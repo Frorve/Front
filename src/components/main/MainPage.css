@@ -125,16 +125,16 @@
 }
 
 .header {
-    background-color: black;
-    color: white;
+    background-color: transparent;
+    backdrop-filter: blur(30px);
+    color: rgb(0, 0, 0);
     padding: 10px;
     text-align: left;
     position: fixed;
     width: 94%;
     top: 0;
-    display: flex;
+    display:flex;
     justify-content: space-between;
-    align-items: center;
     z-index: 1000;
 }
 
@@ -153,16 +153,15 @@
 }
 
 .logout{
-    width: 100px;
     background: #cc2626;
     border: none;
     outline: none;
     border-radius: 40px;
-    box-shadow: 0 0 10px rgba(221, 218, 39, 0.1);
     cursor: pointer;
     font-size: 16px;
     color: #ffffff;
     font-weight: 700;
+    margin-left: 20px;
 }
 
 .no-projects{
@@ -172,9 +171,18 @@
     font-size: 16px;
 }
 
-.add-project-button{
-
+.new-project-button {
+    background: #008cba; /* Cambia el color de fondo según tu preferencia */
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 700;
+    margin-left: 200px; /* Ajusta el margen izquierdo según sea necesario */
 }
+
 
 .success-message-main{
     color: green;
@@ -183,3 +191,81 @@
     text-align: center;
     padding-top: 15px;
   }
+
+.project-card {
+    width: 220px;
+    height: 253px;
+    margin: 20px;
+    position: relative;
+    overflow: hidden;
+    background-color: #f7d451;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    transition: all 0.3s ease;
+    z-index: 1; /* Asegura que los hexágonos no se superpongan */
+}
+
+.project-card.expanded {
+    width: 350px;
+    height: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Asegura que el hexágono expandido esté sobre los demás */
+}
+
+.project-card.expanded .project-info {
+    display: none;
+}
+
+.projects-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative; /* Necesario para los hexágonos expandidos */
+}
+
+.projects-container.expanded .project-card:not(.expanded) {
+    display: none; /* Oculta los hexágonos no expandidos cuando hay uno expandido */
+}
+
+.project-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #3c2415;
+}
+
+.project-info p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.project-details {
+    text-align: center;
+    color: #3c2415;
+}
+
+.project-details p {
+    margin: 10px 0;
+}
+
+.project-actions {
+    margin-top: 20px;
+}
+
+.project-actions button {
+    background-color: #3c2415;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.project-actions button:hover {
+    background-color: #6b4734;
+}

@@ -40,9 +40,8 @@ const LoginForm = () => {
       
             if (response.ok) {
                 console.log('Inicio de sesión exitoso');
-                navigate('/main/${username}');
+                navigate(`/main/${username}`);
             } else {
-            const errorData = await response.json(); 
               setErrorMessage('Credenciales incorrectas');
             }
           } catch (error) {

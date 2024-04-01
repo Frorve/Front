@@ -1,9 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import './MainPage.css';
-import { FaUser, FaPlus } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { FaUser, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { Link, useParams } from 'react-router-dom';
+
+const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
+    const isExpanded = project.id === expandedProjectId;
+
+    const handleEdit = () => {
+        // Aquí puedes agregar la lógica para editar el proyecto
+        console.log('Editar proyecto:', project.id);
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                // Actualizar la lista de proyectos después de borrar
+                onDelete(project.id);
+                console.log('Proyecto borrado exitosamente:', project.id);
+            } else {
+                console.error('Error al borrar el proyecto:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error al borrar el proyecto:', error);
+        }
+    };
+
+    const handleClick = () => {
+        onExpand(isExpanded ? null : project.id);
+    };
+
+    return (
+        <div className={`project-card ${isExpanded ? 'expanded' : ''}`} onClick={handleClick}>
+            <div className="project-info">
+                <p><strong>Nombre: </strong>{project.nombreProyecto}</p>
+                <p><strong>Descripción: </strong>{project.descripcion}</p>
+            </div>
+            {isExpanded && (
+                <div className="project-details">
+                    <p>Colaboradores: {project.colaboradores}</p>
+                    <p>Fecha de inicio: {project.fechaInicio}</p>
+                    <p>Fecha de finalización: {project.fechaFinalizacion}</p>
+                    <div className="project-actions">
+                        <button className="edit-button" onClick={handleEdit}>Editar <FaEdit /></button>
+                        <button className="delete-button" onClick={handleDelete}>Borrar <FaTrash /></button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const MainPage = () => {
+    const { username } = useParams();
     const [showForm, setShowForm] = useState(false);
     const [repos, setRepos] = useState([]);
     const [projectname, setNombreProyecto] = useState('');
@@ -12,6 +64,24 @@ const MainPage = () => {
     const [colab, setColaborador] = useState('');
     const [userCreatedMessage, setUserCreatedMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [expandedProjectId, setExpandedProjectId] = useState(null);
+
+    useEffect(() => {
+        const fetchRepos = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/repo?author=${username}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRepos(data);
+                }
+            } catch (error) {
+                console.error('Error fetching repos:', error);
+                setErrorMessage('Error al obtener los repositorios');
+            }
+        };
+
+        fetchRepos();
+    }, [username]);
 
     const handleProjectoChange = (event) => {
         setNombreProyecto(event.target.value);
@@ -29,39 +99,25 @@ const MainPage = () => {
         setColaborador(event.target.value);
     };
 
-    useEffect(() => {
-        const fetchUserRepos = async () => {
-            try {
-                const response = await fetch('/repo/user/1'); // Reemplaza "1" con el ID del usuario actual
-                if (!response.ok) {
-                    throw new Error('Error fetching user repos');
-                }
-                const data = await response.json();
-                setRepos(data);
-            } catch (error) {
-                console.error('Error fetching user repos:', error);
-            }
-        };
-
-        fetchUserRepos();
-    }, []);
-
     const handleFormToggle = () => {
         setShowForm(!showForm);
     };
 
+    const handleExpand = (projectId) => {
+        setExpandedProjectId(projectId);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-            // Obtener la fecha actual
-    const fechaInicio = new Date().toISOString().split('T')[0];
+        // Obtener la fecha actual
+        const fechaInicio = new Date().toISOString().split('T')[0];
 
-    // Obtener la fecha dentro de 10 días
-    const fechaFinalizacion = new Date();
-    fechaFinalizacion.setDate(fechaFinalizacion.getDate() + 10);
-    const fechaFinalizacionFormateada = fechaFinalizacion.toISOString().split('T')[0];
-    
+        // Obtener la fecha dentro de 10 días
+        const fechaFinalizacion = new Date();
+        fechaFinalizacion.setDate(fechaFinalizacion.getDate() + 10);
+        const fechaFinalizacionFormateada = fechaFinalizacion.toISOString().split('T')[0];
+
         try {
             const response = await fetch('http://localhost:3000/repo', {
                 method: 'POST',
@@ -77,7 +133,7 @@ const MainPage = () => {
                     colaboradores: author + ", " + colab
                 })
             });
-    
+
             if (response.ok) {
                 console.log('Proyecto creado exitosamente');
                 setNombreProyecto('');
@@ -85,13 +141,12 @@ const MainPage = () => {
                 setColaborador('');
                 setDescripcion('');
                 setUserCreatedMessage('Proyecto creado correctamente');
-
             }
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 // Error de nombre de usuario o correo electrónico en uso
                 console.error('Error al crear usuario:', error.message);
-              } 
+            }
         }
     };
 
@@ -100,12 +155,13 @@ const MainPage = () => {
             <header className="header">
                 <div className="logo">
                     <img className="img" src="https://camo.githubusercontent.com/1ecece3e9f50024dc4da57a66ac30e07daafe0914ceb1292d7fc60eb9779cd7a/68747470733a2f2f6265656269742e65732f77702d636f6e74656e742f75706c6f6164732f323031372f30372f6d617263612d73696e2d626f726465732e706e67" alt="Logo de la empresa" />
+                    <button className='new-project-button' onClick={handleFormToggle}>+ Nuevo Proyecto</button>
                 </div>
                 <div className="user-info">
                     <FaUser className="user-icon" />
-                    <span>Username</span>
+                    <span>{username}</span>
                     <Link to="/login">
-                        <button type='submit'>Cerrar sesión</button>
+                        <button className='logout' type='submit'>Cerrar sesión</button>
                     </Link>
                 </div>
             </header>
@@ -116,7 +172,7 @@ const MainPage = () => {
                         <div className='input-box'>
                             <div className="info-box">
                                 <span>Nombre:</span>
-                                <input                             
+                                <input
                                     type="text"
                                     value={projectname}
                                     onChange={handleProjectoChange}
@@ -137,7 +193,7 @@ const MainPage = () => {
                         <div className='input-box'>
                             <div className="info-box">
                                 <span>Autor:</span>
-                                <input type="text" 
+                                <input type="text"
                                     value={author}
                                     onChange={handleAutorChange}
                                     placeholder='Autor del proyecto'
@@ -147,29 +203,25 @@ const MainPage = () => {
                         <div className='input-box'>
                             <div className="info-box">
                                 <span>Colaboradores:</span>
-                                <input type="text" 
+                                <input type="text"
                                     value={colab}
                                     onChange={handleColaboradorChange}
-                                    placeholder='Colaboradores del proyecto'/>
+                                    placeholder='Colaboradores del proyecto' />
                             </div>
                         </div>
                         {userCreatedMessage && <div className="success-message">{userCreatedMessage}</div>}
                         <button type='submit'>Guardar</button>
                     </form>
                 ) : (
-                    <div>
-                        {repos.length > 0 ? (
-                            <ul>
-                                {repos.map(repo => (
-                                    <li key={repo.id}>
-                                        <p>Nombre: {repo.nombreProyecto}</p>
-                                        <p>Descripción: {repo.descripcion}</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="no-projects" >No hay proyectos subidos</p>
-                        )}
+                    <div className='projects-container'>
+                        {repos.map(repo => (
+                            <ProjectCard
+                                key={repo.id}
+                                project={repo}
+                                expandedProjectId={expandedProjectId}
+                                onExpand={handleExpand}
+                            />
+                        ))}
                     </div>
                 )}
                 <button className="add-project-button" onClick={handleFormToggle}>
@@ -186,4 +238,3 @@ const MainPage = () => {
 }
 
 export default MainPage;
-
