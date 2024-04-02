@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './MainPage.css';
 import { FaUser, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { Link, useParams } from 'react-router-dom';
+import logo from '../assets/logo.png'
 
 const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     const isExpanded = project.id === expandedProjectId;
 
     const handleEdit = () => {
-        // Aquí puedes agregar la lógica para editar el proyecto
         console.log('Editar proyecto:', project.id);
     };
 
@@ -18,7 +18,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
             });
 
             if (response.ok) {
-                // Actualizar la lista de proyectos después de borrar
+                window.location.reload();
                 onDelete(project.id);
                 console.log('Proyecto borrado exitosamente:', project.id);
             } else {
@@ -41,9 +41,12 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
             </div>
             {isExpanded && (
                 <div className="project-details">
-                    <p>Colaboradores: {project.colaboradores}</p>
-                    <p>Fecha de inicio: {project.fechaInicio}</p>
-                    <p>Fecha de finalización: {project.fechaFinalizacion}</p>
+                    <p><strong>Nombre: </strong>{project.nombreProyecto}</p>
+                    <p><strong>Descripción: </strong>{project.descripcion}</p>
+                    <p><strong>Colaboradores: </strong>{project.colaboradores}</p>
+                    <p><strong>Fecha de inicio: </strong>{project.fechaInicio}</p>
+                    <p><strong>Fecha de finalización: </strong>{project.fechaFinalizacion}</p>
+                    <p><strong>Archivo: </strong></p>
                     <div className="project-actions">
                         <button className="edit-button" onClick={handleEdit}>Editar <FaEdit /></button>
                         <button className="delete-button" onClick={handleDelete}>Borrar <FaTrash /></button>
@@ -65,6 +68,7 @@ const MainPage = () => {
     const [userCreatedMessage, setUserCreatedMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [expandedProjectId, setExpandedProjectId] = useState(null);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         const fetchRepos = async () => {
@@ -107,31 +111,35 @@ const MainPage = () => {
         setExpandedProjectId(projectId);
     };
 
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        setFile(selectedFile);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Obtener la fecha actual
-        const fechaInicio = new Date().toISOString().split('T')[0];
+    // Obtener la fecha actual
+    const fechaInicio = new Date().toISOString().split('T')[0];
 
-        // Obtener la fecha dentro de 10 días
-        const fechaFinalizacion = new Date();
-        fechaFinalizacion.setDate(fechaFinalizacion.getDate() + 10);
-        const fechaFinalizacionFormateada = fechaFinalizacion.toISOString().split('T')[0];
+    // Obtener la fecha dentro de 10 días
+    const fechaFinalizacion = new Date();
+    fechaFinalizacion.setDate(fechaFinalizacion.getDate() + 10);
+    const fechaFinalizacionFormateada = fechaFinalizacion.toISOString().split('T')[0];
+
+    const formData = new FormData();
+    formData.append('nombreProyecto', projectname);
+    formData.append('descripcion', description);
+    formData.append('fechaInicio', fechaInicio);
+    formData.append('fechaFinalizacion', fechaFinalizacionFormateada);        
+    formData.append('autor', author);
+    formData.append('colaboradores', colab);
+    formData.append('archivo', file); 
 
         try {
             const response = await fetch('http://localhost:3000/repo', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nombreProyecto: projectname,
-                    descripcion: description,
-                    fechaInicio: fechaInicio,
-                    fechaFinalizacion: fechaFinalizacionFormateada,
-                    autor: author,
-                    colaboradores: author + ", " + colab
-                })
+                body: formData
             });
 
             if (response.ok) {
@@ -140,13 +148,13 @@ const MainPage = () => {
                 setAutor('');
                 setColaborador('');
                 setDescripcion('');
+                setFile(null);
                 setUserCreatedMessage('Proyecto creado correctamente');
             }
         } catch (error) {
-            if (error.response && error.response.status === 409) {
-                // Error de nombre de usuario o correo electrónico en uso
-                console.error('Error al crear usuario:', error.message);
-            }
+            console.error('Error al crear proyecto:', error);
+            setErrorMessage('Error al crear el proyecto');
+    
         }
     };
 
@@ -154,8 +162,8 @@ const MainPage = () => {
         <div>
             <header className="header">
                 <div className="logo">
-                    <img className="img" src="https://camo.githubusercontent.com/1ecece3e9f50024dc4da57a66ac30e07daafe0914ceb1292d7fc60eb9779cd7a/68747470733a2f2f6265656269742e65732f77702d636f6e74656e742f75706c6f6164732f323031372f30372f6d617263612d73696e2d626f726465732e706e67" alt="Logo de la empresa" />
-                    <button className='new-project-button' onClick={handleFormToggle}>+ Nuevo Proyecto</button>
+                    <img className="img" src={logo} alt="Logo de la empresa" />
+                    {/* <button className='new-project-button' onClick={handleFormToggle}>+ Nuevo Proyecto</button> */}
                 </div>
                 <div className="user-info">
                     <FaUser className="user-icon" />
@@ -168,45 +176,58 @@ const MainPage = () => {
             <div className='wrapper-main'>
                 {showForm ? (
                     <form onSubmit={handleSubmit}>
-                        <h1>Tus proyectos</h1>
+                        <h1>Nuevo proyecto</h1>
                         <div className='input-box'>
-                            <div className="info-box">
+                            <div className='info-box'>
                                 <span>Nombre:</span>
                                 <input
                                     type="text"
                                     value={projectname}
                                     onChange={handleProjectoChange}
                                     placeholder='Nombre del proyecto'
+                                    maxLength={30}
                                     required />
                             </div>
                         </div>
                         <div className='input-box'>
-                            <div className="info-box">
+                            <div className='info-box'>
                                 <span>Descripción:</span>
                                 <input type="text"
                                     value={description}
                                     onChange={handleDescripcionChange}
                                     placeholder='Descripción del proyecto'
+                                    maxLength={50}
                                     required />
                             </div>
                         </div>
                         <div className='input-box'>
-                            <div className="info-box">
+                            <div className='info-box'>
                                 <span>Autor:</span>
                                 <input type="text"
                                     value={author}
                                     onChange={handleAutorChange}
                                     placeholder='Autor del proyecto'
+                                    maxLength={10}
                                     required />
                             </div>
                         </div>
                         <div className='input-box'>
-                            <div className="info-box">
+                            <div className='info-box'>
                                 <span>Colaboradores:</span>
                                 <input type="text"
                                     value={colab}
                                     onChange={handleColaboradorChange}
-                                    placeholder='Colaboradores del proyecto' />
+                                    placeholder='Colaboradores del proyecto'
+                                    maxLength={30} />
+                            </div>
+                        </div>
+                        <div className='input-box'>
+                            <div className='info-box'>
+                                <span>Archivos:</span>
+                                <input type="file"
+                                    onChange={handleFileChange}
+                                    placeholder='Archivos a subir'
+                                    maxLength={30} />
                             </div>
                         </div>
                         {userCreatedMessage && <div className="success-message">{userCreatedMessage}</div>}
