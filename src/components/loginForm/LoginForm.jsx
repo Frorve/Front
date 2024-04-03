@@ -9,8 +9,19 @@ const LoginForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showEyeIcon, setShowEyeIcon] = useState(false); // Estado para controlar la visibilidad del icono de ojo
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('rememberedUsername');
+        const storedPassword = localStorage.getItem('rememberedPassword');
+        if (storedUsername && storedPassword) {
+            setUsername(storedUsername);
+            setPassword(storedPassword);
+            setRememberMe(true);
+        }
+    }, []);
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -23,6 +34,10 @@ const LoginForm = () => {
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
+    };
+
+    const handleRememberMeChange = () => {
+        setRememberMe(!rememberMe);
     };
 
     const handleSubmit = async (event) => {
@@ -40,6 +55,13 @@ const LoginForm = () => {
       
             if (response.ok) {
                 console.log('Inicio de sesión exitoso');
+                if (rememberMe) {
+                    localStorage.setItem('rememberedUsername', username);
+                    localStorage.setItem('rememberedPassword', password);
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                    localStorage.removeItem('rememberedPassword');
+                }
                 navigate(`/main/${username}`);
             } else {
               setErrorMessage('Credenciales incorrectas');
@@ -82,8 +104,11 @@ const LoginForm = () => {
                     </div>
 
                     <div className="remenber-forgot">
-                        <label><input type="checkbox" />Recuérdame</label>
-                        <a href="#">¿Olvidaste la contraseña?</a>
+                        <label>
+                            <input type="checkbox" checked={rememberMe} onChange={handleRememberMeChange} />
+                            Recuérdame
+                        </label>
+                        <Link to="/register">¿Olvidaste la contraseña?</Link>
                     </div>
 
                     {errorMessage && <div className="error-message">{errorMessage}</div>}
@@ -105,4 +130,5 @@ const LoginForm = () => {
 }
 
 export default LoginForm;
+
 

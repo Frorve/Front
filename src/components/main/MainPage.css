@@ -37,7 +37,7 @@
     color: #000000;
     padding: 20px 45px 20px 20px;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 .input-box input::placeholder {
@@ -178,19 +178,6 @@
     font-size: 16px;
 }
 
-.new-project-button {
-    background: #008cba; /* Cambia el color de fondo según tu preferencia */
-    border: none;
-    outline: none;
-    border-radius: 40px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #ffffff;
-    font-weight: 700;
-    margin-left: 200px; /* Ajusta el margen izquierdo según sea necesario */
-}
-
-
 .success-message-main{
     color: green;
     font-size: 14px;
@@ -210,7 +197,7 @@
     background-color: #f7d451;
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     transition: all 0.8s ease;
-    z-index: 1; /* Asegura que los hexágonos no se superpongan */
+    z-index: 1; 
 }
 
 .project-card.expanded {
@@ -221,7 +208,8 @@
     top: 50%;
     left: 49%;
     transform: translate(-50%, -50%);
-    z-index: 2; /* Asegura que el hexágono expandido esté sobre los demás */
+    border: 5px solid black;
+    z-index: 2;
 }
 
 .project-card.expanded .project-info {
@@ -232,11 +220,11 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    position: relative; /* Necesario para los hexágonos expandidos */
+    position: relative;
 }
 
 .projects-container.expanded .project-card:not(.expanded) {
-    display: none; /* Oculta los hexágonos no expandidos cuando hay uno expandido */
+    display: none;
 }
 
 .project-info {
@@ -266,6 +254,12 @@
     margin: 10px 0;
 }
 
+.project-details button {
+    background-color: #68386d;
+    width: 180px;
+    border-radius: 5px;
+}
+
 .project-actions {
     margin-top: 20px;
 }
@@ -287,4 +281,37 @@
 
 .project-actions button:hover {
     background-color: #6b4734;
+}
+
+.project-details .close-button {
+    position: absolute;
+    top: 5px;
+    right: 30px;
+    width: 50px;
+    height: 40px;
+    border: none;
+    background: rgb(255, 0, 0);
+    cursor: pointer;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.edit{
+    align-items: center;
+    text-align: center;
+}
+
+.edit button{
+    width: 80%;
+    align-items: center;
+    text-align: center;
+}
+
+.edit .input-box{
+    width: 80%;
+    padding-left: 350px;
+}
+
+.edit h1{
+    padding-top: 10px;
 }
