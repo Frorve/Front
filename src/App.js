@@ -11,6 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginForm />} /> {/* Ruta por defecto */}
           <Route path="/login" element={<LoginForm/>} />
+          <Route path="/react-project" element={<LoginForm/>} />
           <Route path="/main/:username" element={<MainPage/>} />
           <Route path="/register" element={<Register/>} />
         </Routes>
