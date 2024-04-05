@@ -78,18 +78,18 @@ const Register = () => {
                             placeholder='Nombre de usuario'
                             value={username}
                             onChange={handleUsernameChange}
-                            maxLength={20}
+                            maxLength={30}
                             required
                         />
                         <FaUser className='icon' />
                     </div>
                     <div className='input-box'>
                         <input
-                            type="text"
+                            type="email"
                             placeholder='Correo electrónico'
                             value={mail}
                             onChange={handleMailChange}
-                            maxLength={20}
+                            maxLength={30}
                             required
                         />
                         <GrMail className='icon' />

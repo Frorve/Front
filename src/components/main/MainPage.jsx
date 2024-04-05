@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './MainPage.css';
 import { FaUser, FaPlus } from "react-icons/fa";
 import { Link, useParams } from 'react-router-dom';
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.png';
 import ProjectCard from './ProjectCard';
 
 const MainPage = () => {
@@ -11,8 +11,9 @@ const MainPage = () => {
     const [repos, setRepos] = useState([]);
     const [projectname, setNombreProyecto] = useState('');
     const [description, setDescripcion] = useState('');
-    const [author, setAutor] = useState('');
+    const [author, setAutor] = useState({username});
     const [colab, setColaborador] = useState('');
+    const [colaboradoresSeleccionados, setColaboradoresSeleccionados] = useState([]);
     const [userCreatedMessage, setUserCreatedMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [expandedProjectId, setExpandedProjectId] = useState(null);
@@ -81,7 +82,14 @@ const MainPage = () => {
     };
 
     const handleAddCollaborator = (collaborator) => {
-        setColaborador(collaborator);
+        // Verificar si el colaborador ya está en la lista
+        if (colaboradoresSeleccionados.includes(collaborator)) {
+            // Si el colaborador ya está en la lista, eliminarlo
+            setColaboradoresSeleccionados(colaboradoresSeleccionados.filter(colab => colab !== collaborator));
+        } else {
+            // Si el colaborador no está en la lista, agregarlo
+            setColaboradoresSeleccionados([...colaboradoresSeleccionados, collaborator]);
+        }
     };
 
     const handleSubmit = async (event) => {
@@ -101,7 +109,7 @@ const MainPage = () => {
         formData.append('fechaInicio', fechaInicio);
         formData.append('fechaFinalizacion', fechaFinalizacionFormateada);
         formData.append('autor', author);
-        formData.append('colaboradores', colab);
+        formData.append('colaboradores', colaboradoresSeleccionados.join(',')); // Convertir la lista de colaboradores a una cadena separada por comas
         formData.append('archivo', file);
 
         try {
@@ -131,7 +139,9 @@ const MainPage = () => {
         <div>
             <header className="header">
                 <div className="logo">
-                    <img className="img" src={logo} alt="Logo de la empresa" />
+                    <a href="http://localhost:3001/main/Probando">
+                        <img className="img" src={logo} alt="Logo de la empresa" />
+                    </a>
                 </div>
                 <div className="user-info">
                     <FaUser className="user-icon" />
@@ -173,7 +183,7 @@ const MainPage = () => {
                             <div className='info-box'>
                                 <span>Autor:</span>
                                 <input type="text"
-                                    value={author}
+                                    value={username}
                                     onChange={handleAutorChange}
                                     placeholder='Autor del proyecto'
                                     maxLength={10}
@@ -183,11 +193,18 @@ const MainPage = () => {
                         <div className='input-box'>
                             <div className='info-box'>
                                 <span>Colaboradores:</span>
-                                <input type="text"
-                                    value={colab}
-                                    onChange={handleColaboradorChange}
-                                    placeholder='Colaboradores del proyecto'
-                                    maxLength={30} />
+                                <ul>
+                                    {colaboradoresSeleccionados.map(colab => (
+                                        <li key={colab} onClick={() => handleAddCollaborator(colab)}>
+                                            {colab} <span className="remove-icon"></span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        <div className='input-box'>
+                            <div className='info-box'>
+                                <span>Buscar colaboradores:</span>
                                 <input
                                     type="text"
                                     placeholder="Buscar colaborador"
@@ -203,6 +220,7 @@ const MainPage = () => {
                                 </ul>
                             </div>
                         </div>
+
                         <div className='input-box'>
                             <div className='info-box'>
                                 <span>Archivos:</span>

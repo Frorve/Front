@@ -11,7 +11,7 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [showEyeIcon, setShowEyeIcon] = useState(false); // Estado para controlar la visibilidad del icono de ojo
+    const [showEyeIcon, setShowEyeIcon] = useState(false);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('rememberedUsername');
@@ -25,7 +25,7 @@ const LoginForm = () => {
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
-        setShowEyeIcon(event.target.value !== ''); // Muestra el icono de ojo cuando el usuario comienza a escribir
+        setShowEyeIcon(event.target.value !== '');
     };
 
     const handlePasswordChange = (event) => {
@@ -45,14 +45,15 @@ const LoginForm = () => {
         
         try {
             const response = await fetch('http://localhost:3000/staff/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ nombre: username, 
-                contraseña: password })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombre: username, contraseña: password })
             });
-      
+
+            const data = await response.json();
+
             if (response.ok) {
                 console.log('Inicio de sesión exitoso');
                 if (rememberMe) {
@@ -62,14 +63,15 @@ const LoginForm = () => {
                     localStorage.removeItem('rememberedUsername');
                     localStorage.removeItem('rememberedPassword');
                 }
+                localStorage.setItem('token', data.token); // Almacenar el token JWT en el almacenamiento local
                 navigate(`/main/${username}`);
             } else {
-              setErrorMessage('Credenciales incorrectas');
+                setErrorMessage(data.message || 'Credenciales incorrectas');
             }
-          } catch (error) {
+        } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al conectarse al servidor');
-          }
+        }
     };
 
     return (
@@ -83,7 +85,7 @@ const LoginForm = () => {
                             placeholder='Usuario'
                             value={username}
                             onChange={handleUsernameChange}
-                            maxLength={20}
+                            maxLength={30}
                             required
                         />
                         <FaUser className='icon' />

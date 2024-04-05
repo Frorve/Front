@@ -23,6 +23,9 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     };
 
     const handleDelete = async () => {
+        const confirmDelete = window.confirm("¿Estás seguro de borrar este proyecto?");
+        if (!confirmDelete) return;
+
         try {
             const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
                 method: 'DELETE',
@@ -47,11 +50,8 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
             });
 
             if (response.ok) {
-                // Crear un blob con los datos del archivo
                 const blob = await response.blob();
-                // Crear una URL de descarga
                 const url = URL.createObjectURL(blob);
-                // Crear un enlace y simular un clic para descargar el archivo
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = "Descarga";
@@ -73,9 +73,9 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
 
     const handleClick = () => {
         if (isExpanded) {
-            return; // Si ya está expandido, no hacer nada
+            return;
         } else {
-            onExpand(project.id); // Expandir la tarjeta si no está expandida
+            onExpand(project.id);
         }
     };
 
