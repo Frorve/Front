@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './MainPage.css';
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";

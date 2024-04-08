@@ -7,6 +7,7 @@ import ProjectCard from './ProjectCard';
 
 const MainPage = () => {
     const { username } = useParams();
+    const { token } = useParams();
     const [showForm, setShowForm] = useState(false);
     const [repos, setRepos] = useState([]);
     const [projectname, setNombreProyecto] = useState('');
@@ -24,7 +25,11 @@ const MainPage = () => {
     useEffect(() => {
         const fetchRepos = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/repo?author=${username}`);
+                const response = await fetch('http://localhost:3000/repo', {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Pasar el token JWT en el encabezado de autorización
+                    }
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setRepos(data);
@@ -36,7 +41,7 @@ const MainPage = () => {
         };
 
         fetchRepos();
-    }, [username]);
+    }, [token]);
 
     const handleProjectoChange = (event) => {
         setNombreProyecto(event.target.value);

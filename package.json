@@ -21,6 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
+    "cypress:open": "cypress open",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
@@ -42,6 +43,9 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.1.1"
+    "cypress": "^13.7.2",
+    "daisyui": "^4.10.1",
+    "gh-pages": "^6.1.1",
+    "tailwindcss": "^3.4.3"
   }
 }

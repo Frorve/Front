@@ -1,0 +1,11 @@
+{
+    "users": [
+      {
+        "nombre": "existing_user",
+        "cargo": "Staff",
+        "correoElectronico": "existing_user@example.com",
+        "contraseña": "existing_password"
+      }
+    ]
+  }
+  

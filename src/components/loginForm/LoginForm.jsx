@@ -44,7 +44,7 @@ const LoginForm = () => {
         event.preventDefault();
         
         try {
-            const response = await fetch('http://localhost:3000/staff/login', {
+            const response = await fetch('http://localhost:3000/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -56,6 +56,7 @@ const LoginForm = () => {
 
             if (response.ok) {
                 console.log('Inicio de sesión exitoso');
+                console.log(data);
                 if (rememberMe) {
                     localStorage.setItem('rememberedUsername', username);
                     localStorage.setItem('rememberedPassword', password);
