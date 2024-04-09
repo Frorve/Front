@@ -25,11 +25,7 @@ const MainPage = () => {
     useEffect(() => {
         const fetchRepos = async () => {
             try {
-                const response = await fetch('http://localhost:3000/repo', {
-                    headers: {
-                        'Authorization': `Bearer ${token}` // Pasar el token JWT en el encabezado de autorización
-                    }
-                });
+                const response = await fetch('http://localhost:3000/repo');
                 if (response.ok) {
                     const data = await response.json();
                     setRepos(data);
@@ -41,7 +37,7 @@ const MainPage = () => {
         };
 
         fetchRepos();
-    }, [token]);
+    }, []);
 
     const handleProjectoChange = (event) => {
         setNombreProyecto(event.target.value);
@@ -165,7 +161,7 @@ const MainPage = () => {
                             <div className='info-box'>
                                 <span>Nombre:</span>
                                 <input
-                                    type="text"
+                                    type="nombreProyecto"
                                     value={projectname}
                                     onChange={handleProjectoChange}
                                     placeholder='Nombre del proyecto'
@@ -176,7 +172,7 @@ const MainPage = () => {
                         <div className='input-box'>
                             <div className='info-box'>
                                 <span>Descripción:</span>
-                                <input type="text"
+                                <input type="descripcion"
                                     value={description}
                                     onChange={handleDescripcionChange}
                                     placeholder='Descripción del proyecto'
@@ -195,7 +191,7 @@ const MainPage = () => {
                                     required />
                             </div>
                         </div>
-                        <div className='input-box'>
+                        {/* <div className='input-box'>
                             <div className='info-box'>
                                 <span>Colaboradores:</span>
                                 <ul>
@@ -224,7 +220,7 @@ const MainPage = () => {
                                     ))}
                                 </ul>
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className='input-box'>
                             <div className='info-box'>
@@ -250,8 +246,8 @@ const MainPage = () => {
                         ))}
                     </div>
                 )}
-                <button className="add-project-button" onClick={handleFormToggle}>
-                    {showForm ? 'Volver atrás' : <FaPlus />}
+                <button className="add-project-button" onClick={handleFormToggle}>Agregar Proyecto
+                    {/* {showForm ? 'Volver atrás' : <FaPlus />} */}
                 </button>
             </div>
             <footer className="footer-page">
