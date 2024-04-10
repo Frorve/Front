@@ -9,6 +9,11 @@
     border-radius: 10px;
     padding: 30px 90px;
     overflow-y: auto;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .wrapper-main h1 {
@@ -101,6 +106,19 @@
     text-align: center;
     margin: 20px 0 15px;
 }
+
+.wrapper-main .save-button:hover {
+    background-color: #399228;
+}
+
+.wrapper-main .cancel-button:hover {
+    background-color: #ff0000;
+}
+
+.wrapper-main .add-project-button:hover {
+    background-color: #e2e068;
+    color: #6b4734;
+  }
 
 .register-link p a {
     color:  #000000;
@@ -256,8 +274,11 @@
 
 .project-details button {
     background-color: #68386d;
-    width: 180px;
+    width: 250px;
     border-radius: 5px;
+    position:relative;
+    padding-top: 10px;
+
 }
 
 .project-actions {
@@ -272,7 +293,7 @@
     padding: 8px 12px;
     cursor: pointer;
     margin-right: 10px;
-    width: 100px;
+    width: 150px;
 }
 
 .project-actions .delete-button{
@@ -294,17 +315,29 @@
     cursor: pointer;
     font-size: 18px;
     color: #ffffff;
+    padding-left: 15px;
+    padding-bottom: 10px;
 }
 
 .edit{
     align-items: center;
     text-align: center;
+    
 }
 
 .edit button{
     width: 80%;
     align-items: center;
     text-align: center;
+
+}
+
+.edit .save-button:hover {
+    background-color: #399228;
+}
+
+.edit .cancel-button:hover {
+    background-color: #cc2626;
 }
 
 .edit .input-box{
@@ -319,3 +352,16 @@
 @media screen and (max-width: 912px) {
     
 }
+
+@media screen and (max-width: 768px) {
+    .project-details .close-button {
+        position: relative;
+        top: auto;
+        right: 5px;
+        width: auto;
+        padding: 10px;
+    }
+}
+
+
+

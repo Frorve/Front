@@ -105,7 +105,9 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
                             {project.archivo && (
                                 <div>
                                     <p><strong>Archivo: </strong></p>
+                                    <div className="icon-container">
                                     <button onClick={downloadFile}>Descargar archivo <FiDownload/></button>
+                                    </div>
                                 </div>
                             )}
 

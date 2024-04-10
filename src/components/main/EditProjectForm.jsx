@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
 const EditProjectForm = ({ project, onSave, onCancel }) => {
+
+    const [userCreatedMessage, setUserCreatedMessage] = useState('');
+
     const [editedProject, setEditedProject] = useState({
         nombreProyecto: project.nombreProyecto,
         descripcion: project.descripcion,
@@ -17,7 +20,6 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Realizar la solicitud PUT al servidor
         try {
             const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
                 method: 'PUT',
@@ -29,6 +31,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
 
             if (response.ok) {
                 onSave(editedProject);
+                setUserCreatedMessage('Proyecto editado correctamente');
                 window.location.reload();
             } else {
                 console.error('Error al actualizar el proyecto:', response.statusText);
@@ -83,8 +86,9 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
                     />
                 </div>
             </div>
+            {userCreatedMessage && <div className="success-message">{userCreatedMessage}</div>}
             <button className="save-button" type='submit'>Guardar</button>
-            <button type='button' onClick={onCancel}>Cancelar</button>
+            <button className="cancel-button" type='button' onClick={onCancel}>Cancelar</button>
             </div>
         </form>
     );

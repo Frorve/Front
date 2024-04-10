@@ -1,5 +1,6 @@
 .wrapper{
-    width: 420px;
+    width: 90%;
+    max-width: 420px; /* Cambiado para un enfoque más responsive */
     background: transparent;
     border: 2px solid rgba(255, 255, 255, .2);
     backdrop-filter: blur(30px);
@@ -10,6 +11,11 @@
     margin: 0 auto;
     max-height: 500px;
     overflow-y: auto;
+    max-height: calc(100% - 20px);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .wrapper h1 {
@@ -110,9 +116,23 @@
     padding: 10px 0;
     backdrop-filter: blur(30px);
     border: 2px solid rgba(255, 255, 255, .2);
+    margin-bottom: -2px; /* Soluciona un problema de superposición con el borde inferior */
 }
 
 .foot {
     font-size: 14px;
 }
- 
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 20px; /* Ajustar el padding */
+  }
+}
+
+/* Media query para pantallas más pequeñas */
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 10px; /* Ajustar el padding */
+  }
+}

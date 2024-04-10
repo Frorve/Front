@@ -136,26 +136,39 @@ const MainPage = () => {
         }
     };
 
+    const handleCancel = () => {
+        setShowForm(false);
+        setNombreProyecto('');
+        setAutor('');
+        setColaborador('');
+        setDescripcion('');
+        setFile(null);
+    };
+
     return (
         <div>
-            <header className="header">
-                <div className="logo">
-                    <a href="http://localhost:3001/main/Probando">
-                        <img className="img" src={logo} alt="Logo de la empresa" />
-                    </a>
-                </div>
-                <div className="user-info">
-                    <FaUser className="user-icon" />
-                    <span>{username}</span>
-                    <Link to="/login">
-                        <button className='logout' type='submit'>Cerrar sesión</button>
-                    </Link>
-                </div>
-            </header>
+      <div className="navbar bg-base-100 text-neutral-content">
+  <div className="navbar-start">
+    <div className="dropdown">
+      <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+      </div>
+    </div>
+    <a className="btn text-xl">Stafko</a>
+  </div>
+  <div className="navbar-center hidden lg:flex">
+  </div>
+  <div className="navbar-end">
+    <Link to="/login">
+    <button className="btn btn-error">Cerrar sesión</button>
+    </Link>
+  </div>
+
+</div>
             <div className='wrapper-main'>
                 <h1>Proyectos</h1>
                 {showForm ? (
-                    <form onSubmit={handleSubmit}>
+                    <form className="formulario" onSubmit={handleSubmit}>
                         <h1>Nuevo proyecto</h1>
                         <div className='input-box'>
                             <div className='info-box'>
@@ -232,7 +245,8 @@ const MainPage = () => {
                             </div>
                         </div>
                         {userCreatedMessage && <div className="success-message">{userCreatedMessage}</div>}
-                        <button type='submit'>Guardar</button>
+                        <button className="save-button" type='submit'>Guardar</button>
+                        <button className="cancel-button" type='button' onClick={handleCancel}>Cancelar</button>
                     </form>
                 ) : (
                     <div className='projects-container'>
@@ -247,7 +261,6 @@ const MainPage = () => {
                     </div>
                 )}
                 <button className="add-project-button" onClick={handleFormToggle}>Agregar Proyecto
-                    {/* {showForm ? 'Volver atrás' : <FaPlus />} */}
                 </button>
             </div>
             <footer className="footer-page">

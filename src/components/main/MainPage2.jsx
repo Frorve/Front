@@ -1,13 +1,44 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import CreateProject from './CreateProject';
 
 const MainPage2 = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [projects, setProjects] = useState([]);
 
-    const [showForm, setShowForm] = useState(false);
+  const handleAddProjectClick = () => {
+    setShowForm(true);
+  };
 
-    const handleAddProjectClick = () => {
-      setShowForm(true);
-    };
+  const handleCloseForm = () => {
+    setShowForm(false);
+  };
 
+  const handleProjectSubmit = (projectData) => {
+    // Aquí puedes agregar la lógica para guardar el proyecto en tu lista de proyectos
+    setProjects([...projects, projectData]);
+    setShowForm(false); // Cerrar el formulario después de guardar el proyecto
+  };
+
+  const projectsList = projects.map((project, index) => (
+    <div key={index} className="relative flex w-80 flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+      <div className="relative mx-4 -mt-6 h-40 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40 bg-gradient-to-r from-blue-500 to-blue-600">
+      </div>
+      <div className="p-6">
+        <h5 className="mb-2 block font-sans text-xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
+          {project.name}
+        </h5>
+        <p className="block font-sans text-base font-light leading-relaxed text-inherit antialiased">
+          {project.description}
+        </p>
+      </div>
+      <div className="p-6 pt-0">
+        <button data-ripple-light="true" type="button" className="select-none rounded-lg bg-blue-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+          Read More
+        </button>
+      </div>
+    </div>
+  ));
 
   return (
     <div>
@@ -47,43 +78,39 @@ const MainPage2 = () => {
     </ul>
   </div>
   <div className="navbar-end">
+    <Link to="/login2">
     <a className="btn">Cerrar sesión</a>
+    </Link>
   </div>
+
 </div>
 
-<div className="hero min-h-screen bg-base-200">
-        <div className="hero-content text-center">
-          <div className="max-w-md">
-            <h1 className="text-5xl font-bold">Hello there</h1>
-            <p className="py-6">Comienza a subir tus proyectos</p>
-            <button onClick={handleAddProjectClick} className="btn btn-primary">
-              Añadir proyecto
-            </button>
-          </div>
-          {showForm && (
-            <form className="mt-6 p-4 bg-white shadow-md rounded-md">
-              <div className="mb-4">
-                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">
-                  Nombre del proyecto
-                </label>
-                <input type="text" id="projectName" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                  Descripción
-                </label>
-                <textarea id="description" rows="3" className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
-              </div>
-              {/* Agrega aquí el campo para el calendario y el campo para subir archivos */}
-              <div className="mt-4">
-                <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  Guardar
+{showForm ? (
+        <CreateProject onClose={handleCloseForm} onSubmit={handleProjectSubmit} />
+      ) : (
+        <div>
+          <div className="hero min-h-screen bg-base-200">
+            <div className="hero-content text-center">
+              <div className="max-w-md">
+                <h1 className="text-5xl font-bold">Hello there</h1>
+                <p className="py-6">Comienza a subir tus proyectos</p>
+                <button onClick={handleAddProjectClick} className="btn btn-primary">
+                  Añadir proyecto
                 </button>
               </div>
-            </form>
-          )}
+            </div>
+          </div>
+
+          {/* Aquí renderizamos la lista de proyectos */}
+          <div className="flex flex-wrap justify-center gap-4 mt-8">
+            {projects.map((project, index) => (
+              <div key={index} className="relative flex w-80 flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
+                {/* Renderizar tarjeta de proyecto aquí */}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <footer className="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
@@ -91,7 +118,7 @@ const MainPage2 = () => {
         </aside>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default MainPage2
+export default MainPage2;
