@@ -21,6 +21,8 @@ const MainPage = () => {
     const [file, setFile] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFinalizacion, setFechaFinalizacion] = useState('');
 
     useEffect(() => {
         const fetchRepos = async () => {
@@ -55,6 +57,14 @@ const MainPage = () => {
         setColaborador(event.target.value);
     };
 
+    const handleFechaInicioChange = (event) => {
+        setFechaInicio(event.target.value);
+    };
+
+    const handleFechaFinalizacionChange = (event) => {
+        setFechaFinalizacion(event.target.value);
+    };
+
     const handleSearchChange = async (event) => {
         setSearchQuery(event.target.value);
         try {
@@ -83,12 +93,9 @@ const MainPage = () => {
     };
 
     const handleAddCollaborator = (collaborator) => {
-        // Verificar si el colaborador ya está en la lista
         if (colaboradoresSeleccionados.includes(collaborator)) {
-            // Si el colaborador ya está en la lista, eliminarlo
             setColaboradoresSeleccionados(colaboradoresSeleccionados.filter(colab => colab !== collaborator));
         } else {
-            // Si el colaborador no está en la lista, agregarlo
             setColaboradoresSeleccionados([...colaboradoresSeleccionados, collaborator]);
         }
     };
@@ -96,19 +103,11 @@ const MainPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Obtener la fecha actual
-        const fechaInicio = new Date().toISOString().split('T')[0];
-
-        // Obtener la fecha dentro de 10 días
-        const fechaFinalizacion = new Date();
-        fechaFinalizacion.setDate(fechaFinalizacion.getDate() + 10);
-        const fechaFinalizacionFormateada = fechaFinalizacion.toISOString().split('T')[0];
-
         const formData = new FormData();
         formData.append('nombreProyecto', projectname);
         formData.append('descripcion', description);
         formData.append('fechaInicio', fechaInicio);
-        formData.append('fechaFinalizacion', fechaFinalizacionFormateada);
+        formData.append('fechaFinalizacion', fechaFinalizacion);
         formData.append('autor', author);
         formData.append('colaboradores', colaboradoresSeleccionados.join(',')); // Convertir la lista de colaboradores a una cadena separada por comas
         formData.append('archivo', file);
@@ -147,26 +146,49 @@ const MainPage = () => {
 
     return (
         <div>
-      <div className="navbar bg-base-100 text-neutral-content">
-  <div className="navbar-start">
-    <div className="dropdown">
-      <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+<div id="nav" className="navbar bg-base-100">
+  <div className="flex-1">
+    <Link to={(`/main/${username}`)} >
+    <a className="btn btn-ghost text-xl" onClick={handleCancel}>Stafko</a>
+    </Link>
+  </div>
+  <div className="flex-none gap-2">
+    {/* <div className="form-control">
+      <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
+    </div> */}
+    
+    <button className="btn">{username}
+    <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+        <div className="w-10 rounded-full">
+            
+          <img alt="Tailwind CSS Navbar component" src="https://cdn-icons-png.freepik.com/512/64/64572.png" />
+        </div>
       </div>
+      {/* <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+        <li>
+          <a className="justify-between" onClick={handleFormToggle}>
+            Agregar proyecto
+            <span className="badge">New</span>
+          </a>
+        </li> */}
+        {/* <li><a>Settings</a></li> */}
+        {/* <Link to='/login' >
+        <li><a>Cerrar sesión</a></li>
+        </Link>
+      </ul> */}
     </div>
-    <a className="btn text-xl">Stafko</a>
-  </div>
-  <div className="navbar-center hidden lg:flex">
-  </div>
-  <div className="navbar-end">
+    </button>
+    <div className="navbar-end">
     <Link to="/login">
     <button className="btn btn-error">Cerrar sesión</button>
     </Link>
   </div>
-
+  </div>
 </div>
+
             <div className='wrapper-main'>
-                <h1>Proyectos</h1>
+            {!showForm && <h1>Proyectos</h1>}
                 {showForm ? (
                     <form className="formulario" onSubmit={handleSubmit}>
                         <h1>Nuevo proyecto</h1>
@@ -201,6 +223,26 @@ const MainPage = () => {
                                     onChange={handleAutorChange}
                                     placeholder='Autor del proyecto'
                                     maxLength={10}
+                                    required />
+                            </div>
+                        </div>
+                        <div className='input-box'>
+                            <div className='info-box'>
+                                <span>Fecha inicio:</span>
+                                <input type="date"
+                                    value={fechaInicio}
+                                    onChange={handleFechaInicioChange}
+                                    placeholder='Descripción del proyecto'
+                                    required />
+                            </div>
+                        </div>
+                        <div className='input-box'>
+                            <div className='info-box'>
+                                <span>Fecha finalización:</span>
+                                <input type="date"
+                                    value={fechaFinalizacion}
+                                    onChange={handleFechaFinalizacionChange}
+                                    placeholder='Descripción del proyecto'
                                     required />
                             </div>
                         </div>
@@ -241,7 +283,7 @@ const MainPage = () => {
                                 <input type="file"
                                     onChange={handleFileChange}
                                     placeholder='Archivos a subir'
-                                    maxLength={30} />
+                                    maxLength={50} />
                             </div>
                         </div>
                         {userCreatedMessage && <div className="success-message">{userCreatedMessage}</div>}
@@ -260,8 +302,7 @@ const MainPage = () => {
                         ))}
                     </div>
                 )}
-                <button className="add-project-button" onClick={handleFormToggle}>Agregar Proyecto
-                </button>
+                {!showForm && <button className="add-project-button" onClick={handleFormToggle}>Agregar Proyecto</button>}
             </div>
             <footer className="footer-page">
                 <div className='foot'>

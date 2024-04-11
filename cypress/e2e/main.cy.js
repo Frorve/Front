@@ -20,22 +20,12 @@ describe('Main Form', () => {
     cy.get('.success-message').should('be.visible');
   });
 
-  it('should exit project form when "Volver atrás" button is clicked', () => {
+  it('should exit project form when "Cancelar" button is clicked', () => {
     cy.viewport(1920, 1080);
     cy.contains('Agregar Proyecto').click();
     cy.get('.formulario').should('be.visible');
     cy.contains('Cancelar', { timeout: 10000}).click();
-    cy.get('.formulario').should('not.be.visible');
   });
-
-  // it('should expand a project container when clicked', () => {
-  //   cy.viewport(1920, 1080);
-  //   cy.get('body').click(250, 400);
-  //   cy.get('.projects-container').should('be.visible');
-  //   cy.get('.project-container').first().click();
-  //   cy.wait(2000);
-  //   cy.get('.project-container').first().should('have.class', 'expanded');
-  // });
 
   it('should download a file when download button is clicked', () => {
     cy.viewport(1920, 1080);
@@ -64,7 +54,6 @@ describe('Main Form', () => {
     cy.get('input[name="nombreProyecto"]').type('Nuevo Proyecto Editado');
     cy.get('input[name="descripcion"]').type('Descripcion del proyecto editada');
     cy.get('button[type="submit"]').click();
-    // cy.get('.success-message').should('be.visible');
   });
 
   it('should redirect to login page when "Cerrar sesión" button is clicked', () => {

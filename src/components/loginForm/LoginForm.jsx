@@ -68,10 +68,12 @@ const LoginForm = () => {
                 navigate(`/main/${username}`);
             } else {
                 setErrorMessage(data.message || 'Credenciales incorrectas');
+                setTimeout(() => setErrorMessage(''), 5000);
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             setErrorMessage('Error al conectarse al servidor');
+            setTimeout(() => setErrorMessage(''), 5000);
         }
     };
 

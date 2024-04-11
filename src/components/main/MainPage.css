@@ -46,7 +46,7 @@
 }
 
 .input-box input::placeholder {
-    color: #000000;
+    color: #999999 !important;
 }
 
 .input-box .icon {
@@ -212,8 +212,7 @@
     position: relative;
     align-items: center;
     overflow: auto;
-    background-color: #f7d451;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: linear-gradient(90deg, rgba(237,255,76,1) 0%, rgba(247,212,81,1) 35%);    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     transition: all 0.8s ease;
     z-index: 1; 
 }
@@ -221,7 +220,7 @@
 .project-card.expanded {
     clip-path: none;
     width: 1750px;
-    height: 600px;
+    height: 710px;
     position: absolute;
     top: 50%;
     left: 49%;
@@ -277,12 +276,7 @@
     width: 250px;
     border-radius: 5px;
     position:relative;
-    padding-top: 10px;
 
-}
-
-.project-actions {
-    margin-top: 20px;
 }
 
 .project-actions button {
@@ -296,12 +290,12 @@
     width: 150px;
 }
 
-.project-actions .delete-button{
-    background-color: #cc2626;
+.project-actions #Sup {
+    background-color: #cc2626 !important;
 }
 
 .project-actions button:hover {
-    background-color: #6b4734;
+    background-color: #41c757;
 }
 
 .project-details .close-button {
@@ -316,7 +310,11 @@
     font-size: 18px;
     color: #ffffff;
     padding-left: 15px;
-    padding-bottom: 10px;
+}
+
+#nav {
+    background-color: transparent !important;
+    backdrop-filter: blur(30px) !important;
 }
 
 .edit{

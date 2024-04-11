@@ -62,7 +62,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
             <div className='input-box'>
                 <div className='info-box'>
                     <span>Descripción:</span>
-                    <input
+                    <input 
                         type="text"
                         name="descripcion"
                         value={editedProject.descripcion}

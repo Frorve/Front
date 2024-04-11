@@ -35,7 +35,7 @@ const Register = () => {
         event.preventDefault();
     
         try {
-            const response = await fetch('http://localhost:3000/staff', {
+            const response = await fetch('http://localhost:3000/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -54,15 +54,18 @@ const Register = () => {
                 setMail('');
                 setPassword('');
                 setUserCreatedMessage('Usuario creado correctamente');
+                setTimeout(() => setUserCreatedMessage(''), 5000);
             } else {
                 const errorData = await response.json(); 
                 setErrorMessage('El nombre de usuario o correo electrónico ya están en uso');
+                setTimeout(() => setErrorMessage(''), 5000);
             }
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 // Error de nombre de usuario o correo electrónico en uso
                 setErrorMessage('El nombre de usuario o correo electrónico ya están en uso');
                 console.error('Error al crear usuario:', error.message);
+                setTimeout(() => setErrorMessage(''), 5000);
               } 
         }
     };

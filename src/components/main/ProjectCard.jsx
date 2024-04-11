@@ -3,10 +3,12 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";
 import EditProjectForm from './EditProjectForm';
+import { useParams } from 'react-router-dom';
 
 const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     const isExpanded = project.id === expandedProjectId;
     const [isEditing, setIsEditing] = useState(false);
+    const { username } = useParams();
 
     const handleEdit = () => {
         console.log('Editar proyecto:', project.id);
@@ -97,7 +99,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
                             <button className="close-button" onClick={handleClose}> <AiFillCloseCircle/> </button>
                             <p><strong>Nombre: </strong>{project.nombreProyecto}</p>
                             <p><strong>Descripción: </strong>{project.descripcion}</p>
-                            <p><strong>Autor: </strong>{project.autor}</p>
+                            <p><strong>Autor: </strong>{username}</p>
                             <p><strong>Colaboradores: </strong>{project.colaboradores}</p>
                             <p><strong>Fecha de inicio: </strong>{project.fechaInicio}</p>
                             <p><strong>Fecha de finalización: </strong>{project.fechaFinalizacion}</p>
@@ -105,15 +107,13 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
                             {project.archivo && (
                                 <div>
                                     <p><strong>Archivo: </strong></p>
-                                    <div className="icon-container">
-                                    <button onClick={downloadFile}>Descargar archivo <FiDownload/></button>
-                                    </div>
+                                    <button className="btn btn-wide" onClick={downloadFile}>Descargar archivo <FiDownload/></button>
                                 </div>
                             )}
 
                             <div className="project-actions">
-                                <button className="edit-button" onClick={handleEdit}>Editar <FaEdit /></button>
-                                <button className="delete-button" onClick={handleDelete}>Borrar <FaTrash /></button>
+                                <button className="btn btn-wide" onClick={handleEdit}>Editar <FaEdit /></button>
+                                <button id="Sup" className="btn btn-wide" onClick={handleDelete}>Borrar <FaTrash /></button>
                             </div>
                         </div>
                     )}
