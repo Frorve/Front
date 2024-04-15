@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import { FiDownload } from "react-icons/fi";
-import { AiFillCloseCircle } from "react-icons/ai";
 import EditProjectForm from "./EditProjectForm";
 import { useParams } from "react-router-dom";
+import ProjectDetails from "./ProjectDetails";
 
 const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
   const isExpanded = project.id === expandedProjectId;
@@ -106,60 +104,14 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
             </p>
           </div>
           {isExpanded && (
-            <div className="project-details">
-              <button className="close-button" onClick={handleClose}>
-                {" "}
-                <AiFillCloseCircle />{" "}
-              </button>
-              <p>
-                <strong>Nombre: </strong>
-                {project.nombreProyecto}
-              </p>
-              <p>
-                <strong>Descripción: </strong>
-                {project.descripcion}
-              </p>
-              <p>
-                <strong>Autor: </strong>
-                {username}
-              </p>
-              <p>
-                <strong>Colaboradores: </strong>
-                {project.colaboradores}
-              </p>
-              <p>
-                <strong>Fecha de inicio: </strong>
-                {project.fechaInicio}
-              </p>
-              <p>
-                <strong>Fecha de finalización: </strong>
-                {project.fechaFinalizacion}
-              </p>
-
-              {project.archivo && (
-                <div>
-                  <p>
-                    <strong>Archivo: </strong>
-                  </p>
-                  <button className="btn btn-wide" onClick={downloadFile}>
-                    Descargar archivo <FiDownload />
-                  </button>
-                </div>
-              )}
-
-              <div className="project-actions">
-                <button className="btn btn-wide" onClick={handleEdit}>
-                  Editar <FaEdit />
-                </button>
-                <button
-                  id="Sup"
-                  className="btn btn-wide"
-                  onClick={handleDelete}
-                >
-                  Borrar <FaTrash />
-                </button>
-              </div>
-            </div>
+            <ProjectDetails
+              project={project}
+              username={username}
+              onClose={handleClose}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onDownload={downloadFile}
+            />
           )}
         </>
       )}

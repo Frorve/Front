@@ -122,7 +122,6 @@ const Register = () => {
               <span>{errorMessage}</span>
             </div>
           )}
-          <br />
           {userCreatedMessage && (
             <div role="alert" className="alert alert-success">
               <svg
@@ -141,6 +140,7 @@ const Register = () => {
               <span>{userCreatedMessage}</span>
             </div>
           )}
+          <br />
           <button type="submit">Crear Usuario</button>
 
           <div className="register-link">

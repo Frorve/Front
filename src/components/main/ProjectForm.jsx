@@ -7,6 +7,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const [fechaFinalizacion, setFechaFinalizacion] = useState("");
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [ProjectCreatedMessage, setProjectCreatedMessage] = useState("");
 
   const handleProjectoChange = (event) => {
     setNombreProyecto(event.target.value);
@@ -53,6 +54,8 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         setFechaFinalizacion("");
         setFile(null);
         onSubmit();
+        setProjectCreatedMessage("¡Proyecto creado!")
+        window.location.reload();
       } else {
         throw new Error("Error al crear proyecto");
       }
@@ -127,6 +130,12 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
           />
         </div>
       </div>
+      {ProjectCreatedMessage && (
+        <div role="alert" className="alert alert-success">
+        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>{ProjectCreatedMessage}</span>
+      </div>
+      )}
       {errorMessage && (
         <div role="alert" className="alert alert-error">
           <span>{errorMessage}</span>

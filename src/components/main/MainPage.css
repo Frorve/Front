@@ -1,13 +1,15 @@
 .wrapper-main {
-  width: 1800px;
-  height: 800px;
+  max-width: 100%;
+  width: 95%;
+  height: 80%; 
+  max-height: 100%;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(30px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   color: #000000;
   border-radius: 10px;
-  padding: 30px 90px;
+  padding: 30px 5%;
   overflow-y: auto;
 
   position: fixed;
@@ -15,6 +17,14 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+@media screen and (max-width: 768px) {
+  .wrapper-main {
+    width: 90%; 
+    padding: 20px;
+  }
+}
+
 
 .wrapper-main h1 {
   font-size: 36px;
@@ -137,7 +147,7 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  background: transparent;
+  background: rgb(255, 255, 255) !important;
   color: #000000;
   text-align: center;
   padding: 10px 0;
@@ -147,55 +157,6 @@
 
 .foot {
   font-size: 14px;
-}
-
-.header {
-  background-color: transparent;
-  backdrop-filter: blur(30px);
-  color: rgb(0, 0, 0);
-  padding: 10px;
-  position: fixed;
-  width: 94%;
-  top: 0;
-  display: flex;
-  justify-content: space-between;
-  z-index: 1000;
-}
-
-.user-info {
-  margin-right: 20px;
-  align-items: center;
-  font-weight: 700;
-}
-
-.user-icon {
-  margin-right: 10px;
-}
-
-.img {
-  width: 200px;
-  height: 50px;
-}
-
-.logout {
-  background: #cc2626;
-  width: 150px;
-  border: none;
-  outline: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 20px;
-  color: #ffffff;
-  font-weight: 700;
-  margin-left: 20px;
-  margin-top: 10px;
-}
-
-.no-projects {
-  text-align: center;
-  padding-bottom: 30px;
-  font-weight: 700;
-  font-size: 16px;
 }
 
 .success-message-main {
@@ -230,6 +191,18 @@
 
 .project-card.expanded {
   clip-path: none;
+  width: 100%; 
+  height: 110%;
+  position:absolute;
+  top: auto;
+  left: auto;
+  transform: none;
+  border: 2px solid black;
+  z-index: 2;
+}
+
+/* .project-card.expanded {
+  clip-path: none;
   width: 1750px;
   height: 750px;
   position: fixed;
@@ -238,7 +211,7 @@
   transform: translate(-50%, -50%);
   border: 5px solid black;
   z-index: 2;
-}
+} */
 
 .project-card.expanded .project-info {
   display: none;
@@ -277,6 +250,19 @@
   overflow-y: auto;
   width: auto;
 }
+
+@media screen and (max-width: 768px) {
+  .project-details {
+    padding-top: 80px; 
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .project-details {
+    padding-top: 60px; 
+  }
+}
+
 
 .project-details p {
   margin: 10px 0;
@@ -323,8 +309,8 @@
 }
 
 #nav {
-  background-color: transparent !important;
-  backdrop-filter: blur(30px) !important;
+  background-color: white !important;
+  backdrop-filter: blur(5px) !important;
 }
 
 .edit {
@@ -348,14 +334,12 @@
 
 .edit .input-box {
   width: 80%;
-  padding-left: 350px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .edit h1 {
   padding-top: 10px;
-}
-
-#succes {
 }
 
 @media screen and (max-width: 912px) {

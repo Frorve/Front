@@ -11,11 +11,11 @@ const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
           </a>
         </Link>
       </div>
-      <div className="flex-none gap-2">
+      <div className="flex-none gap-2 flex items-center">
         <label className="input input-bordered flex items-center gap-2">
           <input
             type="text"
-            className="grow"
+            className="input sm:w-28 md:w-48 lg:w-60 xl:w-80"
             placeholder="Buscar"
             onChange={handleSearchChangeVar}
           />
@@ -32,19 +32,21 @@ const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
             />
           </svg>
         </label>
-        <button className="btn">
-          {username}
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="User Avatar"
-                  src="https://cdn-icons-png.freepik.com/512/64/64572.png"
-                />
+        <button className="btn btn-ghost">
+          <div className="flex items-center">
+            {username}
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="User Avatar"
+                    src="https://cdn-icons-png.freepik.com/512/64/64572.png"
+                  />
+                </div>
               </div>
             </div>
           </div>
