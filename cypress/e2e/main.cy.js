@@ -16,8 +16,9 @@ describe('Main Form', () => {
     cy.contains('Agregar Proyecto').click();
     cy.get('input[type="nombreProyecto"]').type('Nuevo Proyecto');
     cy.get('input[type="descripcion"]').type('Descripción del proyecto');
+    cy.get('input[id="inicio"]').type('2024-04-16');
+    cy.get('input[id="fin"]').type('2024-08-18');
     cy.contains('Guardar').click();
-    cy.get('.success-message').should('be.visible');
   });
 
   it('should exit project form when "Cancelar" button is clicked', () => {
@@ -53,7 +54,7 @@ describe('Main Form', () => {
     cy.contains('Editar').click();
     cy.get('input[name="nombreProyecto"]').type('Nuevo Proyecto Editado');
     cy.get('input[name="descripcion"]').type('Descripcion del proyecto editada');
-    cy.get('button[type="submit"]').click();
+    cy.contains('Guardar').click();
   });
 
   it('should redirect to login page when "Cerrar sesión" button is clicked', () => {

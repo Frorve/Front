@@ -3,6 +3,7 @@ import "./Register.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -27,18 +28,21 @@ const Register = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre: username,
-          cargo: "Staff",
-          correoElectronico: mail,
-          contraseña: password,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: username,
+            cargo: "Staff",
+            correoElectronico: mail,
+            contraseña: password,
+          }),
+        }
+      );
 
       if (response.ok) {
         console.log("Usuario creado exitosamente");
@@ -48,7 +52,6 @@ const Register = () => {
         setUserCreatedMessage("Usuario creado correctamente");
         setTimeout(() => setUserCreatedMessage(""), 5000);
       } else {
-        const errorData = await response.json();
         setErrorMessage(
           "El nombre de usuario o correo electrónico ya están en uso"
         );
@@ -68,6 +71,7 @@ const Register = () => {
   return (
     <div>
       <div className="wrapper">
+        <img src={logo} alt="" />
         <form onSubmit={handleSubmit}>
           <h1>Crear Cuenta</h1>
           <div className="input-box">
@@ -94,7 +98,7 @@ const Register = () => {
           </div>
           <div className="input-box">
             <input
-              type= "password"
+              type="password"
               placeholder="Contraseña"
               value={password}
               onChange={handlePasswordChange}

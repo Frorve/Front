@@ -14,7 +14,7 @@ describe('Login Form', () => {
     cy.get('input[type="text"]').type('usuario_incorrecto');
     cy.get('input[type="password"]').type('contraseña_incorrecta');
     cy.contains('Iniciar Sesión').click();
-    cy.get('.error-message').should('be.visible');
+    cy.get('.alert').should('be.visible');
   });
 
   it('should redirect to registration page when "Regístrate" link is clicked', () => {

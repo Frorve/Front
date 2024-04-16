@@ -28,9 +28,12 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         window.location.reload();
@@ -46,9 +49,12 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
 
   const downloadFile = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        {
+          method: "GET",
+        }
+      );
 
       if (response.ok) {
         const blob = await response.blob();

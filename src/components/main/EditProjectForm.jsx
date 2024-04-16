@@ -20,13 +20,16 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/repo/${project.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editedProject),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editedProject),
+        }
+      );
 
       if (response.ok) {
         onSave(editedProject);
@@ -87,9 +90,21 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
         </div>
         {userCreatedMessage && (
           <div role="alert" className="alert alert-success">
-  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-  <span>{userCreatedMessage}</span>
-</div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{userCreatedMessage}</span>
+          </div>
         )}
         <button className="save-button" type="button" onClick={handleSubmit}>
           Guardar

@@ -16,7 +16,9 @@ const MainPage = () => {
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        const response = await fetch("http://localhost:3000/repo");
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/repo`
+        );
         if (response.ok) {
           const data = await response.json();
           setRepos(data);

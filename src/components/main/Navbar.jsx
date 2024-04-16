@@ -5,10 +5,12 @@ const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
   return (
     <div id="nav" className="navbar bg-base-100">
       <div className="flex-1">
-        <Link to={`/main/${username}`}>
-          <a className="btn btn-ghost text-xl" onClick={handleCancel}>
-            Stafko
-          </a>
+        <Link
+          to={`/main/${username}`}
+          className="btn btn-ghost text-xl"
+          onClick={handleCancel}
+        >
+          Stafko
         </Link>
       </div>
       <div className="flex-none gap-2 flex items-center">
@@ -52,8 +54,8 @@ const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
           </div>
         </button>
         <div className="navbar-end">
-          <Link to="/login">
-            <button className="btn btn-error">Cerrar sesión</button>
+          <Link to="/login" className="btn btn-error">
+            Cerrar sesión
           </Link>
         </div>
       </div>

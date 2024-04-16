@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { AiFillEye } from "react-icons/ai";
+import logo from "../assets/logo.png";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -44,13 +45,16 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nombre: username, contraseña: password }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nombre: username, contraseña: password }),
+        }
+      );
 
       const data = await response.json();
 
@@ -80,6 +84,7 @@ const LoginForm = () => {
   return (
     <div>
       <div className="wrapper">
+        <img src={logo} alt="" />
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
           <div className="input-box">

@@ -41,10 +41,13 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("archivo", file);
 
     try {
-      const response = await fetch("http://localhost:3000/repo", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         console.log("Proyecto creado exitosamente");
@@ -54,7 +57,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         setFechaFinalizacion("");
         setFile(null);
         onSubmit();
-        setProjectCreatedMessage("¡Proyecto creado!")
+        setProjectCreatedMessage("¡Proyecto creado!");
         window.location.reload();
       } else {
         throw new Error("Error al crear proyecto");
@@ -73,7 +76,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         <div className="info-box">
           <span>Nombre:</span>
           <input
-            type="text"
+            type="nombreProyecto"
             value={projectname}
             onChange={handleProjectoChange}
             placeholder="Nombre del proyecto"
@@ -86,7 +89,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         <div className="info-box">
           <span>Descripción:</span>
           <input
-            type="text"
+            type="descripcion"
             value={description}
             onChange={handleDescripcionChange}
             placeholder="Descripción del proyecto"
@@ -100,6 +103,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
           <span>Fecha inicio:</span>
           <input
             type="date"
+            id="inicio"
             value={fechaInicio}
             onChange={handleFechaInicioChange}
             placeholder="Fecha de inicio"
@@ -112,6 +116,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
           <span>Fecha finalización:</span>
           <input
             type="date"
+            id="fin"
             value={fechaFinalizacion}
             onChange={handleFechaFinalizacionChange}
             placeholder="Fecha de finalización"
@@ -132,9 +137,21 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
       </div>
       {ProjectCreatedMessage && (
         <div role="alert" className="alert alert-success">
-        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span>{ProjectCreatedMessage}</span>
-      </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{ProjectCreatedMessage}</span>
+        </div>
       )}
       {errorMessage && (
         <div role="alert" className="alert alert-error">

@@ -1,7 +1,7 @@
-import React from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { FiDownload } from 'react-icons/fi';
-import { AiFillCloseCircle } from 'react-icons/ai';
+import React from "react";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { FiDownload } from "react-icons/fi";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 function Prueba({ project, username, onClose, onEdit, onDelete, onDownload }) {
   return (

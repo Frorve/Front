@@ -4,11 +4,11 @@ describe('Register Form', () => {
   });
 
   it('should successfully register with valid credentials', () => {
-    cy.get('input[type="text"]').type('nuevo_usuario4');
-    cy.get('input[type="email"]').type('nuevo_usuario@example.com4');
-    cy.get('input[type="password"]').type('nueva_contraseña4');
+    cy.get('input[type="text"]').type('nuevo_usuario9');
+    cy.get('input[type="email"]').type('nuevo_usuario@example.com9');
+    cy.get('input[type="password"]').type('nueva_contraseña9');
     cy.contains('Crear Usuario').click();
-    cy.get('.success-message').should('be.visible');
+    cy.get('.alert').should('be.visible');
   });
 
   it('should display error message with existing username', () => {
@@ -17,7 +17,7 @@ describe('Register Form', () => {
       cy.get('input[type="email"]').type('correo@example.com');
       cy.get('input[type="password"]').type('prueba');
       cy.contains('Crear Usuario').click();
-      cy.get('.error-message').should('be.visible');
+      cy.get('.alert').should('be.visible');
     });
   });
 
@@ -27,7 +27,7 @@ describe('Register Form', () => {
       cy.get('input[type="email"]').type('prueba@correo.es');
       cy.get('input[type="password"]').type('contraseña');
       cy.contains('Crear Usuario').click();
-      cy.get('.error-message').should('be.visible');
+      cy.get('.alert').should('be.visible');
     });
   });
 
