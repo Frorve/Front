@@ -96,23 +96,6 @@
   text-decoration: underline;
 }
 
-.footer-page {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background: transparent;
-  color: #000000;
-  text-align: center;
-  padding: 10px 0;
-  backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.foot {
-  font-size: 14px;
-}
-
 .error-message {
   color: red;
   font-size: 14px;

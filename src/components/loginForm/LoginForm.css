@@ -11,10 +11,19 @@
   margin: 0 auto;
   max-height: calc(100vh - 20px);
   overflow-y: auto;
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.logo{
+  width: 70%;
+  height: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  display: block;
 }
 
 @media screen and (max-width: 600px) {
@@ -111,24 +120,6 @@
 
 .register-link p a:hover {
   text-decoration: underline;
-}
-
-.footer-page {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background: transparent;
-  color: #000000;
-  text-align: center;
-  padding: 10px 0;
-  backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  margin-bottom: -2px; /* Soluciona un problema de superposición con el borde inferior */
-}
-
-.foot {
-  font-size: 14px;
 }
 
 /* Media query para pantallas más pequeñas */

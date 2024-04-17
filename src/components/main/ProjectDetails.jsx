@@ -57,8 +57,10 @@ const ProjectDetails = ({
       {project.archivo && (
         <div className="detail-box">
           <p>
-            <strong>Archivo: </strong>
+            <a onClick={onDownload}>
+            <strong>Archivo: </strong> Disponible
             {project.nombreArchivo}
+            </a>
           </p>
           <button className="btn btn-wide" onClick={onDownload}>
             Descargar archivo <FiDownload />

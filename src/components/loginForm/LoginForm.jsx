@@ -84,7 +84,7 @@ const LoginForm = () => {
   return (
     <div>
       <div className="wrapper">
-        <img src={logo} alt="" />
+        <img className="logo" src={logo} alt="" />
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
           <div className="input-box">

@@ -65,7 +65,7 @@ const MainPage = () => {
         handleSearchChangeVar={handleSearchChangeVar}
       />
       <div className="wrapper-main">
-        {!showForm && <h1>Proyectos</h1>}
+        {!showForm && <strong><h1>Proyectos</h1></strong>}
         {showForm ? (
           <ProjectForm
             onSubmit={handleSubmitForm}

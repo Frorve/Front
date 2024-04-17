@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 
-const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
+const Navbar = ({onCancel, username, handleCancel, handleSearchChangeVar }) => {
   return (
     <div id="nav" className="navbar bg-base-100">
       <div className="flex-1">
@@ -10,7 +11,7 @@ const Navbar = ({ username, handleCancel, handleSearchChangeVar }) => {
           className="btn btn-ghost text-xl"
           onClick={handleCancel}
         >
-          Stafko
+          <img className="logo-nav" src={logo} alt="" />
         </Link>
       </div>
       <div className="flex-none gap-2 flex items-center">
