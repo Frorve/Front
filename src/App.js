@@ -7,6 +7,7 @@ import MainPage2 from './components/main/pruebas/MainPage2';
 import LoginForm2 from './components/loginForm/LoginForm2';
 import Register2 from './components/register/Register2';
 import AboutContact from './components/main/pruebas/AboutContact';
+import Forget from './components/forget/Forget'
 import 'tailwindcss/tailwind.css';
 
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login2/" element={<LoginForm2/>} />
           <Route path="/register2/" element={<Register2/>} />
           <Route path="/about" element={<AboutContact/>} />
+          <Route path="/recuperar" element={<Forget/>} />
         </Routes>
       </div>
     </Router>

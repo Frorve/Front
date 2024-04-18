@@ -4,6 +4,7 @@ import "./LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { AiFillEye } from "react-icons/ai";
 import logo from "../assets/logo.png";
+import Footer from "../main/Footer";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const LoginForm = () => {
         localStorage.setItem("token", data.token); // Almacenar el token JWT en el almacenamiento local
         navigate(`/main/${username}`);
       } else {
-        setErrorMessage(data.message || "Credenciales incorrectas");
+        setErrorMessage("Credenciales incorrectas");
         setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
@@ -122,7 +123,7 @@ const LoginForm = () => {
               />
               Recuérdame
             </label>
-            <Link to="/register">¿Olvidaste la contraseña?</Link>
+            <Link to="/recuperar">¿Olvidaste la contraseña?</Link>
           </div>
 
           {errorMessage && (
@@ -154,11 +155,7 @@ const LoginForm = () => {
           </div>
         </form>
       </div>
-      <footer className="footer-page">
-        <div className="foot">
-          <p>© 2024 | Fran Ortega Velasco</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Register.css";
-import { FaUser, FaLock } from "react-icons/fa";
+import "./Forget.css";
+import { FaUser } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -8,17 +8,12 @@ import Footer from "../main/Footer";
 
 const Register = () => {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [userCreatedMessage, setUserCreatedMessage] = useState("");
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
   };
 
   const handleMailChange = (event) => {
@@ -40,7 +35,6 @@ const Register = () => {
             nombre: username,
             cargo: "Staff",
             correoElectronico: mail,
-            contraseña: password,
           }),
         }
       );
@@ -49,19 +43,18 @@ const Register = () => {
         console.log("Usuario creado exitosamente");
         setUsername("");
         setMail("");
-        setPassword("");
         setUserCreatedMessage("Usuario creado correctamente");
         setTimeout(() => setUserCreatedMessage(""), 5000);
       } else {
         setErrorMessage(
-          "El nombre de usuario o correo electrónico ya están en uso"
+          "Error"
         );
         setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setErrorMessage(
-          "El nombre de usuario o correo electrónico ya están en uso"
+          "Error"
         );
         console.error("Error al crear usuario:", error.message);
         setTimeout(() => setErrorMessage(""), 5000);
@@ -74,7 +67,7 @@ const Register = () => {
       <div className="wrapper">
         <img className="logo" src={logo} alt="" />
         <form onSubmit={handleSubmit}>
-          <h1>Crear Cuenta</h1>
+          <h1>Recuperar contraseña</h1>
           <div className="input-box">
             <input
               type="text"
@@ -97,18 +90,7 @@ const Register = () => {
             />
             <GrMail className="icon" />
           </div>
-          <div className="input-box">
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={handlePasswordChange}
-              maxLength={20}
-              required
-            />
-            <FaLock className="icon" />
-          </div>
-
+          
           {errorMessage && (
             <div role="alert" className="alert alert-error">
               <svg
@@ -146,7 +128,7 @@ const Register = () => {
             </div>
           )}
           <br />
-          <button type="submit">Crear Usuario</button>
+          <button type="submit">Recuperar cuenta</button>
 
           <div className="register-link">
             <p>

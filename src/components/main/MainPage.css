@@ -179,7 +179,7 @@
   overflow: auto;
   background: linear-gradient(
     90deg,
-    rgba(237, 255, 76, 1) 0%,
+    rgb(255, 240, 31) 0%,
     rgba(247, 212, 81, 1) 35%
   );
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -265,14 +265,18 @@
   padding: 0.2em;
 }
 
-.project-details button {
+.project-details #down{
   background-color: #68386d;
   width: 250px;
   border-radius: 5px;
   position: relative;
 }
 
-.project-actions button {
+.project-details #down:hover{
+  background-color: #ba74c2;
+}
+
+.project-actions #edit{
   background-color: #3c2415;
   color: #ffffff;
   border: none;
@@ -284,11 +288,22 @@
 }
 
 .project-actions #Sup {
-  background-color: #cc2626 !important;
+  background-color: #cc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-right: 10px;
+  width: 150px;
 }
 
-.project-actions button:hover {
+.project-actions #edit:hover {
   background-color: #41c757;
+}
+
+.project-actions #Sup:hover {
+  background-color: #ff7c7c;
 }
 
 .project-details .close-button {
@@ -303,6 +318,7 @@
   font-size: 18px;
   color: #ffffff;
   padding-left: 15px;
+  border-radius: 5px;
 }
 
 #nav {

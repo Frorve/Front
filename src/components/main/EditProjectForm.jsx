@@ -5,28 +5,39 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
   const [editedProject, setEditedProject] = useState({
     nombreProyecto: project.nombreProyecto,
     descripcion: project.descripcion,
-    fechaFinalizacion: project.fechaFinalizacion
+    fechaFinalizacion: project.fechaFinalizacion,
+    archivo: project.archivo, 
   });
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setEditedProject({
-      ...editedProject,
-      [name]: value,
-    });
+    const { name, value, files } = event.target;
+    if (files) {
+      setEditedProject({
+        ...editedProject,
+        [name]: files[0], 
+      });
+    } else {
+      setEditedProject({
+        ...editedProject,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      const formData = new FormData(); 
+      formData.append("nombreProyecto", editedProject.nombreProyecto);
+      formData.append("descripcion", editedProject.descripcion);
+      formData.append("fechaFinalizacion", editedProject.fechaFinalizacion);
+      formData.append("archivo", editedProject.archivo); 
+
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editedProject),
+          body: formData, 
         }
       );
 
@@ -88,6 +99,17 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
               />
             </div>
           </div>
+          <div className="input-box">
+        <div className="info-box">
+          <span>Archivos:</span>
+          <input
+            type="file"
+            name="archivo"
+            onChange={handleChange}
+            placeholder="Archivos a subir"
+          />
+        </div>
+      </div>
           {userCreatedMessage && (
             <div role="alert" className="alert alert-success">
               <svg
