@@ -15,10 +15,11 @@ const Navbar = ({onCancel, username, handleCancel, handleSearchChangeVar }) => {
         </Link>
       </div>
       <div className="flex-none gap-2 flex items-center">
+      <button className="btn">Gestionar clientes</button>
         <label className="input input-bordered flex items-center gap-2">
           <input
             type="text"
-            className="input sm:w-28 md:w-48 lg:w-60 xl:w-80"
+            className="input sm:w-28 md:w-45 lg:w-60 xl:w-80"
             placeholder="Buscar"
             onChange={handleSearchChangeVar}
           />

@@ -17,17 +17,17 @@ const AboutContact = () => {
        <div className="bg-white p-6 rounded-lg shadow-md">
          <h2 className="text-2xl font-semibold mb-4">Acerca de</h2>
          <p className="text-lg">
-           Esta es una página web dedicada a la gestión de proyectos.
+           Esta es una página web dedicada a la gestión de proyectos. Este proyecto fué realizado durante el periodo de prácticas en BeeBit en 2024
          </p>
        </div>
        <div className="bg-white p-6 rounded-lg shadow-md">
          <h2 className="text-2xl font-semibold mb-4">Contacto</h2>
          <p className="text-lg">
            Si tienes alguna pregunta o sugerencia, no dudes en ponerte en
-           contacto con nosotros.
+           contacto conmigo.
          </p>
-         <p className="text-lg">Correo electrónico: contacto@example.com</p>
-         <p className="text-lg">Teléfono: +1234567890</p>
+         <p className="text-lg">Correo electrónico: fvfotura@gmail.com</p>
+         <p className="text-lg">Teléfono: 640 60 33 83</p>
        </div>
      </div>
       </div>

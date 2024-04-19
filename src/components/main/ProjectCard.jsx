@@ -13,7 +13,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     setIsEditing(true);
   };
 
-  const handleSaveEdit = (updatedProject) => {
+  const handleSaveEdit = () => {
     setIsEditing(false);
   };
 
@@ -39,8 +39,6 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         window.location.reload();
         onDelete(project.id);
         console.log("Proyecto borrado exitosamente:", project.id);
-      } else {
-        console.error("Error al borrar el proyecto:", response.statusText);
       }
     } catch (error) {
       console.error("Error al borrar el proyecto:", error);

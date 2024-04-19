@@ -178,7 +178,7 @@
   align-items: center;
   overflow: auto;
   background: linear-gradient(
-    90deg,
+    70deg,
     rgb(255, 240, 31) 0%,
     rgba(247, 212, 81, 1) 35%
   );
@@ -276,8 +276,12 @@
   background-color: #ba74c2;
 }
 
+.detail-box {
+  
+}
+
 .project-actions #edit{
-  background-color: #3c2415;
+  background-color: #087a7a;
   color: #ffffff;
   border: none;
   border-radius: 5px;
