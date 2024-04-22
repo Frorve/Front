@@ -17,7 +17,7 @@ const MainPage = () => {
     const fetchRepos = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/repo`
+          `${process.env.REACT_APP_BACKEND_URL}/staff-repo/staff/${username}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -29,9 +29,9 @@ const MainPage = () => {
     };
 
     fetchRepos();
-  }, []);
+  }, [username]);
 
-  const handleSearchChangeVar = async (event) => {
+  const handleSearchChangeVar = (event) => {
     const searchTerm = event.target.value;
     setSearchQuery(searchTerm);
   };
@@ -52,11 +52,9 @@ const MainPage = () => {
     setExpandedProjectId(projectId);
   };
 
-  const filteredProjects = searchQuery
-    ? repos.filter((repo) =>
-        repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : repos;
+  const filteredProjects = repos.filter((repo) =>
+    repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
