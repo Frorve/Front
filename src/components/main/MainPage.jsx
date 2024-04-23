@@ -12,26 +12,45 @@ const MainPage = () => {
   const [repos, setRepos] = useState([]);
   const [expandedProjectId, setExpandedProjectId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const fetchRepos = async () => {
+    const fetchCurrentUser = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/staff-repo/staff/${username}`
-        );
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/staff/username/${username}`);
         if (response.ok) {
           const data = await response.json();
-          setRepos(data);
+          setCurrentUser(data);
         }
       } catch (error) {
-        console.error("Error fetching repos:", error);
+        console.error("Error fetching current user:", error);
       }
     };
 
-    fetchRepos();
+    fetchCurrentUser();
   }, [username]);
 
-  const handleSearchChangeVar = (event) => {
+  useEffect(() => {
+    if (currentUser) {
+      const fetchRepos = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_BACKEND_URL}/repo/${username}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setRepos(data);
+          }
+        } catch (error) {
+          console.error("Error fetching repos:", error);
+        }
+      };
+
+      fetchRepos();
+    }
+  }, [currentUser, username]);
+
+  const handleSearchChangeVar = async (event) => {
     const searchTerm = event.target.value;
     setSearchQuery(searchTerm);
   };
@@ -52,9 +71,11 @@ const MainPage = () => {
     setExpandedProjectId(projectId);
   };
 
-  const filteredProjects = repos.filter((repo) =>
-    repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProjects = searchQuery
+    ? repos.filter((repo) =>
+        repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : repos;
 
   return (
     <div>
@@ -64,17 +85,23 @@ const MainPage = () => {
       />
       <div className="wrapper-main">
         {!showForm && <strong><h1>Proyectos</h1></strong>}
-        {showForm ? (
+        {username && showForm ? (
           <ProjectForm
             onSubmit={handleSubmitForm}
             onCancel={handleCancelForm}
+            username={username}
           />
         ) : (
-          <ProjectList
-            projects={filteredProjects}
-            expandedProjectId={expandedProjectId}
-            onExpand={handleExpand}
-          />
+          <>
+            {repos.length === 0 && (
+              <p className="welcome"><strong>Aún no has subido ningún proyecto. ¡Empieza ahora!</strong></p>
+            )}
+            <ProjectList
+              projects={filteredProjects}
+              expandedProjectId={expandedProjectId}
+              onExpand={handleExpand}
+            />
+          </>
         )}
         {!showForm && (
           <button className="add-project-button" onClick={handleFormToggle}>

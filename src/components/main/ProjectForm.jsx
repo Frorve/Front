@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 
 const ProjectForm = ({ onSubmit, onCancel }) => {
+  const { username } = useParams();
   const [projectname, setNombreProyecto] = useState("");
   const [description, setDescripcion] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
@@ -38,11 +40,13 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("descripcion", description);
     formData.append("fechaInicio", fechaInicio);
     formData.append("fechaFinalizacion", fechaFinalizacion);
+    formData.append("autor", username);
     formData.append("archivo", file);
+
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo`,
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${username}`,
         {
           method: "POST",
           body: formData,

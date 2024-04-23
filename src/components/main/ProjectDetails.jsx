@@ -5,7 +5,6 @@ import { AiFillCloseCircle } from "react-icons/ai";
 
 const ProjectDetails = ({
   project,
-  username,
   onClose,
   onEdit,
   onDelete,
@@ -32,7 +31,7 @@ const ProjectDetails = ({
       <div className="detail-box">
         <p>
           <strong>Autor: </strong>
-          {username}
+          {project.autor}
         </p>
       </div>
       <div className="detail-box">

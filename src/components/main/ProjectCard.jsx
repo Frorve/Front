@@ -48,7 +48,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
   const downloadFile = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/repo/download/${project.id}`,
         {
           method: "GET",
         }
