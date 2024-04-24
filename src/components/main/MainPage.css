@@ -3,7 +3,6 @@
   width: 95%;
   height: 80%;
   max-height: 100%;
-
   border: 2px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(6px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -11,7 +10,6 @@
   border-radius: 10px;
   padding: 30px 5%;
   overflow-y: auto;
-
   position: fixed;
   top: 50%;
   left: 50%;
@@ -154,8 +152,8 @@
   color: #000000;
   text-align: center;
   padding: 10px 0;
-  backdrop-filter: blur(30px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  /* backdrop-filter: blur(30px); */
+  /* border: 2px solid rgba(255, 255, 255, 0.2); */
 }
 
 .foot {
@@ -234,52 +232,6 @@
   font-size: 16px;
 }
 
-.project-details {
-  padding-top: 120px;
-  text-align: center;
-  color: #3c2415;
-  align-items: center;
-  overflow-y: auto;
-  width: 100%;
-  height: auto;
-}
-
-@media screen and (max-width: 768px) {
-  .project-details {
-    padding-top: 80px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .project-details {
-    padding-top: 60px;
-  }
-}
-
-.project-details p {
-  margin: 10px 0;
-  border-radius: 40px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  margin-left: 10%;
-  margin-right: 10%;
-  padding: 0.2em;
-}
-
-.project-details #down{
-  background-color: #68386d;
-  width: 250px;
-  border-radius: 5px;
-  position: relative;
-}
-
-.project-details #down:hover{
-  background-color: #ba74c2;
-}
-
-.detail-box {
-  
-}
-
 .project-actions #edit{
   background-color: #087a7a;
   color: #ffffff;
@@ -308,21 +260,6 @@
 
 .project-actions #Sup:hover {
   background-color: #ff7c7c;
-}
-
-.project-details .close-button {
-  position: absolute;
-  top: 5px;
-  right: 30px;
-  width: 50px;
-  height: 40px;
-  border: none;
-  background: rgb(255, 0, 0);
-  cursor: pointer;
-  font-size: 18px;
-  color: #ffffff;
-  padding-left: 15px;
-  border-radius: 5px;
 }
 
 #nav {
@@ -380,14 +317,4 @@
 }
 
 @media screen and (max-width: 912px) {
-}
-
-@media screen and (max-width: 768px) {
-  .project-details .close-button {
-    position: relative;
-    top: auto;
-    right: 5px;
-    width: auto;
-    padding: 10px;
-  }
 }

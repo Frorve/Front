@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const ProjectForm = ({ onSubmit, onCancel }) => {
@@ -10,6 +10,24 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [ProjectCreatedMessage, setProjectCreatedMessage] = useState("");
+  const [staffList, setStaffList] = useState([]);
+  const [selectedStaff, setSelectedStaff] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  const fetchStaff = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/staff`);
+      const data = await response.json();
+      setStaffList(data);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+    }
+  };
 
   const handleProjectoChange = (event) => {
     setNombreProyecto(event.target.value);
@@ -32,6 +50,24 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     setFile(selectedFile);
   };
 
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+    const filteredStaff = staffList.filter((staff) =>
+      staff.nombre.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    setSearchResults(filteredStaff);
+  };
+
+  const handleStaffSelection = (staffId) => {
+    setSelectedStaff([...selectedStaff, staffId]);
+    setSearchInput("");
+    setSearchResults([]);
+  };
+
+  const handleRemoveStaff = (staffId) => {
+    setSelectedStaff(selectedStaff.filter((id) => id !== staffId));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -43,6 +79,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("autor", username);
     formData.append("archivo", file);
 
+    formData.append("colaboradores", JSON.stringify(selectedStaff));
 
     try {
       const response = await fetch(
@@ -126,6 +163,47 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
             placeholder="Fecha de finalización"
             required
           />
+        </div>
+      </div>
+      <div className="input-box">
+        <div className="info-box">
+          <span>Colaboradores:</span>
+          <div className="chips-container">
+            {selectedStaff.map((staffId) => {
+              const staff = staffList.find((staff) => staff.id === staffId);
+              return (
+                <div key={staffId} className="chip">
+                  <span>{staff.nombre}</span>
+                  <button
+                    type="button"
+                    className="remove-button"
+                    onClick={() => handleRemoveStaff(staffId)}
+                  >
+                    X
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+            placeholder="Buscar colaboradores..."
+            maxLength={50}
+          />
+          {searchResults.length > 0 && (
+            <ul className="search-results">
+              {searchResults.map((staff) => (
+                <li
+                  key={staff.id}
+                  onClick={() => handleStaffSelection(staff.id)}
+                >
+                  {staff.nombre}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       <div className="input-box">

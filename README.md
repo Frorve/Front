@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-React Application Stafko - Beebit
+React Application Stafko - Beebit | Fran
 </h1>
 
 # Getting Started with Create React App
@@ -24,7 +24,7 @@ You may also see any lint errors in the console.
 
 ### `npm install`
 
-Installs the necessary dependencies to run the application.\
+Installs the necessary dependencies to run the application.
 
 ## Screenshots
 

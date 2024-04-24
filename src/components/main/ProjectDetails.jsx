@@ -2,6 +2,7 @@ import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";
+import "./Details.css"
 
 const ProjectDetails = ({
   project,
@@ -36,7 +37,7 @@ const ProjectDetails = ({
       </div>
       <div className="detail-box">
         <p>
-          <strong>Colaboradores: </strong>
+          <strong>Colaboradores: </strong> 
           {project.colaboradores}
         </p>
       </div>

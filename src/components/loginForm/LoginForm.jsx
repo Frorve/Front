@@ -18,7 +18,9 @@ const LoginForm = () => {
   useEffect(() => {
     const storedUsername = localStorage.getItem("rememberedUsername");
     const storedPassword = localStorage.getItem("rememberedPassword");
-    if (storedUsername && storedPassword) {
+    const storedRememberMe = localStorage.getItem("rememberMe");
+
+    if (storedUsername && storedPassword && storedRememberMe === "true") {
       setUsername(storedUsername);
       setPassword(storedPassword);
       setRememberMe(true);
@@ -65,11 +67,13 @@ const LoginForm = () => {
         if (rememberMe) {
           localStorage.setItem("rememberedUsername", username);
           localStorage.setItem("rememberedPassword", password);
+          localStorage.setItem("rememberMe", "true");
         } else {
           localStorage.removeItem("rememberedUsername");
           localStorage.removeItem("rememberedPassword");
+          localStorage.removeItem("rememberMe");
         }
-        localStorage.setItem("token", data.token); // Almacenar el token JWT en el almacenamiento local
+        localStorage.setItem("token", data.token);
         navigate(`/main/${username}`);
       } else {
         setErrorMessage("Credenciales incorrectas");

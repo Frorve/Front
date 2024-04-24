@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
-const Navbar = ({onCancel, username, handleCancel, handleSearchChangeVar }) => {
+const Navbar = ({username, handleCancel, handleSearchChangeVar }) => {
   return (
     <div id="nav" className="navbar bg-base-100">
       <div className="flex-1">
