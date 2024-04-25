@@ -8,23 +8,23 @@ React Application Stafko - Beebit | Fran
 
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este proyecto fue creado con [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
-In the project directory, you can run:
+En el directorio del proyecto, Puedes ejecutar:
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3001](http://localhost:3001) to view it in your browser.
+Inicia la aplicacion.\
+Abre [http://localhost:3001](http://localhost:3001) para visualizarlo en tu navegador.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+La página se actualizará automaticamente cuando hagas cambios.\
+Es posible que también veas cualquier error de lint en la consola.
 
 ### `npm install`
 
-Installs the necessary dependencies to run the application.
+Instala las dependencias necesarias para ejecutar la aplicación.
 
 ## Screenshots
 

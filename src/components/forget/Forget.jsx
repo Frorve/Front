@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Forget.css";
+import "./styles/Forget.css";
 import { FaUser } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";

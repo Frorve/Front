@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import "../MainPage.css";
+import React from "react";
+import "../styles/MainPage.css";
 import { useParams } from "react-router-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";

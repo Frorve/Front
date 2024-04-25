@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Register.css";
+import "./styles/Register.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";

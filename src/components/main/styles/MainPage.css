@@ -96,7 +96,22 @@
   text-decoration: underline;
 }
 
-.wrapper-main button {
+/* .wrapper-main button {
+  width: 100%;
+  height: 45px;
+  background: #000000;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 15px;
+} */
+
+.wrapper-main .add-project-button {
   width: 100%;
   height: 45px;
   background: #000000;
@@ -111,6 +126,67 @@
   margin-top: 15px;
 }
 
+.wrapper-main .save-button{
+  width: 80%;
+  height: 45px;
+  background: #000000;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.wrapper-main .cancel-button{
+  width: 80%;
+  height: 45px;
+  background: #000000;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.wrapper-main .cancel-button-new {
+  width: 100%;
+  height: 45px;
+  background: #000000;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.wrapper-main .save-button-new {
+  width: 100%;
+  height: 45px;
+  background: #000000;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+
 .wrapper-main .register-link {
   font-size: 14.5px;
   text-align: center;
@@ -123,6 +199,16 @@
 }
 
 .wrapper-main .cancel-button:hover {
+  background-color: #ff0000;
+  transition: 0.5s;
+}
+
+.wrapper-main .save-button-new:hover {
+  background-color: #399228;
+  transition: 0.5s;
+}
+
+.wrapper-main .cancel-button-new:hover {
   background-color: #ff0000;
   transition: 0.5s;
 }

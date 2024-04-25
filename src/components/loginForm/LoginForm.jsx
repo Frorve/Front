@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./LoginForm.css";
+import "./styles/LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { AiFillEye } from "react-icons/ai";
 import logo from "../assets/logo.png";

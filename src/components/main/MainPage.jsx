@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./MainPage.css";
+import "./styles/MainPage.css";
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -15,21 +15,33 @@ const MainPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const fetchRepos = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/staff/username/${username}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCurrentUser(data);
+        const currentUserResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/repo/${username}`);
+        if (currentUserResponse.ok) {
+          const currentUserData = await currentUserResponse.json();
+          setCurrentUser(currentUserData);
+        }
+  
+        const collaboratorResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/repo/collaborator-repos/${username}`);
+        if (collaboratorResponse.ok) {
+          const collaboratorData = await collaboratorResponse.json();
+          setRepos(prevRepos => {
+            const currentRepoIds = prevRepos.map(repo => repo.id);
+            const newCollabRepos = collaboratorData.filter(collabRepo => !currentRepoIds.includes(collabRepo.id));
+            return [...prevRepos, ...newCollabRepos];
+          });
+          
         }
       } catch (error) {
-        console.error("Error fetching current user:", error);
+        console.error("Error fetching repos:", error);
       }
     };
-
-    fetchCurrentUser();
+  
+    fetchRepos();
   }, [username]);
-
+  
+  
   useEffect(() => {
     if (currentUser) {
       const fetchRepos = async () => {
@@ -39,16 +51,26 @@ const MainPage = () => {
           );
           if (response.ok) {
             const data = await response.json();
-            setRepos(data);
+            setRepos(prevRepos => {
+              // Crear un conjunto temporal para almacenar los IDs de los repositorios actuales
+              const currentRepoIds = new Set(prevRepos.map(repo => repo.id));
+              // Filtrar los nuevos repositorios para evitar duplicados
+              const newData = data.filter(repo => !currentRepoIds.has(repo.id));
+              // Fusionar los repositorios existentes con los nuevos repositorios
+              return [...prevRepos, ...newData];
+            });
           }
         } catch (error) {
           console.error("Error fetching repos:", error);
         }
       };
-
+  
       fetchRepos();
     }
   }, [currentUser, username]);
+  
+  
+  
 
   const handleSearchChangeVar = async (event) => {
     const searchTerm = event.target.value;
