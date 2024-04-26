@@ -9,13 +9,33 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const collaboratorNames = selectedCollaborators.map((collaborator) => collaborator.nombre);
+  const collaboratorNames = selectedCollaborators.map(
+    (collaborator) => collaborator.nombre
+  );
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setsuccessMessage] = useState("");
 
+  const isEndDateNear = () => {
+    const endDate = new Date(project.fechaFinalizacion);
+    const currentDate = new Date();
+    const differenceInDays = Math.ceil(
+      (endDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24)
+    );
+    return differenceInDays <= 7;
+  };
+
+  const isEndDatePassed = () => {
+    const endDate = new Date(project.fechaFinalizacion);
+    const currentDate = new Date();
+    return endDate < currentDate;
+  };
 
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/staff`);
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/staff`
+        );
         if (response.ok) {
           const data = await response.json();
           setSearchResults(data);
@@ -48,59 +68,94 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   };
 
   const handleSelectCollaborator = (staff) => {
-    if (!selectedCollaborators.some((collaborator) => collaborator.id === staff.id)) {
+    if (
+      !selectedCollaborators.some(
+        (collaborator) => collaborator.id === staff.id
+      )
+    ) {
       const updatedCollaborators = [...selectedCollaborators, staff];
       setSelectedCollaborators(updatedCollaborators);
-      localStorage.setItem("selectedCollaborators", JSON.stringify(updatedCollaborators));
+      localStorage.setItem(
+        "selectedCollaborators",
+        JSON.stringify(updatedCollaborators)
+      );
     }
   };
 
   const handleRemoveCollaborator = async (staff) => {
-    const updatedCollaborators = selectedCollaborators.filter((item) => item.id !== staff.id);
+    const updatedCollaborators = selectedCollaborators.filter(
+      (item) => item.id !== staff.id
+    );
     setSelectedCollaborators(updatedCollaborators);
-    localStorage.setItem("selectedCollaborators", JSON.stringify(updatedCollaborators));
-  
+    localStorage.setItem(
+      "selectedCollaborators",
+      JSON.stringify(updatedCollaborators)
+    );
+
     console.log("Colaborador a eliminar:", staff);
-  
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/repo/${staff.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${staff.id}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (response.ok) {
         console.log("Colaborador eliminado correctamente de la base de datos");
       } else {
-        console.error("Error al eliminar colaborador de la base de datos:", response.statusText);
+        console.error(
+          "Error al eliminar colaborador de la base de datos:",
+          response.statusText
+        );
+        setErrorMessage("Error al eliminar colaborador de la base de datos");
+        setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
-      console.error("Error al eliminar colaborador de la base de datos:", error);
+      console.error(
+        "Error al eliminar colaborador de la base de datos:",
+        error
+      );
+      setErrorMessage("Error al eliminar colaborador de la base de datos");
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
   const handleSaveCollaborators = async () => {
     try {
-      const collaboratorNamesString = collaboratorNames.join(', ');
-  
+      const collaboratorNamesString = collaboratorNames.join(", ");
+
       const formData = new FormData();
       formData.append("colaboradores", collaboratorNamesString);
-      
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`, {
-        method: "PUT",
-        body: formData,
-      });
-  
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
       if (response.ok) {
         console.log("Colaboradores guardados correctamente");
+        setsuccessMessage("Colaborador/es guardado correctamente");
+        setTimeout(() => setsuccessMessage(""), 5000);
       } else {
         console.error("Error al guardar colaboradores:", response.statusText);
+        setErrorMessage("Error al guardar colaboradores");
+        setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
       console.error("Error al guardar colaboradores:", error);
+      setErrorMessage("Error al guardar colaboradores");
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
-  
-  const filteredStaff = searchResults.filter((staff) =>
-    !selectedCollaborators.some((selected) => selected.id === staff.id) &&
-    staff.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const filteredStaff = searchResults.filter(
+    (staff) =>
+      !selectedCollaborators.some((selected) => selected.id === staff.id) &&
+      staff.nombre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -108,77 +163,108 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       <button className="close-button" onClick={onClose}>
         <AiFillCloseCircle />
       </button>
-
-      <div className="detail-box">
-        <p>
+      <div className="columa1">
+        <div className="detail-nombre">
           <strong>Nombre: </strong>
-          {project.nombreProyecto}
-        </p>
-      </div>
-      <div className="detail-box">
-        <p>
+          <p>{project.nombreProyecto}</p>
+        </div>
+
+        <div className="detail-descripcion">
           <strong>Descripción: </strong>
-          {project.descripcion}
-        </p>
-      </div>
-      <div className="detail-box">
-        <p>
-          <strong>Autor: </strong>
-          {project.autor}
-        </p>
-      </div>
-      <div className="detail-box">
-        <p>
-          <strong>Colaboradores: </strong>
-          {selectedCollaborators.map((staff) => staff.nombre).join(", ")}
-          {project.colaboradores}
-        </p>
-      </div>
-      <div className="detail-box">
-        <p>
+
+          <p>{project.descripcion}</p>
+        </div>
+
+        <div className="detail-inicio">
           <strong>Fecha de inicio: </strong>
-          {project.fechaInicio}
-        </p>
-      </div>
-      <div className="detail-box">
-        <p>
+          <div className="fecha-container">
+            <p>{project.fechaInicio}</p>
+          </div>
+        </div>
+
+        <div className="detail-inicio">
           <strong>Fecha de finalización: </strong>
-          {project.fechaFinalizacion}
-        </p>
+          <div className="fecha-container">
+            <p>{project.fechaFinalizacion}</p>
+          </div>
+        </div>
       </div>
 
-      {project.archivo && (
-        <div className="detail-box">
+      <div className="columna2">
+        <div className="detail-colaborador">
+          <strong>Colaboradores: </strong>
+
           <p>
-            <strong>Archivo: </strong> Disponible {project.nombreArchivo}
+            {selectedCollaborators.map((staff) => staff.nombre).join(", ")}
+            {project.colaboradores}
           </p>
-          <button id="down" className="btn btn-wide" onClick={onDownload}>
-            Descargar archivo <FiDownload />
+        </div>
+        <div className="detail-colab">
+          <button
+            className="btn btn-neutral"
+            onClick={() => document.getElementById("modal").showModal()}
+          >
+            Añadir/Eliminar colaboradores
           </button>
         </div>
-      )}
-
-      <div className="project-actions">
-        <button id="edit" className="btn btn-wide" onClick={onEdit}>
-          Editar <FaEdit />
-        </button>
-        <button id="Sup" className="btn btn-wide" onClick={onDelete}>
-          Borrar <FaTrash />
-        </button>
-        <button
-          className="btn"
-          onClick={() => document.getElementById("modal").showModal()}
-        >
-          Añadir/Eliminar colaboradores
-        </button>
       </div>
 
+      <div className="columna3">
+        <div className="detail-autor">
+          <strong>Cliente: </strong>
+
+          <p>{project.autor}</p>
+        </div>
+
+        <div className="detail-autor">
+          <strong>Autor: </strong>
+
+          <p>{project.autor}</p>
+        </div>
+
+        {project.archivo && (
+          <div className="detail-archivo">
+            <strong>Archivo: </strong>
+            <p>Disponible{project.nombreArchivo}</p>
+            <button id="down" className="btn btn-wide" onClick={onDownload}>
+              Descargar archivo <FiDownload />
+            </button>
+          </div>
+        )}
+
+        <div className="project-actions">
+          <button id="edit" className="btn btn-wide" onClick={onEdit}>
+            Editar <FaEdit />
+          </button>
+          <button id="Sup" className="btn btn-wide" onClick={onDelete}>
+            Borrar <FaTrash />
+          </button>
+        </div>
+
+        {isEndDatePassed() && (
+          <div className="warning-message">
+            <strong>Proyecto finalizado</strong>
+          </div>
+        )}
+
+        {isEndDateNear() && (
+          <div className="warning-message">
+            <strong>¡Atención!</strong> Fecha de finalización del proyecto está
+            cerca.
+          </div>
+        )}
+      </div>
       <dialog id="modal" className="modal">
         <div className="modal-box w-full max-w-5xl">
-          <button className="close-button" onClick={() => document.getElementById("modal").close()}>
+          <button
+            className="close-button"
+            onClick={() => document.getElementById("modal").close()}
+          >
             <AiFillCloseCircle />
           </button>
-          <h2><strong>Añadir colaboradores</strong></h2>
+          <h2>
+            <strong>Añadir colaboradores</strong>
+          </h2>
           <br />
           <label className="input input-bordered flex items-center gap-2">
             <input
@@ -205,7 +291,10 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           {showSearchResults && (
             <ul className="search-results">
               {filteredStaff.map((staff) => (
-                <li key={staff.id} onClick={() => handleSelectCollaborator(staff)}>
+                <li
+                  key={staff.id}
+                  onClick={() => handleSelectCollaborator(staff)}
+                >
                   {staff.nombre}
                 </li>
               ))}
@@ -213,16 +302,62 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           )}
           <br />
           <div className="selected-collaborators">
-            <h3><strong>Colaboradores Seleccionados:</strong> </h3>
-            <ul id="lista">
+            <h3>
+              <strong>Colaboradores Seleccionados:</strong>{" "}
+            </h3>
+            <ul className="collaborator-list">
+              {" "}
               {selectedCollaborators.map((staff) => (
-                <li id="lista" key={staff.id}>
+                <li key={staff.id}>
+                  {" "}
                   {staff.nombre}
-                  <button id="remove" className="btn btn-xs btn-error" onClick={() => handleRemoveCollaborator(staff)}>Eliminar</button>
+                  <button
+                    className="btn btn-xs btn-error"
+                    onClick={() => handleRemoveCollaborator(staff)}
+                  >
+                    Eliminar
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
+          <br />
+          {errorMessage && (
+            <div role="alert" className="alert alert-error">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+          {successMessage && (
+            <div role="alert" className="alert alert-success">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{successMessage}</span>
+            </div>
+          )}
           <br />
           <button className="btn" onClick={handleSaveCollaborators}>
             Guardar Colaboradores

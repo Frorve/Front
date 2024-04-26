@@ -8,7 +8,7 @@ const Navbar = ({username, handleCancel, handleSearchChangeVar }) => {
       <div className="flex-1">
         <Link
           to={`/main/${username}`}
-          className="btn btn-ghost text-xl"
+          className="btn btn-ghost"
           onClick={handleCancel}
         >
           <img className="logo-nav" src={logo} alt="" />

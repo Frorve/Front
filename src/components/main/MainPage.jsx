@@ -41,7 +41,6 @@ const MainPage = () => {
     fetchRepos();
   }, [username]);
   
-  
   useEffect(() => {
     if (currentUser) {
       const fetchRepos = async () => {
@@ -52,11 +51,8 @@ const MainPage = () => {
           if (response.ok) {
             const data = await response.json();
             setRepos(prevRepos => {
-              // Crear un conjunto temporal para almacenar los IDs de los repositorios actuales
               const currentRepoIds = new Set(prevRepos.map(repo => repo.id));
-              // Filtrar los nuevos repositorios para evitar duplicados
               const newData = data.filter(repo => !currentRepoIds.has(repo.id));
-              // Fusionar los repositorios existentes con los nuevos repositorios
               return [...prevRepos, ...newData];
             });
           }
@@ -69,9 +65,6 @@ const MainPage = () => {
     }
   }, [currentUser, username]);
   
-  
-  
-
   const handleSearchChangeVar = async (event) => {
     const searchTerm = event.target.value;
     setSearchQuery(searchTerm);

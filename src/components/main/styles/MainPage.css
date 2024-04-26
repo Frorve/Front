@@ -96,21 +96,6 @@
   text-decoration: underline;
 }
 
-/* .wrapper-main button {
-  width: 100%;
-  height: 45px;
-  background: #000000;
-  border: none;
-  outline: none;
-  border-radius: 40px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  font-size: 16px;
-  color: #ffffff;
-  font-weight: 700;
-  margin-top: 15px;
-} */
-
 .wrapper-main .add-project-button {
   width: 100%;
   height: 45px;
@@ -238,8 +223,6 @@
   color: #000000;
   text-align: center;
   padding: 10px 0;
-  /* backdrop-filter: blur(30px); */
-  /* border: 2px solid rgba(255, 255, 255, 0.2); */
 }
 
 .foot {
@@ -256,7 +239,7 @@
 
 .project-card {
   width: 220px;
-  height: 253px;
+  height: 250px;
   margin: 20px;
   position: relative;
   align-items: center;
@@ -281,12 +264,12 @@
   width: 100%;
   height: auto;
   position: absolute;
-  top: auto;
+  top: -15%;
   left: auto;
   transform: none;
   border: 2px solid black;
   z-index: 2;
-  padding-bottom: 5%;
+  padding-bottom: 1%;
 }
 
 .project-card.expanded .project-info {
@@ -316,36 +299,6 @@
 .project-info p {
   margin: 0;
   font-size: 16px;
-}
-
-.project-actions #edit{
-  background-color: #087a7a;
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  cursor: pointer;
-  margin-right: 10px;
-  width: 150px;
-}
-
-.project-actions #Sup {
-  background-color: #cc2626;
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  cursor: pointer;
-  margin-right: 10px;
-  width: 150px;
-}
-
-.project-actions #edit:hover {
-  background-color: #41c757;
-}
-
-.project-actions #Sup:hover {
-  background-color: #ff7c7c;
 }
 
 #nav {
