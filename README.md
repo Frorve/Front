@@ -6,11 +6,11 @@
 React Application Stafko - Beebit | Fran
 </h1>
 
-# Getting Started with Create React App
+# Empieza con Create React App
 
 Este proyecto fue creado con [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Scripts Disponibles
 
 En el directorio del proyecto, Puedes ejecutar:
 

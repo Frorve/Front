@@ -10,9 +10,14 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [ProjectCreatedMessage, setProjectCreatedMessage] = useState("");
+  const [cliente, setCliente] = useState("");
 
-  const handleProjectoChange = (event) => {
+  const handleProjectoChange = (event) => {   
     setNombreProyecto(event.target.value);
+  };
+
+  const handleClienteChange = (event) => {
+    setCliente(event.target.value);
   };
 
   const handleDescripcionChange = (event) => {
@@ -41,6 +46,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("fechaInicio", fechaInicio);
     formData.append("fechaFinalizacion", fechaFinalizacion);
     formData.append("autor", username);
+    formData.append("cliente", cliente);
     formData.append("archivo", file);
 
     try {
@@ -58,6 +64,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         setDescripcion("");
         setFechaInicio("");
         setFechaFinalizacion("");
+        setCliente("");
         setFile(null);
         onSubmit();
         setProjectCreatedMessage("¡Proyecto creado!");
@@ -98,6 +105,18 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
             placeholder="Descripción del proyecto"
             maxLength={50}
             required
+          />
+        </div>
+      </div>
+      <div className="input-box">
+        <div className="info-box">
+          <span>Cliente:</span>
+          <input
+            type="cliente"
+            value={cliente}
+            onChange={handleClienteChange}
+            placeholder="Cliente del proyecto"
+            maxLength={50}
           />
         </div>
       </div>

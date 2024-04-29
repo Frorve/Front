@@ -14,6 +14,129 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setsuccessMessage] = useState("");
+  const [selectedClients, setSelectedClients] = useState([]);
+
+  const [searchQueryClients, setSearchQueryClients] = useState("");
+  const [searchResultsClients, setSearchResultsClients] = useState([]);
+  const [showSearchResultsClients, setShowSearchResultsClients] =
+    useState(false);
+
+  const clientNames = selectedClients.map((client) => client.nombre);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/cliente/all`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setSearchResultsClients(data);
+        } else {
+          console.error("Error fetching clients:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
+  useEffect(() => {
+    const storedClients = localStorage.getItem("selectedClients");
+    if (storedClients) {
+      setSelectedClients(JSON.parse(storedClients));
+    }
+  }, []);
+
+  const handleSelectClient = (client) => {
+    if (!selectedClients.some((selected) => selected.id === client.id)) {
+      const updatedClients = [...selectedClients, client];
+      setSelectedClients(updatedClients);
+      localStorage.setItem("selectedClients", JSON.stringify(updatedClients));
+    }
+  };
+
+  const handleSearchInputChangeClients = (event) => {
+    const query = event.target.value;
+    setSearchQueryClients(query);
+    if (query.trim() !== "") {
+      setShowSearchResultsClients(true);
+    } else {
+      setShowSearchResultsClients(false);
+    }
+  };
+
+  const handleRemoveClient = async (client) => {
+    const updatedClients = selectedClients.filter(
+      (item) => item.id !== client.id
+    );
+    setSelectedClients(updatedClients);
+    localStorage.setItem("selectedClients", JSON.stringify(updatedClients));
+
+    console.log("Cliente a eliminar:", client);
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/cliente/${client.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.ok) {
+        console.log("Cliente eliminado correctamente de la base de datos");
+      } else {
+        console.error(
+          "Error al eliminar cliente de la base de datos:",
+          response.statusText
+        );
+        setErrorMessage("Error al eliminar cliente de la base de datos");
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
+    } catch (error) {
+      console.error("Error al eliminar cliente de la base de datos:", error);
+      setErrorMessage("Error al eliminar cliente de la base de datos");
+      setTimeout(() => setErrorMessage(""), 5000);
+    }
+  };
+
+  const handleSaveClients = async () => {
+    try {
+      const clientNamesString = clientNames.join(", ");
+
+      const formData = new FormData();
+      formData.append("clientes", clientNamesString);
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/cliente/${project.id}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        console.log("Clientes guardados correctamente");
+        setsuccessMessage("Cliente/s guardado correctamente");
+        setTimeout(() => setsuccessMessage(""), 5000);
+      } else {
+        console.error("Error al guardar clientes:", response.statusText);
+        setErrorMessage("Error al guardar clientes");
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
+    } catch (error) {
+      console.error("Error al guardar clientes:", error);
+      setErrorMessage("Error al guardar clientes");
+      setTimeout(() => setErrorMessage(""), 5000);
+    }
+  };
+
+  const filteredClients = searchResultsClients.filter(
+    (client) =>
+      !selectedClients.some((selected) => selected.id === client.id) &&
+      client.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const isEndDateNear = () => {
     const endDate = new Date(project.fechaFinalizacion);
@@ -212,8 +335,17 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       <div className="columna3">
         <div className="detail-autor">
           <strong>Cliente: </strong>
+          <p>
+          {selectedClients.map((client) => client.nombre).join(", ")}
+          {project.cliente}</p>
 
-          <p>{project.autor}</p>
+          <button
+            className="btn"
+            id="modal-cliente"
+            onClick={() => document.getElementById("modal-client").showModal()}
+          >
+            Asignar Cliente
+          </button>
         </div>
 
         <div className="detail-autor">
@@ -254,6 +386,78 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           </div>
         )}
       </div>
+
+      <dialog id="modal-client" className="modal">
+        <div className="modal-box w-full max-w-5xl">
+          <button
+            className="close-button"
+            onClick={() => document.getElementById("modal-client").close()}
+          >
+            <AiFillCloseCircle />
+          </button>
+          <h2>
+            <strong>Buscar Clientes</strong>
+          </h2>
+          <br />
+          <label className="input input-bordered flex items-center gap-2">
+            <input
+              type="text"
+              className="grow"
+              placeholder="Buscar clientes..."
+              value={searchQueryClients}
+              onChange={handleSearchInputChangeClients}
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="w-4 h-4 opacity-70"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </label>
+          <br />
+          {showSearchResultsClients && (
+            <ul className="search-results">
+              {filteredClients.map((client) => (
+                <li key={client.id} onClick={() => handleSelectClient(client)}>
+                  {client.nombre}
+                </li>
+              ))}
+            </ul>
+          )}
+          <br />
+          <h3>
+            <strong>Clientes Seleccionados:</strong>{" "}
+          </h3>
+          <br />
+          <ul className="client-list">
+            {" "}
+        {selectedClients.map((client) => (
+          <li key={client.id}>
+            {" "}
+            {client.nombre}
+            <button
+              id="remove"
+              className="btn btn-xs btn-error"
+              onClick={() => handleRemoveClient(client)}
+            >
+              Eliminar
+            </button>
+          </li>
+        ))}
+      </ul>
+      <br />
+          <button className="btn" onClick={handleSaveClients}>
+            Guardar Clientes
+          </button>
+        </div>
+      </dialog>
+
       <dialog id="modal" className="modal">
         <div className="modal-box w-full max-w-5xl">
           <button
@@ -305,6 +509,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             <h3>
               <strong>Colaboradores Seleccionados:</strong>{" "}
             </h3>
+            <br />
             <ul className="collaborator-list">
               {" "}
               {selectedCollaborators.map((staff) => (
@@ -312,6 +517,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
                   {" "}
                   {staff.nombre}
                   <button
+                    id="remove"
                     className="btn btn-xs btn-error"
                     onClick={() => handleRemoveCollaborator(staff)}
                   >

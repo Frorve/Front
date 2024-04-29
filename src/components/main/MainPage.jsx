@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
+import ClienteForm from "./ClienteForm";
 
 const MainPage = () => {
   const { username } = useParams();
@@ -13,6 +14,8 @@ const MainPage = () => {
   const [expandedProjectId, setExpandedProjectId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+  const [showClienteForm, setShowClienteForm] = useState(false);
+  
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -86,47 +89,68 @@ const MainPage = () => {
     setExpandedProjectId(projectId);
   };
 
+  const handleClienteFormToggle = () => {
+    setShowClienteForm(!showClienteForm);
+  };
+
+  const handleSubmitClienteForm = () => {
+    setShowClienteForm(false);
+  };
+
+  const handleCancelClienteForm = () => {
+    setShowClienteForm(false);
+  };
+
   const filteredProjects = searchQuery
     ? repos.filter((repo) =>
         repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : repos;
 
-  return (
-    <div>
-      <Navbar
-        username={username}
-        handleSearchChangeVar={handleSearchChangeVar}
-      />
-      <div className="wrapper-main">
-        {!showForm && <strong><h1>Proyectos</h1></strong>}
-        {username && showForm ? (
-          <ProjectForm
-            onSubmit={handleSubmitForm}
-            onCancel={handleCancelForm}
-            username={username}
-          />
-        ) : (
-          <>
-            {repos.length === 0 && (
-              <p className="welcome"><strong>Aún no has subido ningún proyecto. ¡Empieza ahora!</strong></p>
-            )}
-            <ProjectList
-              projects={filteredProjects}
-              expandedProjectId={expandedProjectId}
-              onExpand={handleExpand}
+    return (
+      <div>
+        <Navbar
+          username={username}
+          handleSearchChangeVar={handleSearchChangeVar}
+          handleClienteFormToggle={handleClienteFormToggle}
+        />
+        <div className="wrapper-main">
+          {!showForm && <strong><h1>Proyectos</h1></strong>}
+          {username && showForm ? (
+            <ProjectForm
+              onSubmit={handleSubmitForm}
+              onCancel={handleCancelForm}
+              username={username}
             />
-          </>
-        )}
-        {!showForm && (
-          <button className="add-project-button" onClick={handleFormToggle}>
-            Agregar Proyecto
-          </button>
-        )}
+          ) : (
+            <>
+              {showClienteForm && (
+                <ClienteForm
+                  onSubmit={handleSubmitClienteForm}
+                  onCancel={handleCancelClienteForm}
+                />
+              )}
+              {repos.length === 0 && (
+                <p className="welcome"><strong>Aún no has subido ningún proyecto. ¡Empieza ahora!</strong></p>
+              )}
+              <ProjectList
+                projects={filteredProjects}
+                expandedProjectId={expandedProjectId}
+                onExpand={handleExpand}
+              />
+            </>
+          )}
+          {!showForm && (
+            <>
+              <button className="add-project-button" onClick={handleFormToggle}>
+                Agregar Proyecto
+              </button>
+            </>
+          )}
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  );
-};
+    );
+  };
 
 export default MainPage;

@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
-const Navbar = ({username, handleCancel, handleSearchChangeVar }) => {
+const Navbar = ({ username, handleCancel, handleSearchChangeVar, handleClienteFormToggle }) => {
+
   return (
     <div id="nav" className="navbar bg-base-100">
       <div className="flex-1">
@@ -15,7 +16,14 @@ const Navbar = ({username, handleCancel, handleSearchChangeVar }) => {
         </Link>
       </div>
       <div className="flex-none gap-2 flex items-center">
-      <button className="btn">Gestionar clientes</button>
+        <button
+          className="btn"
+          onClick={handleClienteFormToggle}        
+          >
+          Gestionar clientes
+        </button>
+
+
         <label className="input input-bordered flex items-center gap-2">
           <input
             type="text"
