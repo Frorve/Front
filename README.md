@@ -48,3 +48,12 @@ Instala las dependencias necesarias para ejecutar la aplicación.
 
 ### Detalles del Proyecto:
 <img src="screenshots/Detalles.png">
+
+### Form Nuevo Cliente:
+<img src="screenshots/Form nuevo cliente.png">
+
+### Añadir Colaboradores:
+<img src="screenshots/AddColab.png">
+
+### Añadir Clientes:
+<img src="screenshots/AddCliente.png">

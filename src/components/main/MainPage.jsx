@@ -115,7 +115,7 @@ const MainPage = () => {
           handleClienteFormToggle={handleClienteFormToggle}
         />
         <div className="wrapper-main">
-          {!showForm && <strong><h1>Proyectos</h1></strong>}
+          {!showForm && !showClienteForm && <strong><h1>Proyectos</h1></strong>}
           {username && showForm ? (
             <ProjectForm
               onSubmit={handleSubmitForm}
@@ -140,7 +140,7 @@ const MainPage = () => {
               />
             </>
           )}
-          {!showForm && (
+          {!showForm && !showClienteForm && (
             <>
               <button className="add-project-button" onClick={handleFormToggle}>
                 Agregar Proyecto

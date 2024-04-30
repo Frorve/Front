@@ -7,7 +7,6 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     descripcion: project.descripcion,
     fechaFinalizacion: project.fechaFinalizacion,
     archivo: project.archivo, 
-    cliente: project.cliente,
   });
 
   const handleChange = (event) => {
@@ -33,7 +32,6 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
       formData.append("descripcion", editedProject.descripcion);
       formData.append("fechaFinalizacion", editedProject.fechaFinalizacion);
       formData.append("archivo", editedProject.archivo); 
-      formData.append("cliente", editedProject.cliente);
 
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
@@ -85,19 +83,6 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
                 placeholder="Descripción del proyecto"
                 maxLength={50}
                 required
-              />
-            </div>
-          </div>
-          <div className="input-box">
-            <div className="info-box">
-              <span>Cliente:</span>
-              <input
-                type="text"
-                name="cliente"
-                value={editedProject.cliente}
-                onChange={handleChange}
-                placeholder="Cliente del proyecto"
-                maxLength={50}
               />
             </div>
           </div>

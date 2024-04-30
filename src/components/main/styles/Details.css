@@ -137,18 +137,32 @@
 }
 
 .detail-colaborador p {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  width: 80%;
+  text-align: center;
+  border-radius: 40px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  line-height: 50px;
+  background: white;
+  margin-top: 5%;
+
+}
+
+.caja {
   margin-top: 0.5%;
+  padding-left: 10%;
   border: 2px solid rgba(0, 0, 0, 0.2);
   width: 80%;
   text-align: center;
   border-radius: 40px;
   height: 500px;
-  display: flex;
+  display: block;
   overflow-y: auto;
   justify-content: center;
   line-height: 50px;
   background: white;
-
 }
 
 .detail-colab {
@@ -287,7 +301,12 @@ li{
 
 .warning-message {
   color: #cc2626;
-  margin-top: 15%;
+  margin-top: 10%;
+}
+
+#warning-message {
+  margin-top: 10%;
+  width: 89%;
 }
 
 #modal-cliente {
@@ -297,4 +316,19 @@ li{
 
 .search-results {
   color: #1e8f31;
+}
+
+#clock {
+  margin-top: 3%;
+  margin-left: 12%;
+}
+
+#time {
+  margin-top: 3%;
+  width: 70%;
+  margin-left: 7%;
+}
+
+#stop {
+  margin-left: 10%;
 }

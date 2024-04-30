@@ -3,6 +3,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";
 import "./styles/Details.css";
+import axios from "axios";
 
 const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,6 +23,79 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     useState(false);
 
   const clientNames = selectedClients.map((client) => client.nombre);
+  const [timerActive, setTimerActive] = useState(false);
+  const [timerDuration, setTimerDuration] = useState(0);
+  const [timerIntervalId, setTimerIntervalId] = useState(null);
+  const [timeEntryId, setTimeEntryId] = useState(null); 
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handleStartTimer = async () => {
+    try {
+      if (!timerActive) {
+        const response = await axios.post(
+          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
+          {
+            start: new Date().toISOString(),
+            description: project.nombreProyecto,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": "NjczYjljNGUtYzRmYy00MDczLWFjYmYtYzlhZjM4N2FhMzdl",
+            },
+          }
+        );
+
+        console.log("Entrada de tiempo iniciada:", response.data);
+        setTimerActive(true);
+        const startTime = new Date().getTime();
+        const intervalId = setInterval(() => {
+          const elapsedTime = new Date().getTime() - startTime;
+          setTimerDuration(elapsedTime);
+        }, 1000);
+        setTimerIntervalId(intervalId);
+      } else {
+        clearInterval(timerIntervalId);
+        setTimerActive(false);
+        setTimerIntervalId(null);
+        setTimerDuration(0);
+      }
+    } catch (error) {
+      console.error("Error al iniciar la entrada de tiempo:", error);
+    }
+  };
+
+  const handleStopTimer = async () => {
+    try {
+      if (timerActive) {
+        clearInterval(timerIntervalId);
+        setTimerActive(false);
+        setTimerIntervalId(null);
+        const response = await axios.patch(
+          `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries/${timeEntryId}`,
+          {
+            end: new Date().toISOString(),
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Api-Key': 'NjczYjljNGUtYzRmYy00MDczLWFjYmYtYzlhZjM4N2FhMzdl',
+            },
+          }
+        );
+        console.log('Entrada de tiempo detenida:', response.data);
+      }
+    } catch (error) {
+      console.error('Error al detener la entrada de tiempo:', error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -79,7 +153,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/cliente/${client.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${client.id}`,
         {
           method: "DELETE",
         }
@@ -106,10 +180,10 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       const clientNamesString = clientNames.join(", ");
 
       const formData = new FormData();
-      formData.append("clientes", clientNamesString);
+      formData.append("cliente", clientNamesString);
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/cliente/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
         {
           method: "PUT",
           body: formData,
@@ -311,16 +385,43 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             <p>{project.fechaFinalizacion}</p>
           </div>
         </div>
+
+        <button id="clock" className="btn btn-info" onClick={handleStartTimer}>
+          Iniciar Timer
+        </button>
+
+        <button id="stop" className="btn btn-error" onClick={handleStopTimer}>
+  Detener Timer
+</button>
+
+
+        <div id="time" role="alert" className="alert">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-info shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <strong>Tiempo transcurrido: </strong>
+          <span>{formatTime(timerDuration)}</span>
+        </div>
       </div>
 
       <div className="columna2">
         <div className="detail-colaborador">
           <strong>Colaboradores: </strong>
-
-          <p>
-            {selectedCollaborators.map((staff) => staff.nombre).join(", ")}
-            {project.colaboradores}
-          </p>
+          <div className="caja">
+            {selectedCollaborators.map((staff, index) => (
+              <p key={index}>{staff.nombre}</p>
+            ))}
+          </div>
         </div>
         <div className="detail-colab">
           <button
@@ -336,8 +437,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         <div className="detail-autor">
           <strong>Cliente: </strong>
           <p>
-          {selectedClients.map((client) => client.nombre).join(", ")}
-          {project.cliente}</p>
+            {selectedClients.map((client) => client.nombre).join(", ")}
+            {project.cliente}
+          </p>
 
           <button
             className="btn"
@@ -380,9 +482,28 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         )}
 
         {isEndDateNear() && (
-          <div className="warning-message">
-            <strong>¡Atención!</strong> Fecha de finalización del proyecto está
-            cerca.
+          <div
+            id="warning-message"
+            role="alert"
+            className="alert alert-warning"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>
+              <strong>¡Atención!</strong> La fecha de finalización del proyecto
+              está cerca
+            </span>
           </div>
         )}
       </div>
@@ -437,21 +558,58 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           <br />
           <ul className="client-list">
             {" "}
-        {selectedClients.map((client) => (
-          <li key={client.id}>
-            {" "}
-            {client.nombre}
-            <button
-              id="remove"
-              className="btn btn-xs btn-error"
-              onClick={() => handleRemoveClient(client)}
-            >
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
-      <br />
+            {selectedClients.map((client) => (
+              <li key={client.id}>
+                {" "}
+                {client.nombre}
+                <button
+                  id="remove"
+                  className="btn btn-xs btn-error"
+                  onClick={() => handleRemoveClient(client)}
+                >
+                  Eliminar
+                </button>
+              </li>
+            ))}
+          </ul>
+          <br />
+          {errorMessage && (
+            <div role="alert" className="alert alert-error">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+          {successMessage && (
+            <div role="alert" className="alert alert-success">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{successMessage}</span>
+            </div>
+          )}
+          <br />
           <button className="btn" onClick={handleSaveClients}>
             Guardar Clientes
           </button>
