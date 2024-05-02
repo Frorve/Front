@@ -9,6 +9,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
+  const [task, setTask] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const collaboratorNames = selectedCollaborators.map(
     (collaborator) => collaborator.nombre
@@ -26,7 +27,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [timerDuration, setTimerDuration] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
-  const [timeEntryId, setTimeEntryId] = useState(null); 
+  const [timeEntryId, setTimeEntryId] = useState(null);
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -35,41 +36,117 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  const handleStartTimer = async () => {
-    try {
-      if (!timerActive) {
-        const response = await axios.post(
-          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
-          {
-            start: new Date().toISOString(),
-            description: project.nombreProyecto,
-          },
+  const convertirSegundosAHorasMinutosSegundos = (duracionSegundos) => {
+    const horas = Math.floor(duracionSegundos / 3600);
+    const minutos = Math.floor((duracionSegundos % 3600) / 60);
+    const segundos = duracionSegundos % 60;
+
+    return `${horas} horas ${minutos} minutos ${segundos} segundos`;
+  };
+
+  const handleTaskChange = (event) => {
+    setTask(event.target.value);
+  };
+
+ const handleStartTimer = async () => {
+  try {
+    if (!timerActive) {
+      const startTime = new Date().toISOString();
+      let projectId;
+
+      if (!project.cliente) {
+        console.log("El proyecto no tiene un cliente asociado en la aplicación.");
+
+        const projectResponse = await axios.post(
+          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
+          { name: project.nombreProyecto },
           {
             headers: {
               "Content-Type": "application/json",
-              "X-Api-Key": "NjczYjljNGUtYzRmYy00MDczLWFjYmYtYzlhZjM4N2FhMzdl",
+              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
             },
           }
         );
 
-        console.log("Entrada de tiempo iniciada:", response.data);
-        setTimerActive(true);
-        const startTime = new Date().getTime();
-        const intervalId = setInterval(() => {
-          const elapsedTime = new Date().getTime() - startTime;
-          setTimerDuration(elapsedTime);
-        }, 1000);
-        setTimerIntervalId(intervalId);
+        projectId = projectResponse.data.id;
       } else {
-        clearInterval(timerIntervalId);
-        setTimerActive(false);
-        setTimerIntervalId(null);
-        setTimerDuration(0);
+        const allClientsResponse = await axios.get(
+          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+            },
+          }
+        );
+
+        const existingClient = allClientsResponse.data.find(
+          (client) => client.name === project.cliente
+        );
+
+        let clientId;
+
+        if (existingClient) {
+          clientId = existingClient.id;
+        } else {
+          const projectClient = await axios.post(
+            "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
+            { name: project.cliente },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+              },
+            }
+          );
+          clientId = projectClient.data.id;
+        }
+
+        const allProjectsResponse = await axios.get(
+          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
+          { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+        );
+
+        const existingProject = allProjectsResponse.data.find((p) => p.name === project.nombreProyecto);
+
+        if (existingProject) {
+          projectId = existingProject.id;
+        } else {
+          const projectResponse = await axios.post(
+            "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
+            { name: project.nombreProyecto },
+            { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+          );
+          projectId = projectResponse.data.id;
+        }
       }
-    } catch (error) {
-      console.error("Error al iniciar la entrada de tiempo:", error);
+
+      const response = await axios.post(
+        "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
+        { start: startTime, projectId: projectId, description: task },
+        { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+      );
+
+      console.log("Entrada de tiempo iniciada:", response.data);
+      setTimerActive(true);
+      setTimeEntryId(response.data.id);
+      const intervalId = setInterval(() => {
+        const elapsedTime = new Date().getTime() - startTime;
+        setTimerDuration(elapsedTime);
+      }, 1000);
+      setTimerIntervalId(intervalId);
+    } else {
+      clearInterval(timerIntervalId);
+      setTimerActive(false);
+      setTimerIntervalId(null);
+      setTimerDuration(0);
     }
-  };
+  } catch (error) {
+    console.error("Error al iniciar la entrada de tiempo:", error);
+    setErrorMessage("Error al iniciar la entrada de tiempo. Por favor, inténtalo de nuevo más tarde.");
+  }
+};
+
 
   const handleStopTimer = async () => {
     try {
@@ -78,24 +155,48 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         setTimerActive(false);
         setTimerIntervalId(null);
         const response = await axios.patch(
-          `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries/${timeEntryId}`,
+          `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/user/662f3bdccdbdaa6762287ea6/time-entries/`,
           {
             end: new Date().toISOString(),
           },
           {
             headers: {
-              'Content-Type': 'application/json',
-              'X-Api-Key': 'NjczYjljNGUtYzRmYy00MDczLWFjYmYtYzlhZjM4N2FhMzdl',
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
             },
           }
         );
-        console.log('Entrada de tiempo detenida:', response.data);
+        console.log("Entrada de tiempo detenida:", response.data);
       }
     } catch (error) {
-      console.error('Error al detener la entrada de tiempo:', error);
+      console.error("Error al detener la entrada de tiempo:", error);
     }
   };
-  
+
+  const obtenerTiempoEmpleado = async (timeEntryId) => {
+    try {
+      const response = await axios.get(
+        `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries/${timeEntryId}`,
+        {
+          headers: {
+            "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+          },
+        }
+      );
+
+      const duracionSegundos = response.data.duration;
+      const tiempoEmpleado =
+        convertirSegundosAHorasMinutosSegundos(duracionSegundos);
+
+      return tiempoEmpleado;
+    } catch (error) {
+      console.error(
+        "Error al obtener los detalles de la entrada de tiempo:",
+        error
+      );
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -386,14 +487,43 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           </div>
         </div>
 
-        <button id="clock" className="btn btn-info" onClick={handleStartTimer}>
-          Iniciar Timer
+        <button
+          id="clock"
+          className="btn btn-info"
+          onClick={() => document.getElementById("my_modal_3").showModal()}
+        >
+          Clockify
         </button>
+        <dialog id="my_modal_3" className="modal">
+          <div id="select-work" className="modal-box">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+            <h3 className="font-bold text-lg">¿En que estás trabajando?</h3>
+            <input
+              type="text"
+              placeholder="Escribe aquí"
+              onChange={handleTaskChange}
+              className="input input-bordered w-full max-w-xs"
+              maxLength={50}
+              required
+            />
+            <br />
+            <button
+              id="timer"
+              className="btn btn-success"
+              onClick={handleStartTimer}
+            >
+              Iniciar Timer
+            </button>
+          </div>
+        </dialog>
 
         <button id="stop" className="btn btn-error" onClick={handleStopTimer}>
-  Detener Timer
-</button>
-
+          Detener Timer
+        </button>
 
         <div id="time" role="alert" className="alert">
           <svg
@@ -419,7 +549,16 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           <strong>Colaboradores: </strong>
           <div className="caja">
             {selectedCollaborators.map((staff, index) => (
-              <p key={index}>{staff.nombre}</p>
+              <p key={index}>
+                {" "}
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="User Avatar"
+                    src="https://cdn-icons-png.freepik.com/512/64/64572.png"
+                  />
+                </div>{" "}
+                {staff.nombre}
+              </p>
             ))}
           </div>
         </div>
@@ -451,7 +590,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         </div>
 
         <div className="detail-autor">
-          <strong>Autor: </strong>
+          <strong>Propietario: </strong>
 
           <p>{project.autor}</p>
         </div>
@@ -473,6 +612,23 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           <button id="Sup" className="btn btn-wide" onClick={onDelete}>
             Borrar <FaTrash />
           </button>
+        </div>
+
+        <div id="tiempo-empleado" role="alert" className="alert alert-info">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-current shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span>Tiempo empleado en el proyecto: </span> {obtenerTiempoEmpleado}
         </div>
 
         {isEndDatePassed() && (

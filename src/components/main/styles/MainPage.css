@@ -270,6 +270,9 @@
   border: 2px solid black;
   z-index: 2;
   padding-bottom: 1%;
+  background: #f7cc70;
+  border-radius: 10px;
+
 }
 
 .project-card.expanded .project-info {

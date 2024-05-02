@@ -23,7 +23,6 @@
 }
 
 .detail-nombre {
-  margin-top: 5%;
   margin-left: 2%;
   grid-column: 1;
 }
@@ -66,7 +65,6 @@
 }
 
 .detail-autor {
-  margin-top: 5%;
   margin-left: 2%;
   grid-column: 3;
 }
@@ -132,7 +130,6 @@
 
 .detail-colaborador {
   grid-column: 2;
-  margin-top: 5%;
   overflow-y: auto;
 }
 
@@ -157,12 +154,19 @@
   width: 80%;
   text-align: center;
   border-radius: 40px;
-  height: 500px;
+  height: 550px;
   display: block;
   overflow-y: auto;
   justify-content: center;
   line-height: 50px;
   background: white;
+}
+
+.caja img {
+  padding-right: 20% !important;
+  margin-right: 10% !important;
+  margin-top: 20%;
+  
 }
 
 .detail-colab {
@@ -305,7 +309,7 @@ li{
 }
 
 #warning-message {
-  margin-top: 10%;
+  margin-top: 3%;
   width: 89%;
 }
 
@@ -331,4 +335,18 @@ li{
 
 #stop {
   margin-left: 10%;
+}
+
+#tiempo-empleado {
+  margin-top: 3%;
+  width: 89%;
+}
+
+#select-work input{
+  margin-top: 5%;
+  margin-right: 5%;
+}
+
+#timer {
+margin-top: 5%;
 }
