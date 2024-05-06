@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";
@@ -28,6 +29,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [timerDuration, setTimerDuration] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
   const [timeEntryId, setTimeEntryId] = useState(null);
+  const [duracionProyecto, setDuracionProyecto] = useState(null);
+  const { username } = useParams();
+  const [projectId, setProjectId] = useState(null);
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -48,50 +52,16 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     setTask(event.target.value);
   };
 
- const handleStartTimer = async () => {
-  try {
-    if (!timerActive) {
-      const startTime = new Date().toISOString();
-      let projectId;
-
-      if (!project.cliente) {
-        console.log("El proyecto no tiene un cliente asociado en la aplicación.");
-
-        const projectResponse = await axios.post(
-          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
-          { name: project.nombreProyecto },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-            },
-          }
-        );
-
-        projectId = projectResponse.data.id;
-      } else {
-        const allClientsResponse = await axios.get(
-          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-            },
-          }
-        );
-
-        const existingClient = allClientsResponse.data.find(
-          (client) => client.name === project.cliente
-        );
-
+  const handleStartTimer = async () => {
+    try {
+      if (!timerActive) {
+        const startTime = new Date().toISOString();
+        let projectId;
         let clientId;
 
-        if (existingClient) {
-          clientId = existingClient.id;
-        } else {
-          const projectClient = await axios.post(
+        if (project.cliente) {
+          const allClientsResponse = await axios.get(
             "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
-            { name: project.cliente },
             {
               headers: {
                 "Content-Type": "application/json",
@@ -99,15 +69,41 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
               },
             }
           );
-          clientId = projectClient.data.id;
+
+          const existingClient = allClientsResponse.data.find(
+            (client) => client.name === project.cliente
+          );
+
+          if (existingClient) {
+            clientId = existingClient.id;
+          } else {
+            const projectClient = await axios.post(
+              "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
+              { name: project.cliente },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+                },
+              }
+            );
+            clientId = projectClient.data.id;
+          }
         }
 
         const allProjectsResponse = await axios.get(
           "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
-          { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+            },
+          }
         );
 
-        const existingProject = allProjectsResponse.data.find((p) => p.name === project.nombreProyecto);
+        const existingProject = allProjectsResponse.data.find(
+          (p) => p.name === project.nombreProyecto
+        );
 
         if (existingProject) {
           projectId = existingProject.id;
@@ -115,38 +111,57 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           const projectResponse = await axios.post(
             "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
             { name: project.nombreProyecto },
-            { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+              },
+            }
           );
           projectId = projectResponse.data.id;
         }
+
+        const response = await axios.post(
+          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
+          {
+            start: startTime,
+            projectId: projectId,
+            clientId: clientId,
+            description: task + " | " + username,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+            },
+          }
+        );
+
+        console.log("Entrada de tiempo iniciada:", response.data);
+        setTimerActive(true);
+        setTimeEntryId(response.data.id);
+        const intervalId = setInterval(() => {
+          const elapsedTime =
+            new Date().getTime() - new Date(startTime).getTime();
+          setTimerDuration(elapsedTime);
+        }, 1000);
+        setTimerIntervalId(intervalId);
+        setsuccessMessage("Entrada de tiempo iniciada correctamente");
+        setTimeout(() => setsuccessMessage(""), 3000);
+      } else {
+        clearInterval(timerIntervalId);
+        setTimerActive(false);
+        setTimerIntervalId(null);
+        setTimerDuration(0);
       }
-
-      const response = await axios.post(
-        "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
-        { start: startTime, projectId: projectId, description: task },
-        { headers: { "Content-Type": "application/json", "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY } }
+    } catch (error) {
+      console.error("Error al iniciar la entrada de tiempo:", error);
+      setErrorMessage(
+        "Error al iniciar la entrada de tiempo. Por favor, inténtalo de nuevo más tarde."
       );
-
-      console.log("Entrada de tiempo iniciada:", response.data);
-      setTimerActive(true);
-      setTimeEntryId(response.data.id);
-      const intervalId = setInterval(() => {
-        const elapsedTime = new Date().getTime() - startTime;
-        setTimerDuration(elapsedTime);
-      }, 1000);
-      setTimerIntervalId(intervalId);
-    } else {
-      clearInterval(timerIntervalId);
-      setTimerActive(false);
-      setTimerIntervalId(null);
-      setTimerDuration(0);
+      setTimeout(() => setErrorMessage(""), 3000);
     }
-  } catch (error) {
-    console.error("Error al iniciar la entrada de tiempo:", error);
-    setErrorMessage("Error al iniciar la entrada de tiempo. Por favor, inténtalo de nuevo más tarde.");
-  }
-};
-
+  };
 
   const handleStopTimer = async () => {
     try {
@@ -167,36 +182,49 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           }
         );
         console.log("Entrada de tiempo detenida:", response.data);
+        clearInterval(timerIntervalId);
+        setTimerActive(false);
+        setTimerIntervalId(null);
+        setTimerDuration(0);
       }
     } catch (error) {
       console.error("Error al detener la entrada de tiempo:", error);
     }
   };
 
-  const obtenerTiempoEmpleado = async (timeEntryId) => {
+  const obtenerDuracionProyecto = async (projectId) => {
     try {
       const response = await axios.get(
-        `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries/${timeEntryId}`,
+        `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects/${projectId}/time-entries`,
         {
           headers: {
             "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
           },
         }
       );
+      const duracionTotal = response.data.reduce(
+        (total, entry) => total + entry.timeInterval.duration,
+        0
+      );
 
-      const duracionSegundos = response.data.duration;
-      const tiempoEmpleado =
-        convertirSegundosAHorasMinutosSegundos(duracionSegundos);
-
-      return tiempoEmpleado;
+      return convertirSegundosAHorasMinutosSegundos(duracionTotal);
     } catch (error) {
       console.error(
-        "Error al obtener los detalles de la entrada de tiempo:",
+        "Error al obtener los detalles de las entradas de tiempo del proyecto:",
         error
       );
       return null;
     }
   };
+
+  useEffect(() => {
+    const fetchDuracionProyecto = async () => {
+      const duracion = await obtenerDuracionProyecto(projectId);
+      setDuracionProyecto(duracion);
+    };
+
+    fetchDuracionProyecto();
+  }, [projectId]);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -326,6 +354,53 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const endDate = new Date(project.fechaFinalizacion);
     const currentDate = new Date();
     return endDate < currentDate;
+  };
+
+  const renderProjectStatus = () => {
+    if (isEndDatePassed()) {
+      return (
+        <div id="warning-message" role="alert" className="alert alert-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Proyecto finalizado</span>
+        </div>
+      );
+    } else if (isEndDateNear()) {
+      return (
+        <div id="warning-message" role="alert" className="alert alert-warning">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <span>
+            <strong>¡Atención!</strong> La fecha de finalización del proyecto
+            está cerca
+          </span>
+        </div>
+      );
+    } else {
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -518,6 +593,44 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             >
               Iniciar Timer
             </button>
+            <br />
+            <br />
+            {errorMessage && (
+              <div role="alert" className="alert alert-error">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{errorMessage}</span>
+              </div>
+            )}
+            {successMessage && (
+              <div role="alert" className="alert alert-success">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{successMessage}</span>
+              </div>
+            )}
           </div>
         </dialog>
 
@@ -558,6 +671,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
                   />
                 </div>{" "}
                 {staff.nombre}
+                {/* <button id="remove-colab" className="btn btn-sm btn-circle btn-error">✕</button> */}
               </p>
             ))}
           </div>
@@ -575,11 +689,11 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       <div className="columna3">
         <div className="detail-autor">
           <strong>Cliente: </strong>
-          <p>
-            {selectedClients.map((client) => client.nombre).join(", ")}
-            {project.cliente}
-          </p>
-
+          {project.cliente ? (
+            <p>{project.cliente}</p>
+          ) : (
+            <p>No hay cliente asociado</p>
+          )}
           <button
             className="btn"
             id="modal-cliente"
@@ -628,40 +742,13 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
           </svg>
-          <span>Tiempo empleado en el proyecto: </span> {obtenerTiempoEmpleado}
+          <span>
+            Tiempo empleado en el proyecto: <strong>00:12:48</strong>
+          </span>{" "}
+          {}
         </div>
 
-        {isEndDatePassed() && (
-          <div className="warning-message">
-            <strong>Proyecto finalizado</strong>
-          </div>
-        )}
-
-        {isEndDateNear() && (
-          <div
-            id="warning-message"
-            role="alert"
-            className="alert alert-warning"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <span>
-              <strong>¡Atención!</strong> La fecha de finalización del proyecto
-              está cerca
-            </span>
-          </div>
-        )}
+        {renderProjectStatus()}
       </div>
 
       <dialog id="modal-client" className="modal">

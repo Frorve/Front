@@ -57,3 +57,6 @@ Instala las dependencias necesarias para ejecutar la aplicación.
 
 ### Añadir Clientes:
 <img src="screenshots/AddCliente.png">
+
+### Añadir Time Entry en Clockify:
+<img src="screenshots/AddTimeEntryClockify.png">

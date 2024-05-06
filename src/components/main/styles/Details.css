@@ -39,7 +39,6 @@
   align-items: center;
   line-height: 50px;
   background: white;
-
 }
 
 .detail-descripcion {
@@ -61,7 +60,6 @@
   line-height: 50px;
   overflow-y: auto;
   background: white;
-
 }
 
 .detail-autor {
@@ -81,7 +79,6 @@
   align-items: center;
   line-height: 50px;
   background: white;
-  
 }
 
 .detail-inicio {
@@ -125,7 +122,6 @@
   text-align: center;
   border-radius: 40px;
   background: white;
-
 }
 
 .detail-colaborador {
@@ -144,7 +140,6 @@
   line-height: 50px;
   background: white;
   margin-top: 5%;
-
 }
 
 .caja {
@@ -166,7 +161,6 @@
   padding-right: 20% !important;
   margin-right: 10% !important;
   margin-top: 20%;
-  
 }
 
 .detail-colab {
@@ -200,7 +194,6 @@
   align-items: center;
   line-height: 50px;
   background: white;
-
 }
 
 .project-actions {
@@ -283,7 +276,7 @@
   margin-left: 1em;
 }
 
-li{
+li {
   margin-top: 1%;
 }
 
@@ -342,11 +335,16 @@ li{
   width: 89%;
 }
 
-#select-work input{
+#select-work input {
   margin-top: 5%;
   margin-right: 5%;
 }
 
 #timer {
-margin-top: 5%;
+  margin-top: 5%;
+}
+
+#remove-colab {
+  margin-top: 2%;
+  margin-left: 3%;
 }
