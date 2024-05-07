@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginForm from './components/loginForm/LoginForm';
 import MainPage from './components/main/MainPage';
 import Register from './components/register/Register';
-import AboutContact from './components/main/pruebas/AboutContact';
+import AboutContact from './components/main/about/AboutContact';
 import Forget from './components/forget/Forget'
 import 'tailwindcss/tailwind.css';
 

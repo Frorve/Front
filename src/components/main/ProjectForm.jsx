@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const ProjectForm = ({ onSubmit, onCancel }) => {
@@ -20,17 +20,41 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   };
 
   const handleFechaInicioChange = (event) => {
-    setFechaInicio(event.target.value);
+    const nuevaFechaInicio = event.target.value;
+    setFechaInicio(nuevaFechaInicio);
+
+    if (fechaFinalizacion && fechaFinalizacion < nuevaFechaInicio) {
+      setFechaFinalizacion(nuevaFechaInicio);
+    }
   };
 
   const handleFechaFinalizacionChange = (event) => {
-    setFechaFinalizacion(event.target.value);
+    const nuevaFechaFinalizacion = event.target.value;
+
+    if (nuevaFechaFinalizacion >= fechaInicio) {
+      setFechaFinalizacion(nuevaFechaFinalizacion); 
+    } else {
+      alert('La fecha de finalización no puede ser anterior a la fecha de inicio.');
+    }
   };
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
   };
+
+  const obtenerFechaActual = () => {
+    const fechaActual = new Date();
+    const year = fechaActual.getFullYear();
+    const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
+    const day = String(fechaActual.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    const fechaActual = obtenerFechaActual();
+    setFechaInicio(fechaActual);
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -110,6 +134,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
             value={fechaInicio}
             onChange={handleFechaInicioChange}
             placeholder="Fecha de inicio"
+            readOnly
             required
           />
         </div>

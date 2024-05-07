@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import { FiDownload } from "react-icons/fi";
 import { AiFillCloseCircle } from "react-icons/ai";
+import Columna1 from "./Columna1";
+import Columna2 from "./Columna2";
+import Columna3 from "./Columna3";
+import Modal from "./Modal";
 import "./styles/Details.css";
 import axios from "axios";
 
@@ -424,11 +426,23 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   }, []);
 
   useEffect(() => {
-    const storedCollaborators = localStorage.getItem("selectedCollaborators");
-    if (storedCollaborators) {
-      setSelectedCollaborators(JSON.parse(storedCollaborators));
+    const fetchCollaborators = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/repo/collaborators/${project.id}`);
+        if (response.status === 200) {
+          setSelectedCollaborators(response.data);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching collaborators:", error);
+      }
+    };
+  
+    if (project.id) {
+      fetchCollaborators();
     }
-  }, []);
+  }, [project.id]);
+  
 
   const handleSearchInputChange = (event) => {
     const query = event.target.value;
@@ -525,452 +539,68 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     }
   };
 
-  const filteredStaff = searchResults.filter(
-    (staff) =>
-      !selectedCollaborators.some((selected) => selected.id === staff.id) &&
-      staff.nombre.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredStaff = searchResults.filter((staff) => {
+    const isSelected = selectedCollaborators.some((selected) => selected.id === staff.id);
+    const matchesSearchQuery = staff.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+    return !isSelected && matchesSearchQuery;
+  });
+  
 
   return (
     <div className="project-details">
       <button className="close-button" onClick={onClose}>
         <AiFillCloseCircle />
       </button>
-      <div className="columa1">
-        <div className="detail-nombre">
-          <strong>Nombre: </strong>
-          <p>{project.nombreProyecto}</p>
-        </div>
+      <Columna1
+        project={project}
+        handleTaskChange={handleTaskChange}
+        handleStartTimer={handleStartTimer}
+        handleStopTimer={handleStopTimer}
+        timerDuration={timerDuration}
+        formatTime={formatTime}
+        errorMessage={errorMessage}
+        successMessage={successMessage}
+      />
 
-        <div className="detail-descripcion">
-          <strong>Descripción: </strong>
+      <Columna2 selectedCollaborators={selectedCollaborators} />
 
-          <p>{project.descripcion}</p>
-        </div>
+      <Columna3
+        project={project}
+        onDownload={onDownload}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        renderProjectStatus={renderProjectStatus}
+      />
 
-        <div className="detail-inicio">
-          <strong>Fecha de inicio: </strong>
-          <div className="fecha-container">
-            <p>{project.fechaInicio}</p>
-          </div>
-        </div>
+      <Modal
+        id="modal-client"
+        title="Clientes"
+        searchQuery={searchQueryClients}
+        handleSearchInputChange={handleSearchInputChangeClients}
+        showSearchResults={showSearchResultsClients}
+        filteredData={filteredClients}
+        handleSelectItem={handleSelectClient}
+        selectedItems={selectedClients}
+        handleRemoveItem={handleRemoveClient}
+        errorMessage={errorMessage}
+        successMessage={successMessage}
+        handleSave={handleSaveClients}
+      />
 
-        <div className="detail-inicio">
-          <strong>Fecha de finalización: </strong>
-          <div className="fecha-container">
-            <p>{project.fechaFinalizacion}</p>
-          </div>
-        </div>
-
-        <button
-          id="clock"
-          className="btn btn-info"
-          onClick={() => document.getElementById("my_modal_3").showModal()}
-        >
-          Clockify
-        </button>
-        <dialog id="my_modal_3" className="modal">
-          <div id="select-work" className="modal-box">
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <h3 className="font-bold text-lg">¿En que estás trabajando?</h3>
-            <input
-              type="text"
-              placeholder="Escribe aquí"
-              onChange={handleTaskChange}
-              className="input input-bordered w-full max-w-xs"
-              maxLength={50}
-              required
-            />
-            <br />
-            <button
-              id="timer"
-              className="btn btn-success"
-              onClick={handleStartTimer}
-            >
-              Iniciar Timer
-            </button>
-            <br />
-            <br />
-            {errorMessage && (
-              <div role="alert" className="alert alert-error">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="stroke-current shrink-0 h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{errorMessage}</span>
-              </div>
-            )}
-            {successMessage && (
-              <div role="alert" className="alert alert-success">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="stroke-current shrink-0 h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{successMessage}</span>
-              </div>
-            )}
-          </div>
-        </dialog>
-
-        <button id="stop" className="btn btn-error" onClick={handleStopTimer}>
-          Detener Timer
-        </button>
-
-        <div id="time" role="alert" className="alert">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="stroke-info shrink-0 w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          <strong>Tiempo transcurrido: </strong>
-          <span>{formatTime(timerDuration)}</span>
-        </div>
-      </div>
-
-      <div className="columna2">
-        <div className="detail-colaborador">
-          <strong>Colaboradores: </strong>
-          <div className="caja">
-            {selectedCollaborators.map((staff, index) => (
-              <p key={index}>
-                {" "}
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="User Avatar"
-                    src="https://cdn-icons-png.freepik.com/512/64/64572.png"
-                  />
-                </div>{" "}
-                {staff.nombre}
-                {/* <button id="remove-colab" className="btn btn-sm btn-circle btn-error">✕</button> */}
-              </p>
-            ))}
-          </div>
-        </div>
-        <div className="detail-colab">
-          <button
-            className="btn btn-neutral"
-            onClick={() => document.getElementById("modal").showModal()}
-          >
-            Añadir/Eliminar colaboradores
-          </button>
-        </div>
-      </div>
-
-      <div className="columna3">
-        <div className="detail-autor">
-          <strong>Cliente: </strong>
-          {project.cliente ? (
-            <p>{project.cliente}</p>
-          ) : (
-            <p>No hay cliente asociado</p>
-          )}
-          <button
-            className="btn"
-            id="modal-cliente"
-            onClick={() => document.getElementById("modal-client").showModal()}
-          >
-            Asignar Cliente
-          </button>
-        </div>
-
-        <div className="detail-autor">
-          <strong>Propietario: </strong>
-
-          <p>{project.autor}</p>
-        </div>
-
-        {project.archivo && (
-          <div className="detail-archivo">
-            <strong>Archivo: </strong>
-            <p>Disponible{project.nombreArchivo}</p>
-            <button id="down" className="btn btn-wide" onClick={onDownload}>
-              Descargar archivo <FiDownload />
-            </button>
-          </div>
-        )}
-
-        <div className="project-actions">
-          <button id="edit" className="btn btn-wide" onClick={onEdit}>
-            Editar <FaEdit />
-          </button>
-          <button id="Sup" className="btn btn-wide" onClick={onDelete}>
-            Borrar <FaTrash />
-          </button>
-        </div>
-
-        <div id="tiempo-empleado" role="alert" className="alert alert-info">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="stroke-current shrink-0 w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          <span>
-            Tiempo empleado en el proyecto: <strong>00:12:48</strong>
-          </span>{" "}
-          {}
-        </div>
-
-        {renderProjectStatus()}
-      </div>
-
-      <dialog id="modal-client" className="modal">
-        <div className="modal-box w-full max-w-5xl">
-          <button
-            className="close-button"
-            onClick={() => document.getElementById("modal-client").close()}
-          >
-            <AiFillCloseCircle />
-          </button>
-          <h2>
-            <strong>Buscar Clientes</strong>
-          </h2>
-          <br />
-          <label className="input input-bordered flex items-center gap-2">
-            <input
-              type="text"
-              className="grow"
-              placeholder="Buscar clientes..."
-              value={searchQueryClients}
-              onChange={handleSearchInputChangeClients}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="w-4 h-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </label>
-          <br />
-          {showSearchResultsClients && (
-            <ul className="search-results">
-              {filteredClients.map((client) => (
-                <li key={client.id} onClick={() => handleSelectClient(client)}>
-                  {client.nombre}
-                </li>
-              ))}
-            </ul>
-          )}
-          <br />
-          <h3>
-            <strong>Clientes Seleccionados:</strong>{" "}
-          </h3>
-          <br />
-          <ul className="client-list">
-            {" "}
-            {selectedClients.map((client) => (
-              <li key={client.id}>
-                {" "}
-                {client.nombre}
-                <button
-                  id="remove"
-                  className="btn btn-xs btn-error"
-                  onClick={() => handleRemoveClient(client)}
-                >
-                  Eliminar
-                </button>
-              </li>
-            ))}
-          </ul>
-          <br />
-          {errorMessage && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{errorMessage}</span>
-            </div>
-          )}
-          {successMessage && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{successMessage}</span>
-            </div>
-          )}
-          <br />
-          <button className="btn" onClick={handleSaveClients}>
-            Guardar Clientes
-          </button>
-        </div>
-      </dialog>
-
-      <dialog id="modal" className="modal">
-        <div className="modal-box w-full max-w-5xl">
-          <button
-            className="close-button"
-            onClick={() => document.getElementById("modal").close()}
-          >
-            <AiFillCloseCircle />
-          </button>
-          <h2>
-            <strong>Añadir colaboradores</strong>
-          </h2>
-          <br />
-          <label className="input input-bordered flex items-center gap-2">
-            <input
-              type="text"
-              className="grow"
-              placeholder="Buscar colaboradores..."
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="w-4 h-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </label>
-          <br />
-          {showSearchResults && (
-            <ul className="search-results">
-              {filteredStaff.map((staff) => (
-                <li
-                  key={staff.id}
-                  onClick={() => handleSelectCollaborator(staff)}
-                >
-                  {staff.nombre}
-                </li>
-              ))}
-            </ul>
-          )}
-          <br />
-          <div className="selected-collaborators">
-            <h3>
-              <strong>Colaboradores Seleccionados:</strong>{" "}
-            </h3>
-            <br />
-            <ul className="collaborator-list">
-              {" "}
-              {selectedCollaborators.map((staff) => (
-                <li key={staff.id}>
-                  {" "}
-                  {staff.nombre}
-                  <button
-                    id="remove"
-                    className="btn btn-xs btn-error"
-                    onClick={() => handleRemoveCollaborator(staff)}
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <br />
-          {errorMessage && (
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{errorMessage}</span>
-            </div>
-          )}
-          {successMessage && (
-            <div role="alert" className="alert alert-success">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{successMessage}</span>
-            </div>
-          )}
-          <br />
-          <button className="btn" onClick={handleSaveCollaborators}>
-            Guardar Colaboradores
-          </button>
-        </div>
-      </dialog>
+      <Modal
+        id="modal"
+        title="Colaboradores"
+        searchQuery={searchQuery}
+        handleSearchInputChange={handleSearchInputChange}
+        showSearchResults={showSearchResults}
+        filteredData={filteredStaff}
+        handleSelectItem={handleSelectCollaborator}
+        selectedItems={selectedCollaborators}
+        handleRemoveItem={handleRemoveCollaborator}
+        errorMessage={errorMessage}
+        successMessage={successMessage}
+        handleSave={handleSaveCollaborators}
+      />
     </div>
   );
 };

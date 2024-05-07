@@ -1,19 +1,19 @@
 .wrapper-main {
   max-width: 100%;
   width: 95%;
-  height: 80%;
+  height: 83%;
   max-height: 100%;
   border: 2px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(6px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   color: #000000;
   border-radius: 10px;
-  padding: 30px 5%;
+  padding: 20px 5%;
   overflow-y: auto;
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -48%);
 }
 
 @media screen and (max-width: 768px) {
@@ -261,17 +261,16 @@
 
 .project-card.expanded {
   clip-path: none;
-  width: 100%;
+  width: 95%;
   height: auto;
-  position: absolute;
-  top: -15%;
-  left: auto;
+  position: fixed;
   transform: none;
-  border: 2px solid black;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   z-index: 2;
-  padding-bottom: 1%;
+  padding-bottom: 2.5%;
   background: #f7cc70;
   border-radius: 10px;
+  top: 0%;
 
 }
 
@@ -319,14 +318,23 @@
 .edit {
   align-items: center;
   text-align: center;
-  backdrop-filter: blur(30px) !important;
-  background: transparent !important;
 }
 
 .editar {
+  width: 100%;
+  max-width: 2000px; 
+  margin: 0 auto;
+  padding: 20px;
+  height: 710px !important;
+}
+
+/* .editar {
   backdrop-filter: blur(30px) !important;
   background: transparent !important;
-}
+  width: auto !important;
+  height: 720px !important;
+  position:relative !important;
+} */
 
 .edit button {
   width: 80%;
@@ -348,6 +356,10 @@
   margin-right: auto;
 }
 
+.edit input {
+  background: white !important;
+}
+
 .edit h1 {
   padding-top: 10px;
 }
@@ -356,6 +368,23 @@
   text-align: center;
   padding-top: 2%;
   padding-bottom: 2%;
+}
+
+.about {
+  max-width: 100%;
+  width: 95%;
+  height: 80%;
+  max-height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: #000000;
+  border-radius: 10px;
+  overflow-y: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @media screen and (max-width: 912px) {

@@ -15,7 +15,7 @@ const MainPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [showClienteForm, setShowClienteForm] = useState(false);
-  
+  const [showProjectList, setShowProjectList] = useState(true);
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -75,14 +75,17 @@ const MainPage = () => {
 
   const handleFormToggle = () => {
     setShowForm(!showForm);
+    setShowProjectList(false); 
   };
 
   const handleSubmitForm = () => {
     setShowForm(false);
+    setShowProjectList(true); 
   };
 
   const handleCancelForm = () => {
     setShowForm(false);
+    setShowProjectList(true); 
   };
 
   const handleExpand = (projectId) => {
@@ -91,14 +94,17 @@ const MainPage = () => {
 
   const handleClienteFormToggle = () => {
     setShowClienteForm(!showClienteForm);
+    setShowProjectList(false); 
   };
 
   const handleSubmitClienteForm = () => {
     setShowClienteForm(false);
+    setShowProjectList(true);
   };
 
   const handleCancelClienteForm = () => {
     setShowClienteForm(false);
+    setShowProjectList(true);
   };
 
   const filteredProjects = searchQuery
@@ -130,14 +136,16 @@ const MainPage = () => {
                   onCancel={handleCancelClienteForm}
                 />
               )}
-              {repos.length === 0 && (
+              {showProjectList && repos.length === 0 && (
                 <p className="welcome"><strong>Aún no has subido ningún proyecto. ¡Empieza ahora!</strong></p>
               )}
-              <ProjectList
-                projects={filteredProjects}
-                expandedProjectId={expandedProjectId}
-                onExpand={handleExpand}
-              />
+              {showProjectList && (
+                <ProjectList
+                  projects={filteredProjects}
+                  expandedProjectId={expandedProjectId}
+                  onExpand={handleExpand}
+                />
+              )}
             </>
           )}
           {!showForm && !showClienteForm && (

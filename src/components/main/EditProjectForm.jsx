@@ -57,7 +57,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     <div className="editar">
       <form onSubmit={handleSubmit}>
         <div className="edit">
-          <h1>Editar Proyecto</h1>
+          <h1><strong>Editar Proyecto</strong></h1>
           <div className="input-box">
             <div className="info-box">
               <span>Nombre:</span>
