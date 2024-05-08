@@ -119,6 +119,7 @@ const MainPage = () => {
           username={username}
           handleSearchChangeVar={handleSearchChangeVar}
           handleClienteFormToggle={handleClienteFormToggle}
+          handleFormToggle={handleFormToggle}
         />
         <div className="wrapper-main">
           {!showForm && !showClienteForm && <strong><h1>Proyectos</h1></strong>}

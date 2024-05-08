@@ -30,10 +30,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [timerDuration, setTimerDuration] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
-  const [timeEntryId, setTimeEntryId] = useState(null);
-  const [duracionProyecto, setDuracionProyecto] = useState(null);
+  // const [duracionProyecto, setDuracionProyecto] = useState(null);
   const { username } = useParams();
-  const [projectId, setProjectId] = useState(null);
+  // const [projectId, setProjectId] = useState(null);
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -42,13 +41,13 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  const convertirSegundosAHorasMinutosSegundos = (duracionSegundos) => {
-    const horas = Math.floor(duracionSegundos / 3600);
-    const minutos = Math.floor((duracionSegundos % 3600) / 60);
-    const segundos = duracionSegundos % 60;
+  // const convertirSegundosAHorasMinutosSegundos = (duracionSegundos) => {
+  //   const horas = Math.floor(duracionSegundos / 3600);
+  //   const minutos = Math.floor((duracionSegundos % 3600) / 60);
+  //   const segundos = duracionSegundos % 60;
 
-    return `${horas} horas ${minutos} minutos ${segundos} segundos`;
-  };
+  //   return `${horas} horas ${minutos} minutos ${segundos} segundos`;
+  // };
 
   const handleTaskChange = (event) => {
     setTask(event.target.value);
@@ -60,10 +59,10 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         const startTime = new Date().toISOString();
         let projectId;
         let clientId;
-
+  
         if (project.cliente) {
           const allClientsResponse = await axios.get(
-            "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
+            `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -71,16 +70,16 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
               },
             }
           );
-
+  
           const existingClient = allClientsResponse.data.find(
             (client) => client.name === project.cliente
           );
-
+  
           if (existingClient) {
             clientId = existingClient.id;
           } else {
             const projectClient = await axios.post(
-              "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/clients",
+              `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
               { name: project.cliente },
               {
                 headers: {
@@ -92,9 +91,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             clientId = projectClient.data.id;
           }
         }
-
+  
         const allProjectsResponse = await axios.get(
-          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
+          `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -102,16 +101,16 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             },
           }
         );
-
+  
         const existingProject = allProjectsResponse.data.find(
           (p) => p.name === project.nombreProyecto
         );
-
+  
         if (existingProject) {
           projectId = existingProject.id;
         } else {
           const projectResponse = await axios.post(
-            "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects",
+            `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects`,
             { name: project.nombreProyecto },
             {
               headers: {
@@ -122,34 +121,39 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           );
           projectId = projectResponse.data.id;
         }
-
-        const response = await axios.post(
-          "https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/time-entries",
-          {
-            start: startTime,
-            projectId: projectId,
-            clientId: clientId,
-            description: task + " | " + username,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+  
+        if (projectId && clientId) {
+          const response = await axios.post(
+            `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/time-entries`,
+            {
+              start: startTime,
+              projectId: projectId,
+              clientId: clientId,
+              description: task + " | " + username,
             },
-          }
-        );
-
-        console.log("Entrada de tiempo iniciada:", response.data);
-        setTimerActive(true);
-        setTimeEntryId(response.data.id);
-        const intervalId = setInterval(() => {
-          const elapsedTime =
-            new Date().getTime() - new Date(startTime).getTime();
-          setTimerDuration(elapsedTime);
-        }, 1000);
-        setTimerIntervalId(intervalId);
-        setsuccessMessage("Entrada de tiempo iniciada correctamente");
-        setTimeout(() => setsuccessMessage(""), 3000);
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+              },
+            }
+          );
+          
+          console.log("Entrada de tiempo iniciada:", response.data);
+          console.log("projectId:", projectId);
+          console.log("clientId:", clientId);
+          setTimerActive(true);
+          const intervalId = setInterval(() => {
+            const elapsedTime =
+              new Date().getTime() - new Date(startTime).getTime();
+            setTimerDuration(elapsedTime);
+          }, 1000);
+          setTimerIntervalId(intervalId);
+          setsuccessMessage("Entrada de tiempo iniciada correctamente");
+          setTimeout(() => setsuccessMessage(""), 3000);
+        } else {
+          console.error("Error al obtener o crear el cliente o el proyecto.");
+        }
       } else {
         clearInterval(timerIntervalId);
         setTimerActive(false);
@@ -172,7 +176,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         setTimerActive(false);
         setTimerIntervalId(null);
         const response = await axios.patch(
-          `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/user/662f3bdccdbdaa6762287ea6/time-entries/`,
+          `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/user/${process.env.REACT_APP_USER_CLOCKIFY}/time-entries/`,
           {
             end: new Date().toISOString(),
           },
@@ -194,39 +198,40 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     }
   };
 
-  const obtenerDuracionProyecto = async (projectId) => {
-    try {
-      const response = await axios.get(
-        `https://api.clockify.me/api/v1/workspaces/662f3bdccdbdaa6762287ea7/projects/${projectId}/time-entries`,
-        {
-          headers: {
-            "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-          },
-        }
-      );
-      const duracionTotal = response.data.reduce(
-        (total, entry) => total + entry.timeInterval.duration,
-        0
-      );
+  // const obtenerDuracionProyecto = async (projectId) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects/${projectId}`,
+  //       {
+  //         headers: {
+  //           "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+  //         },
+  //       }
+  //     );
+  //     const duracionTotal = response.data.duration(
+  //       (total, entry) => total + entry.timeInterval.duration,
+  //       0
+  //     );
 
-      return convertirSegundosAHorasMinutosSegundos(duracionTotal);
-    } catch (error) {
-      console.error(
-        "Error al obtener los detalles de las entradas de tiempo del proyecto:",
-        error
-      );
-      return null;
-    }
-  };
+  //     console.log(duracionTotal);
+  //     return convertirSegundosAHorasMinutosSegundos(duracionTotal);
+  //   } catch (error) {
+  //     console.error(
+  //       "Error al obtener los detalles de las entradas de tiempo del proyecto:",
+  //       error
+  //     );
+  //     return null;
+  //   }
+  // };
 
-  useEffect(() => {
-    const fetchDuracionProyecto = async () => {
-      const duracion = await obtenerDuracionProyecto(projectId);
-      setDuracionProyecto(duracion);
-    };
+  // useEffect(() => {
+  //   const fetchDuracionProyecto = async () => {
+  //     const duracion = await obtenerDuracionProyecto(projectId);
+  //     setDuracionProyecto(duracion);
+  //   };
 
-    fetchDuracionProyecto();
-  }, [projectId]);
+  //   fetchDuracionProyecto();
+  // }, [projectId]);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -395,8 +400,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             />
           </svg>
           <span>
-            <strong>¡Atención!</strong> La fecha de finalización del proyecto
-            está cerca
+            <strong>¡Atención!</strong> La fecha de finalización del proyecto está cerca
           </span>
         </div>
       );
@@ -404,6 +408,8 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       return null;
     }
   };
+  
+  
 
   useEffect(() => {
     const fetchStaff = async () => {
@@ -428,21 +434,25 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   useEffect(() => {
     const fetchCollaborators = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/repo/collaborators/${project.id}`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/repo/collaborators/${project.id}`
+        );
         if (response.status === 200) {
-          setSelectedCollaborators(response.data);
-          console.log(response.data);
+          const collaborators = response.data.map((name, index) => ({
+            id: index + 1,
+            nombre: name,
+          }));
+          setSelectedCollaborators(collaborators);
         }
       } catch (error) {
         console.error("Error fetching collaborators:", error);
       }
     };
-  
+
     if (project.id) {
       fetchCollaborators();
     }
   }, [project.id]);
-  
 
   const handleSearchInputChange = (event) => {
     const query = event.target.value;
@@ -540,11 +550,14 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   };
 
   const filteredStaff = searchResults.filter((staff) => {
-    const isSelected = selectedCollaborators.some((selected) => selected.id === staff.id);
-    const matchesSearchQuery = staff.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+    const isSelected = selectedCollaborators.some(
+      (selected) => selected.id === staff.id
+    );
+    const matchesSearchQuery = staff.nombre
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     return !isSelected && matchesSearchQuery;
   });
-  
 
   return (
     <div className="project-details">

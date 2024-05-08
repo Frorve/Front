@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import Footer from "../main/Footer";
 
-const Register = () => {
+const Forget = () => {
   const [username, setUsername] = useState("");
   const [mail, setMail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -143,4 +143,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Forget;

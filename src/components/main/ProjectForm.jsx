@@ -134,7 +134,6 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
             value={fechaInicio}
             onChange={handleFechaInicioChange}
             placeholder="Fecha de inicio"
-            readOnly
             required
           />
         </div>
