@@ -4,8 +4,8 @@ html, body {
   font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: url("./components/assets/fran.png");
-  height: 100%;
+  background: url("./assets/background.png");
+  height: auto;
   margin: 0; 
   padding: 0; 
 

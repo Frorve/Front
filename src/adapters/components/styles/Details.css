@@ -269,6 +269,9 @@
     right: 5px;
     width: auto;
     padding: 10px;
+    justify-content: center;
+    align-items: center;
+
   }
 }
 

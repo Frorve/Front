@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EditProjectForm from "./EditProjectForm";
 import { useParams } from "react-router-dom";
-import ProjectDetails from "./ProjectDetails";
+import ProjectDetails from "../ProjectDetailsComponent/ProjectDetails";
 
 const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
   const isExpanded = project.id === expandedProjectId;

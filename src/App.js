@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LoginForm from './components/loginForm/LoginForm';
-import MainPage from './components/main/MainPage';
-import Register from './components/register/Register';
-import AboutContact from './components/main/about/AboutContact';
-import Forget from './components/forget/Forget'
+import LoginForm from './adapters/pages/LoginForm';
+import MainPage from './adapters/pages/MainPage';
+import Register from './adapters/pages/Register';
+import AboutContact from './adapters/components/AboutComponent/AboutContact';
+import Forget from './adapters/pages/Forget'
 import 'tailwindcss/tailwind.css';
 
 

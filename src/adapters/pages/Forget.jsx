@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./styles/Forget.css";
+import "../components/styles/Forget.css";
 import { FaUser } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import Footer from "../main/Footer";
+import logo from "../../assets/logo.png";
+import Footer from "../components/FooterComponent/Footer";
 
 const Forget = () => {
   const [username, setUsername] = useState("");

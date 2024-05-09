@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import "./styles/Register.css";
+import "../components/styles/Register.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import Footer from "../main/Footer";
+import logo from "../../assets/logo.png";
+import Footer from "../components/FooterComponent/Footer";
+import * as api from "../api/api";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [userCreatedMessage, setUserCreatedMessage] = useState("");
+  const [errorMessage] = useState("");
+  const [userCreatedMessage] = useState("");
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -25,27 +26,11 @@ const Register = () => {
     setMail(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleSubmit = async (username, mail, password, setUsername, setMail, setPassword, setUserCreatedMessage, setErrorMessage) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nombre: username,
-            cargo: "Staff",
-            correoElectronico: mail,
-            contraseña: password,
-          }),
-        }
-      );
-
-      if (response.ok) {
+      const response = await api.registerUser(username, mail, password);
+  
+      if (response.status === 200) {
         console.log("Usuario creado exitosamente");
         setUsername("");
         setMail("");

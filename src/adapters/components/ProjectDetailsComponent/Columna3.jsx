@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
+import axios from "axios";
 
 const Columna3 = ({ project, onDownload, onEdit, onDelete, renderProjectStatus }) => {
+  const [projectTime, setProjectTime] = useState(0);
 
-    //Contador para las pruebas de horas totales
-    const horas = Math.floor(Math.random() * 2).toString().padStart(2, '0');
-    const minutos = Math.floor(Math.random() * 50).toString().padStart(2, '0'); 
-    const segundos = Math.floor(Math.random() * 50).toString().padStart(2, '0'); 
+  useEffect(() => {
+    const fetchProjectTime = async () => {
+      try {
 
-    const tiempoEmpleado = `${horas}:${minutos}:${segundos}`;
+        if (!project.id) {
+          return;
+        }
+
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/repo/search/${project.id}`);
+        setProjectTime(response.data.time);
+        console.log("Tiempo del proyecto:", response.data.time);
+        console.log(project.id);
+      } catch (error) {
+        console.error("Error al obtener el tiempo del proyecto:", error);
+      }
+    };
+
+    fetchProjectTime();
+  }, [project.id]);
 
   return (
     <div className="columna3">
@@ -68,7 +83,7 @@ const Columna3 = ({ project, onDownload, onEdit, onDelete, renderProjectStatus }
           ></path>
         </svg>
         <span>
-          Tiempo empleado en el proyecto: <strong>{tiempoEmpleado}</strong>
+          Tiempo empleado en el proyecto: <strong>{projectTime}</strong>
         </span>{" "}
         {}
       </div>

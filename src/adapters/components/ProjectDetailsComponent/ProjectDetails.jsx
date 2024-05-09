@@ -5,8 +5,9 @@ import Columna1 from "./Columna1";
 import Columna2 from "./Columna2";
 import Columna3 from "./Columna3";
 import Modal from "./Modal";
-import "./styles/Details.css";
+import "../styles/Details.css";
 import axios from "axios";
+import clockify from "../../api/clockify";
 
 const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,22 +124,8 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         }
   
         if (projectId && clientId) {
-          const response = await axios.post(
-            `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/time-entries`,
-            {
-              start: startTime,
-              projectId: projectId,
-              clientId: clientId,
-              description: task + " | " + username,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-              },
-            }
-          );
-          
+          const response = await clockify.startTimeEntry(startTime, projectId, clientId, task + " | " + username);
+
           console.log("Entrada de tiempo iniciada:", response.data);
           console.log("projectId:", projectId);
           console.log("clientId:", clientId);
@@ -188,10 +175,29 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           }
         );
         console.log("Entrada de tiempo detenida:", response.data);
+        console.log(timerDuration);
         clearInterval(timerIntervalId);
         setTimerActive(false);
         setTimerIntervalId(null);
-        setTimerDuration(0);
+
+        const timeData = { time: timerDuration};
+
+        const timeMS = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/repo/time/${project.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(timeData),
+          }
+        );
+
+        if (timeMS.ok) {
+          console.log("Tiempo contado:", timerDuration);
+          setTimerDuration(0);
+        }
+
       }
     } catch (error) {
       console.error("Error al detener la entrada de tiempo:", error);
@@ -409,8 +415,6 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     }
   };
   
-  
-
   useEffect(() => {
     const fetchStaff = async () => {
       try {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./styles/MainPage.css";
+import "../components/styles/MainPage.css";
 import { useParams } from "react-router-dom";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import ProjectForm from "./ProjectForm";
-import ProjectList from "./ProjectList";
-import ClienteForm from "./ClienteForm";
+import Navbar from "../components/NavbarComponent/Navbar";
+import Footer from "../components/FooterComponent/Footer";
+import ProjectForm from "../components/ProjectListComponent/ProjectForm";
+import ProjectList from "../components/ProjectListComponent/ProjectList";
+import ClienteForm from "../components/ProjectListComponent/ClienteForm";
 
 const MainPage = () => {
   const { username } = useParams();

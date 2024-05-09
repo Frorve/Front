@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./styles/LoginForm.css";
+import "../components/styles/LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { AiFillEye } from "react-icons/ai";
-import logo from "../assets/logo.png";
-import Footer from "../main/Footer";
+import logo from "../../assets/logo.png";
+import Footer from "../components/FooterComponent/Footer";
+import * as api from "../api/api";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -48,22 +49,10 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ nombre: username, contraseña: password }),
-        }
-      );
+      const response = await api.loginUser(username, password);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         console.log("Inicio de sesión exitoso");
-        console.log(data);
         if (rememberMe) {
           localStorage.setItem("rememberedUsername", username);
           localStorage.setItem("rememberedPassword", password);
@@ -73,15 +62,15 @@ const LoginForm = () => {
           localStorage.removeItem("rememberedPassword");
           localStorage.removeItem("rememberMe");
         }
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", response.data.token);
         navigate(`/main/${username}`);
       } else {
         setErrorMessage("Credenciales incorrectas");
         setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      setErrorMessage("Error al conectarse al servidor");
+      console.error("Error al iniciar sesión:", error.message);
+      setErrorMessage(error.message);
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };

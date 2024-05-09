@@ -1,6 +1,6 @@
 import React from "react";
 import NavbarContact from "./NavbarContact";
-import Footer from "../Footer";
+import Footer from "../FooterComponent/Footer";
 
 const AboutContact = () => {
 
