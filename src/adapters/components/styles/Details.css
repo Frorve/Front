@@ -63,13 +63,12 @@
 }
 
 .detail-autor {
-  margin-left: 2%;
   grid-column: 3;
+  overflow-y: auto;
 }
 
 .detail-autor p {
-  margin-top: 0.5%;
-  border: 2px solid rgba(0, 0, 0, 0.2);
+
   width: 80%;
   text-align: center;
   border-radius: 40px;
@@ -79,6 +78,8 @@
   align-items: center;
   line-height: 50px;
   background: white;
+  text-align: center;
+  margin-top: 2%;
 }
 
 .detail-inicio {
@@ -163,6 +164,26 @@
   margin-top: 20%;
 }
 
+.caja2 {
+  margin-top: 0.5%;
+  padding-left: 10%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  width: 80%;
+  text-align: center;
+  border-radius: 40px;
+  height: auto;
+  display: block;
+  overflow-y: auto;
+  justify-content: center;
+  line-height: 50px;
+  background: white;
+}
+
+.caja2 img {
+  padding-right: 20% !important;
+  margin-right: 10% !important;
+}
+
 .detail-colab {
   grid-column: 2;
 }
@@ -188,7 +209,7 @@
   width: 80%;
   text-align: center;
   border-radius: 40px;
-  height: 50px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;

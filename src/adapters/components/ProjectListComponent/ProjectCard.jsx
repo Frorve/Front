@@ -59,7 +59,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "Descarga";
+        link.download = project.nombreArchivo;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

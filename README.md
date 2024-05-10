@@ -10,6 +10,17 @@ React Application Stafko - Beebit | Fran
 
 Este proyecto fue creado con [Create React App](https://github.com/facebook/create-react-app).
 
+## About
+
+Bienvenido a mi aplicación de gestión de proyectos, creada durante el periodo de prácticas en BeeBit en 2024. Esta aplicación te permite administrar proyectos de manera eficiente, colaborar con tu equipo, y gestionar el tiempo con la integración de Clockify.
+
+Funcionalidades destacadas:
+
+- Registro de usuarios y autenticación segura.
+- Subida y gestión de proyectos.
+- Integración con la API de Clockify para registrar tiempo.
+- Posibilidad de añadir colaboradores y clientes a proyectos.
+
 ## Scripts Disponibles
 
 En el directorio del proyecto, Puedes ejecutar:

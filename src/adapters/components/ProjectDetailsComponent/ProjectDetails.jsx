@@ -5,6 +5,7 @@ import Columna1 from "./Columna1";
 import Columna2 from "./Columna2";
 import Columna3 from "./Columna3";
 import Modal from "./Modal";
+import ModalClientes from "./ModalClientes";
 import "../styles/Details.css";
 import axios from "axios";
 import clockify from "../../api/clockify";
@@ -31,9 +32,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [timerDuration, setTimerDuration] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
-  // const [duracionProyecto, setDuracionProyecto] = useState(null);
   const { username } = useParams();
-  // const [projectId, setProjectId] = useState(null);
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -41,14 +40,6 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-  // const convertirSegundosAHorasMinutosSegundos = (duracionSegundos) => {
-  //   const horas = Math.floor(duracionSegundos / 3600);
-  //   const minutos = Math.floor((duracionSegundos % 3600) / 60);
-  //   const segundos = duracionSegundos % 60;
-
-  //   return `${horas} horas ${minutos} minutos ${segundos} segundos`;
-  // };
 
   const handleTaskChange = (event) => {
     setTask(event.target.value);
@@ -59,40 +50,40 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       if (!timerActive) {
         const startTime = new Date().toISOString();
         let projectId;
-        let clientId;
-  
-        if (project.cliente) {
-          const allClientsResponse = await axios.get(
-            `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-              },
-            }
-          );
-  
-          const existingClient = allClientsResponse.data.find(
-            (client) => client.name === project.cliente
-          );
-  
-          if (existingClient) {
-            clientId = existingClient.id;
-          } else {
-            const projectClient = await axios.post(
-              `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
-              { name: project.cliente },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-                },
-              }
-            );
-            clientId = projectClient.data.id;
-          }
-        }
-  
+        // let clientId;
+
+        // if (project.cliente) {
+        //   const allClientsResponse = await axios.get(
+        //     `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
+        //     {
+        //       headers: {
+        //         "Content-Type": "application/json",
+        //         "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+        //       },
+        //     }
+        //   );
+
+        //   const existingClient = allClientsResponse.data.find(
+        //     (client) => client.name === project.cliente
+        //   );
+
+        //   if (existingClient) {
+        //     clientId = existingClient.id;
+        //   } else {
+        //     const projectClient = await axios.post(
+        //       `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/clients`,
+        //       { name: project.cliente },
+        //       {
+        //         headers: {
+        //           "Content-Type": "application/json",
+        //           "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+        //         },
+        //       }
+        //     );
+        //     clientId = projectClient.data.id;
+        //   }
+        // }
+
         const allProjectsResponse = await axios.get(
           `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects`,
           {
@@ -102,11 +93,11 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             },
           }
         );
-  
+
         const existingProject = allProjectsResponse.data.find(
           (p) => p.name === project.nombreProyecto
         );
-  
+
         if (existingProject) {
           projectId = existingProject.id;
         } else {
@@ -122,13 +113,17 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           );
           projectId = projectResponse.data.id;
         }
-  
-        if (projectId && clientId) {
-          const response = await clockify.startTimeEntry(startTime, projectId, clientId, task + " | " + username);
+
+        if (projectId) {
+          const response = await clockify.startTimeEntry(
+            startTime,
+            projectId,
+            // clientId,
+            task + " | " + username
+          );
 
           console.log("Entrada de tiempo iniciada:", response.data);
           console.log("projectId:", projectId);
-          console.log("clientId:", clientId);
           setTimerActive(true);
           const intervalId = setInterval(() => {
             const elapsedTime =
@@ -180,7 +175,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         setTimerActive(false);
         setTimerIntervalId(null);
 
-        const timeData = { time: timerDuration};
+        const timeData = { time: timerDuration };
+        const totalTime = timerDuration + project.time;
+        const totalTimeData = { time: totalTime };
 
         const timeMS = await fetch(
           `${process.env.REACT_APP_BACKEND_URL}/repo/time/${project.id}`,
@@ -189,58 +186,24 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(timeData),
+            body: JSON.stringify(totalTimeData),
           }
         );
 
         if (timeMS.ok) {
           console.log("Tiempo contado:", timerDuration);
+          console.log(project.time);
+          console.log(totalTimeData);
           setTimerDuration(0);
         }
-
       }
     } catch (error) {
       console.error("Error al detener la entrada de tiempo:", error);
     }
   };
 
-  // const obtenerDuracionProyecto = async (projectId) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects/${projectId}`,
-  //       {
-  //         headers: {
-  //           "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
-  //         },
-  //       }
-  //     );
-  //     const duracionTotal = response.data.duration(
-  //       (total, entry) => total + entry.timeInterval.duration,
-  //       0
-  //     );
-
-  //     console.log(duracionTotal);
-  //     return convertirSegundosAHorasMinutosSegundos(duracionTotal);
-  //   } catch (error) {
-  //     console.error(
-  //       "Error al obtener los detalles de las entradas de tiempo del proyecto:",
-  //       error
-  //     );
-  //     return null;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const fetchDuracionProyecto = async () => {
-  //     const duracion = await obtenerDuracionProyecto(projectId);
-  //     setDuracionProyecto(duracion);
-  //   };
-
-  //   fetchDuracionProyecto();
-  // }, [projectId]);
-
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchClientsAll = async () => {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND_URL}/cliente/all`
@@ -256,15 +219,31 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       }
     };
 
-    fetchClients();
+    fetchClientsAll();
   }, []);
 
   useEffect(() => {
-    const storedClients = localStorage.getItem("selectedClients");
-    if (storedClients) {
-      setSelectedClients(JSON.parse(storedClients));
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/repo/clients/${project.id}`
+        );
+        if (response.status === 200) {
+          const clients = response.data.map((name, index) => ({
+            id: index + 1,
+            nombre: name,
+          }));
+          setSelectedClients(clients);
+        }
+      } catch (error) {
+        console.error("Error fetching collaborators:", error);
+      }
+    };
+
+    if (project.id) {
+      fetchClients();
     }
-  }, []);
+  }, [project.id]);
 
   const handleSelectClient = (client) => {
     if (!selectedClients.some((selected) => selected.id === client.id)) {
@@ -290,8 +269,6 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     );
     setSelectedClients(updatedClients);
     localStorage.setItem("selectedClients", JSON.stringify(updatedClients));
-
-    console.log("Cliente a eliminar:", client);
 
     try {
       const response = await fetch(
@@ -406,7 +383,8 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             />
           </svg>
           <span>
-            <strong>¡Atención!</strong> La fecha de finalización del proyecto está cerca
+            <strong>¡Atención!</strong> La fecha de finalización del proyecto
+            está cerca
           </span>
         </div>
       );
@@ -414,7 +392,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       return null;
     }
   };
-  
+
   useEffect(() => {
     const fetchStaff = async () => {
       try {
@@ -587,9 +565,10 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         onEdit={onEdit}
         onDelete={onDelete}
         renderProjectStatus={renderProjectStatus}
+        selectedClients={selectedClients}
       />
 
-      <Modal
+      <ModalClientes
         id="modal-client"
         title="Clientes"
         searchQuery={searchQueryClients}

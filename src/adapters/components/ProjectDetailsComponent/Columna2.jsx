@@ -16,7 +16,6 @@ const Columna2 = ({ selectedCollaborators }) => {
                   />
                 </div>
                 <span>{staff.nombre}</span>
-                {/* <button id="remove-colab" className="btn btn-sm btn-circle btn-error">✕</button> */}
               </p>
             ))}
           </div>

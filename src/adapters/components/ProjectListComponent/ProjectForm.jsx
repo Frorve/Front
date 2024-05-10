@@ -8,6 +8,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFinalizacion, setFechaFinalizacion] = useState("");
   const [file, setFile] = useState(null);
+  const [archivoName, setArchivoName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [ProjectCreatedMessage, setProjectCreatedMessage] = useState("");
 
@@ -41,6 +42,8 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
+    setFile(selectedFile);
+    setArchivoName(selectedFile.name);
   };
 
   const obtenerFechaActual = () => {
@@ -65,6 +68,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("fechaInicio", fechaInicio);
     formData.append("fechaFinalizacion", fechaFinalizacion);
     formData.append("autor", username);
+    formData.append("nombreArchivo", archivoName)
     formData.append("archivo", file);
 
     try {

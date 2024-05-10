@@ -6,15 +6,15 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     nombreProyecto: project.nombreProyecto,
     descripcion: project.descripcion,
     fechaFinalizacion: project.fechaFinalizacion,
-    archivo: project.archivo, 
   });
 
   const handleChange = (event) => {
     const { name, value, files } = event.target;
-    if (files) {
+    if (files && files.length > 0) {
       setEditedProject({
         ...editedProject,
-        [name]: files[0], 
+        archivo: files[0],
+        archivoName: files[0].name,
       });
     } else {
       setEditedProject({
@@ -31,8 +31,12 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
       formData.append("nombreProyecto", editedProject.nombreProyecto);
       formData.append("descripcion", editedProject.descripcion);
       formData.append("fechaFinalizacion", editedProject.fechaFinalizacion);
-      formData.append("archivo", editedProject.archivo); 
 
+      if (editedProject.archivo) {
+        formData.append("archivo", editedProject.archivo);
+        formData.append("nombreArchivo", editedProject.archivoName);
+      }
+  
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
         {
@@ -108,6 +112,11 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
             onChange={handleChange}
             placeholder="Archivos a subir"
           />
+          <div className="actually">
+              {project.nombreArchivo && (
+      <p>Archivo actual: {project.nombreArchivo}</p>
+    )}
+    </div>
         </div>
       </div>
           {userCreatedMessage && (

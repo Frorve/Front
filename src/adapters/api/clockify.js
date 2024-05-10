@@ -66,10 +66,29 @@ export const startTimeEntry = async (startTime, projectId, clientId, description
     }
   };
 
+  export const fetchAllProjects = async () => {
+    try {
+      const allProjectsResponse = await axios.get(
+        `https://api.clockify.me/api/v1/workspaces/${process.env.REACT_APP_WORKSPACE_CLOCKIFY}/projects`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Api-Key": process.env.REACT_APP_CLOCKIFY_API_KEY,
+          },
+        }
+      );
+      return allProjectsResponse.data;
+    } catch (error){
+      console.error("Error fetching all projects:", error);
+      throw error;
+    }
+  };
+
 
 export default {
   fetchAllClients,
   createClient,
   startTimeEntry,
   createProject,
+  fetchAllProjects,
 };
