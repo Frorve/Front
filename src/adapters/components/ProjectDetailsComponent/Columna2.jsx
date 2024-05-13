@@ -25,7 +25,7 @@ const Columna2 = ({ selectedCollaborators }) => {
       </div>
       <div className="detail-colab">
         <button
-          className="btn btn-neutral"
+          className="btn"
           onClick={() => document.getElementById("modal").showModal()}
         >
           Añadir/Eliminar colaboradores

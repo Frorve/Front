@@ -69,8 +69,8 @@ const Columna3 = ({
                 </div>
                 <span>{cliente.nombre}</span>
               </p>
-          ))}
-        </div>
+            ))}
+          </div>
         ) : (
           <p>No hay cliente asociado</p>
         )}

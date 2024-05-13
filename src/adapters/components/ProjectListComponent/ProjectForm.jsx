@@ -12,7 +12,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [ProjectCreatedMessage, setProjectCreatedMessage] = useState("");
 
-  const handleProjectoChange = (event) => {   
+  const handleProjectoChange = (event) => {
     setNombreProyecto(event.target.value);
   };
 
@@ -33,9 +33,11 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     const nuevaFechaFinalizacion = event.target.value;
 
     if (nuevaFechaFinalizacion >= fechaInicio) {
-      setFechaFinalizacion(nuevaFechaFinalizacion); 
+      setFechaFinalizacion(nuevaFechaFinalizacion);
     } else {
-      alert('La fecha de finalización no puede ser anterior a la fecha de inicio.');
+      alert(
+        "La fecha de finalización no puede ser anterior a la fecha de inicio."
+      );
     }
   };
 
@@ -49,8 +51,8 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const obtenerFechaActual = () => {
     const fechaActual = new Date();
     const year = fechaActual.getFullYear();
-    const month = String(fechaActual.getMonth() + 1).padStart(2, '0');
-    const day = String(fechaActual.getDate()).padStart(2, '0');
+    const month = String(fechaActual.getMonth() + 1).padStart(2, "0");
+    const day = String(fechaActual.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -68,7 +70,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     formData.append("fechaInicio", fechaInicio);
     formData.append("fechaFinalizacion", fechaFinalizacion);
     formData.append("autor", username);
-    formData.append("nombreArchivo", archivoName)
+    formData.append("nombreArchivo", archivoName);
     formData.append("archivo", file);
 
     try {

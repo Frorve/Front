@@ -46,16 +46,12 @@ const Forget = () => {
         setUserCreatedMessage("Usuario creado correctamente");
         setTimeout(() => setUserCreatedMessage(""), 5000);
       } else {
-        setErrorMessage(
-          "Error"
-        );
+        setErrorMessage("Error");
         setTimeout(() => setErrorMessage(""), 5000);
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        setErrorMessage(
-          "Error"
-        );
+        setErrorMessage("Error");
         console.error("Error al crear usuario:", error.message);
         setTimeout(() => setErrorMessage(""), 5000);
       }
@@ -90,7 +86,7 @@ const Forget = () => {
             />
             <GrMail className="icon" />
           </div>
-          
+
           {errorMessage && (
             <div role="alert" className="alert alert-error">
               <svg

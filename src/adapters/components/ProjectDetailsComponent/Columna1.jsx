@@ -2,9 +2,16 @@ import React from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import Message from "./Message";
 
-
-const Columna1 = ({ project, handleTaskChange, handleStartTimer, handleStopTimer, timerDuration, formatTime, errorMessage, successMessage }) => {
-    
+const Columna1 = ({
+  project,
+  handleTaskChange,
+  handleStartTimer,
+  handleStopTimer,
+  timerDuration,
+  formatTime,
+  errorMessage,
+  successMessage,
+}) => {
   return (
     <div className="columa1">
       <div className="detail-nombre">
@@ -60,7 +67,9 @@ const Columna1 = ({ project, handleTaskChange, handleStartTimer, handleStopTimer
           <br />
           <br />
           {errorMessage && <Message type="error" message={errorMessage} />}
-          {successMessage && <Message type="success" message={successMessage} />}
+          {successMessage && (
+            <Message type="success" message={successMessage} />
+          )}
           <button
             id="timer"
             className="btn btn-success"

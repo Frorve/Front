@@ -50,7 +50,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       if (!timerActive) {
         const startTime = new Date().toISOString();
         let projectId;
-        // let clientId;
+        let clientId;
 
         // if (project.cliente) {
         //   const allClientsResponse = await axios.get(
@@ -118,7 +118,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           const response = await clockify.startTimeEntry(
             startTime,
             projectId,
-            // clientId,
+            clientId,
             task + " | " + username
           );
 

@@ -27,7 +27,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const formData = new FormData(); 
+      const formData = new FormData();
       formData.append("nombreProyecto", editedProject.nombreProyecto);
       formData.append("descripcion", editedProject.descripcion);
       formData.append("fechaFinalizacion", editedProject.fechaFinalizacion);
@@ -36,12 +36,12 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
         formData.append("archivo", editedProject.archivo);
         formData.append("nombreArchivo", editedProject.archivoName);
       }
-  
+
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
         {
           method: "PUT",
-          body: formData, 
+          body: formData,
         }
       );
 
@@ -61,7 +61,9 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     <div className="editar">
       <form onSubmit={handleSubmit}>
         <div className="edit">
-          <h1><strong>Editar Proyecto</strong></h1>
+          <h1>
+            <strong>Editar Proyecto</strong>
+          </h1>
           <div className="input-box">
             <div className="info-box">
               <span>Nombre:</span>
@@ -104,21 +106,21 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
             </div>
           </div>
           <div className="input-box">
-        <div className="info-box">
-          <span>Archivos:</span>
-          <input
-            type="file"
-            name="archivo"
-            onChange={handleChange}
-            placeholder="Archivos a subir"
-          />
-          <div className="actually">
-              {project.nombreArchivo && (
-      <p>Archivo actual: {project.nombreArchivo}</p>
-    )}
-    </div>
-        </div>
-      </div>
+            <div className="info-box">
+              <span>Archivos:</span>
+              <input
+                type="file"
+                name="archivo"
+                onChange={handleChange}
+                placeholder="Archivos a subir"
+              />
+              <div className="actually">
+                {project.nombreArchivo && (
+                  <p>Archivo actual: {project.nombreArchivo}</p>
+                )}
+              </div>
+            </div>
+          </div>
           {userCreatedMessage && (
             <div role="alert" className="alert alert-success">
               <svg

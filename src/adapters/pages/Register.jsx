@@ -26,10 +26,19 @@ const Register = () => {
     setMail(event.target.value);
   };
 
-  const handleSubmit = async (username, mail, password, setUsername, setMail, setPassword, setUserCreatedMessage, setErrorMessage) => {
+  const handleSubmit = async (
+    username,
+    mail,
+    password,
+    setUsername,
+    setMail,
+    setPassword,
+    setUserCreatedMessage,
+    setErrorMessage
+  ) => {
     try {
       const response = await api.registerUser(username, mail, password);
-  
+
       if (response.status === 200) {
         console.log("Usuario creado exitosamente");
         setUsername("");

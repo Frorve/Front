@@ -33,7 +33,7 @@
   width: 80%;
   text-align: center;
   border-radius: 40px;
-  height: 50px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,11 +68,10 @@
 }
 
 .detail-autor p {
-
   width: 80%;
   text-align: center;
   border-radius: 40px;
-  height: 50px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -95,7 +94,7 @@
 .detail-fin {
   margin-top: 5%;
   margin-left: 2%;
-  height: 50px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,7 +107,7 @@
   width: 270%;
   text-align: center;
   border-radius: 40px;
-  height: 50px;
+  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,19 +168,15 @@
   padding-left: 10%;
   border: 2px solid rgba(0, 0, 0, 0.2);
   width: 80%;
-  text-align: center;
   border-radius: 40px;
   height: auto;
   display: block;
-  overflow-y: auto;
-  justify-content: center;
-  line-height: 50px;
   background: white;
 }
 
 .caja2 img {
   padding-right: 20% !important;
-  margin-right: 10% !important;
+  padding-bottom: 10% !important;
 }
 
 .detail-colab {
@@ -194,13 +189,12 @@
   align-items: center;
   text-align: center;
   margin-top: 5%;
-  margin-left: 15%;
+  margin-left: 17%;
 }
 
 .detail-archivo {
   grid-column: 3;
   margin-top: 5%;
-  margin-left: 2%;
 }
 
 .detail-archivo p {
@@ -219,7 +213,7 @@
 
 .project-actions {
   grid-column: 1;
-  margin-left: 7%;
+  margin-left: 13%;
   margin-top: 5%;
 }
 
@@ -261,7 +255,7 @@
   width: 250px;
   margin-bottom: 1%;
   margin-top: 5%;
-  margin-left: 15%;
+  margin-left: 20%;
 }
 
 .project-details #down:hover {
@@ -292,7 +286,6 @@
     padding: 10px;
     justify-content: center;
     align-items: center;
-
   }
 }
 
@@ -332,7 +325,7 @@ li {
 
 #modal-cliente {
   margin-top: 5%;
-  margin-left: 26%;
+  margin-left: 27%;
 }
 
 .search-results {
@@ -341,7 +334,7 @@ li {
 
 #clock {
   margin-top: 3%;
-  margin-left: 12%;
+  margin-left: 15%;
 }
 
 #time {

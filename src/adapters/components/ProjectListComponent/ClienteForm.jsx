@@ -1,77 +1,77 @@
 import React, { useState } from "react";
 
 const ClienteForm = ({ onSubmit, onCancel }) => {
-    const [clientename, setClienteNombre] = useState("");
-    const [clientecif, setClienteCif] = useState("");
-    const [clientecorreo, setClienteCorreo] = useState("");
-    const [clientetelefono, setClienteTelefono] = useState("");
-    const [clienteweb, setClienteWeb] = useState("");
+  const [clientename, setClienteNombre] = useState("");
+  const [clientecif, setClienteCif] = useState("");
+  const [clientecorreo, setClienteCorreo] = useState("");
+  const [clientetelefono, setClienteTelefono] = useState("");
+  const [clienteweb, setClienteWeb] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [ProjectClienteMessage, setClienteCreatedMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [ProjectClienteMessage, setClienteCreatedMessage] = useState("");
 
-    const handleClienteNameChange = (event) => {
-        setClienteNombre(event.target.value);
+  const handleClienteNameChange = (event) => {
+    setClienteNombre(event.target.value);
+  };
+
+  const handleClienteCifChange = (event) => {
+    setClienteCif(event.target.value);
+  };
+
+  const handleClienteCorreoChange = (event) => {
+    setClienteCorreo(event.target.value);
+  };
+
+  const handleClienteTelefonoChange = (event) => {
+    setClienteTelefono(event.target.value);
+  };
+
+  const handleClienteWebChange = (event) => {
+    setClienteWeb(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const clienteData = {
+      nombre: clientename,
+      cif: clientecif,
+      correoElectronico: clientecorreo,
+      telefono: clientetelefono,
+      web: clienteweb,
     };
 
-    const handleClienteCifChange = (event) => {
-        setClienteCif(event.target.value);
-    };
-
-    const handleClienteCorreoChange = (event) => {
-        setClienteCorreo(event.target.value);
-    };
-
-    const handleClienteTelefonoChange = (event) => {
-        setClienteTelefono(event.target.value);
-    };
-
-    const handleClienteWebChange = (event) => {
-        setClienteWeb(event.target.value);
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-      
-        const clienteData = {
-          nombre: clientename,
-          cif: clientecif,
-          correoElectronico: clientecorreo,
-          telefono: clientetelefono,
-          web: clienteweb
-        };
-      
-        try {
-          const response = await fetch(
-            `${process.env.REACT_APP_BACKEND_URL}/cliente`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json" 
-              },
-              body: JSON.stringify(clienteData)
-            }
-          );
-      
-          if (response.ok) {
-            console.log("Cliente creado exitosamente");
-            setClienteCif("");
-            setClienteNombre("");
-            setClienteCorreo("");
-            setClienteTelefono("");
-            setClienteWeb("");
-            onSubmit();
-            setClienteCreatedMessage("¡Cliente creado!");
-          } else {
-            throw new Error("Error al crear cliente");
-          }
-        } catch (error) {
-          console.error("Error al crear cliente:", error);
-          setErrorMessage("Error al crear el cliente");
-          setTimeout(() => setErrorMessage(""), 5000);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/cliente`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(clienteData),
         }
-      };
-      
+      );
+
+      if (response.ok) {
+        console.log("Cliente creado exitosamente");
+        setClienteCif("");
+        setClienteNombre("");
+        setClienteCorreo("");
+        setClienteTelefono("");
+        setClienteWeb("");
+        onSubmit();
+        setClienteCreatedMessage("¡Cliente creado!");
+      } else {
+        throw new Error("Error al crear cliente");
+      }
+    } catch (error) {
+      console.error("Error al crear cliente:", error);
+      setErrorMessage("Error al crear el cliente");
+      setTimeout(() => setErrorMessage(""), 5000);
+    }
+  };
+
   return (
     <form className="formulario" onSubmit={handleSubmit}>
       <h1>Nuevo cliente</h1>
@@ -172,5 +172,4 @@ const ClienteForm = ({ onSubmit, onCancel }) => {
   );
 };
 
-
-export default ClienteForm
+export default ClienteForm;
