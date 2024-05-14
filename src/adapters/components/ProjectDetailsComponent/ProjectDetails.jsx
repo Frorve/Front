@@ -226,7 +226,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchClients = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/clients/${project.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/items/repo/${project.id}?fields=cliente`
         );
         if (response.status === 200) {
           const clients = response.data.map((name, index) => ({

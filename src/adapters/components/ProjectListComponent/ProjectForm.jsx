@@ -44,7 +44,6 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
-    setFile(selectedFile);
     setArchivoName(selectedFile.name);
   };
 
@@ -56,6 +55,23 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     return `${year}-${month}-${day}`;
   };
 
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/files`, {
+      method: "POST",
+      body: formData,
+    });
+  
+    if (!response.ok) {
+      throw new Error("Error al subir el archivo");
+    }
+  
+    const data = await response.json();
+    return data.data.id; // UUID del archivo subido
+  };
+
   useEffect(() => {
     const fechaActual = obtenerFechaActual();
     setFechaInicio(fechaActual);
@@ -64,23 +80,29 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("nombreProyecto", projectname);
-    formData.append("descripcion", description);
-    formData.append("fechaInicio", fechaInicio);
-    formData.append("fechaFinalizacion", fechaFinalizacion);
-    formData.append("autor", username);
-    formData.append("nombreArchivo", archivoName);
-    formData.append("archivo", file);
-
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${username}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      let archivoUUID = null;
+      if (file) {
+        archivoUUID = await uploadFile(file);
+      }
+
+      const projectData = {
+        nombreProyecto: projectname,
+        descripcion: description,
+        fechaInicio: fechaInicio,
+        fechaFinalizacion: fechaFinalizacion,
+        autor: username,
+        nombreArchivo: archivoName,
+        archivo: archivoUUID,
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+      });
 
       if (response.ok) {
         console.log("Proyecto creado exitosamente");

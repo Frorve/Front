@@ -43,7 +43,7 @@ const ClienteForm = ({ onSubmit, onCancel }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/cliente`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente`,
         {
           method: "POST",
           headers: {

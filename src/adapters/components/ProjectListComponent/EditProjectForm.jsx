@@ -24,24 +24,48 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     }
   };
 
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("http://localhost:8055/files", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al subir el archivo");
+    }
+
+    const data = await response.json();
+    return data.data.id; // UUID del archivo subido
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("nombreProyecto", editedProject.nombreProyecto);
-      formData.append("descripcion", editedProject.descripcion);
-      formData.append("fechaFinalizacion", editedProject.fechaFinalizacion);
 
+    try {
+      let archivoUUID = project.archivo; // Usar el UUID existente si no hay un archivo nuevo
       if (editedProject.archivo) {
-        formData.append("archivo", editedProject.archivo);
-        formData.append("nombreArchivo", editedProject.archivoName);
+        archivoUUID = await uploadFile(editedProject.archivo);
       }
 
+      const projectData = {
+        nombreProyecto: editedProject.nombreProyecto,
+        descripcion: editedProject.descripcion,
+        fechaFinalizacion: editedProject.fechaFinalizacion,
+        nombreArchivo: editedProject.archivoName,
+        archivo: archivoUUID,
+      };
+
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/items/repo/${project.id}`,
         {
-          method: "PUT",
-          body: formData,
+          method: "PATCH", // Usar PATCH en lugar de PUT para actualizaciones parciales
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(projectData),
         }
       );
 

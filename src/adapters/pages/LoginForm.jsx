@@ -49,9 +49,21 @@ const LoginForm = () => {
     event.preventDefault();
 
     try {
-      const response = await api.loginUser(username, password);
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: username,
+            password: password
+          }),
+        }
+      );
 
-      if (response.status === 200) {
+      if (response.ok) {
         console.log("Inicio de sesión exitoso");
         if (rememberMe) {
           localStorage.setItem("rememberedUsername", username);

@@ -11,8 +11,8 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
-  const [errorMessage] = useState("");
-  const [userCreatedMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userCreatedMessage, setUserCreatedMessage ] = useState("");
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -26,20 +26,26 @@ const Register = () => {
     setMail(event.target.value);
   };
 
-  const handleSubmit = async (
-    username,
-    mail,
-    password,
-    setUsername,
-    setMail,
-    setPassword,
-    setUserCreatedMessage,
-    setErrorMessage
-  ) => {
-    try {
-      const response = await api.registerUser(username, mail, password);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-      if (response.status === 200) {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: username,
+            password: password,
+            correoElectronico: mail
+          }),
+        }
+      );
+
+      if (response.ok) {
         console.log("Usuario creado exitosamente");
         setUsername("");
         setMail("");
