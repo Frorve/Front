@@ -58,16 +58,16 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
   const uploadFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-  
+
     const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/files`, {
       method: "POST",
       body: formData,
     });
-  
+
     if (!response.ok) {
       throw new Error("Error al subir el archivo");
     }
-  
+
     const data = await response.json();
     return data.data.id; // UUID del archivo subido
   };
@@ -96,10 +96,13 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         archivo: archivoUUID,
       };
 
+      const token = localStorage.getItem("authToken");
+
       const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, 
         },
         body: JSON.stringify(projectData),
       });
@@ -115,11 +118,12 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         setProjectCreatedMessage("¡Proyecto creado!");
         window.location.reload();
       } else {
-        throw new Error("Error al crear proyecto");
+        const errorData = await response.json();
+        throw new Error(errorData.errors[0].message || "Error al crear proyecto");
       }
     } catch (error) {
       console.error("Error al crear proyecto:", error);
-      setErrorMessage("Error al crear el proyecto");
+      setErrorMessage(error.message);
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };

@@ -33,25 +33,39 @@ const Columna3 = ({
         if (!project.id) {
           return;
         }
-
+  
         if (!project.time) {
           setProjectTime("00:00:00");
         }
-
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/search/${project.id}`
+  
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=time`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            },
+          }
         );
-        const formattedTime = formatTime(response.data.time);
-        setProjectTime(formattedTime);
-        console.log("Tiempo del proyecto:", response.data.time);
-        console.log(project.id);
+  
+        if (response.ok) {
+          const responseData = await response.json();
+          const time = responseData.data.time;
+          const formattedTime = formatTime(time);
+          setProjectTime(formattedTime);
+          console.log("Tiempo del proyecto:", time);
+          console.log(project.id);
+        } else {
+          console.error("Error al obtener el tiempo del proyecto. Código de estado:", response.status);
+        }
       } catch (error) {
         console.error("Error al obtener el tiempo del proyecto:", error);
       }
     };
-
+  
     fetchProjectTime();
   }, [project.id]);
+  
 
   return (
     <div className="columna3">

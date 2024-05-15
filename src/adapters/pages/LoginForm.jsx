@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../components/styles/LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
+import { GrMail } from "react-icons/gr";
 import { AiFillEye } from "react-icons/ai";
 import logo from "../../assets/logo.png";
 import Footer from "../components/FooterComponent/Footer";
-import * as api from "../api/api";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [mail, setMail] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showEyeIcon, setShowEyeIcon] = useState(false);
@@ -37,6 +38,10 @@ const LoginForm = () => {
     setPassword(event.target.value);
   };
 
+  const handleMailChange = (event) => {
+    setMail(event.target.value);
+  };
+
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -48,44 +53,133 @@ const LoginForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const loginData = {
+      email: mail,
+      password: password,
+    };
+
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/users`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nombre: username,
-            password: password
-          }),
-        }
-      );
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
 
       if (response.ok) {
-        console.log("Inicio de sesión exitoso");
-        if (rememberMe) {
-          localStorage.setItem("rememberedUsername", username);
-          localStorage.setItem("rememberedPassword", password);
-          localStorage.setItem("rememberMe", "true");
+        const data = await response.json();
+        const token = data.data.access_token;
+        const refreshToken = data.data.refresh_token;
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("refreshToken", refreshToken);
+        console.log(token);
+
+        const userResponse = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          const firstName = userData.data.first_name;
+
+          localStorage.setItem("username", firstName);
+
+          if (rememberMe) {
+            localStorage.setItem("rememberedUsername", username);
+            localStorage.setItem("rememberedPassword", password);
+            localStorage.setItem("rememberMe", "true");
+          } else {
+            localStorage.removeItem("rememberedUsername");
+            localStorage.removeItem("rememberedPassword");
+            localStorage.removeItem("rememberMe");
+          }
+
+          navigate(`/main/${firstName}`);
         } else {
-          localStorage.removeItem("rememberedUsername");
-          localStorage.removeItem("rememberedPassword");
-          localStorage.removeItem("rememberMe");
+          throw new Error("Error al obtener información del usuario");
         }
-        localStorage.setItem("token", response.data.token);
-        navigate(`/main/${username}`);
       } else {
-        setErrorMessage("Credenciales incorrectas");
-        setTimeout(() => setErrorMessage(""), 5000);
+        throw new Error("Credenciales incorrectas");
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error.message);
+      console.error("Error al iniciar sesión:", error);
       setErrorMessage(error.message);
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };
+
+  const refreshToken = async () => {
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+    if (!storedRefreshToken) {
+      throw new Error("No hay refresh token disponible");
+    }
+
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refresh_token: storedRefreshToken }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const newToken = data.data.access_token;
+      const newRefreshToken = data.data.refresh_token;
+      localStorage.setItem("authToken", newToken);
+      localStorage.setItem("refreshToken", newRefreshToken);
+      return newToken;
+    } else {
+      throw new Error("No se pudo refrescar el token");
+    }
+  };
+
+  useEffect(() => {
+    const checkAndRefreshToken = async () => {
+      const storedToken = localStorage.getItem("authToken");
+      if (!storedToken) return;
+
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          const firstName = userData.data.first_name;
+          localStorage.setItem("username", firstName);
+          navigate(`/main/${firstName}`);
+        } else {
+          const newToken = await refreshToken();
+          const userResponse = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/users/me`, {
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            const firstName = userData.data.first_name;
+            localStorage.setItem("username", firstName);
+            navigate(`/main/${firstName}`);
+          } else {
+            throw new Error("Error al obtener información del usuario");
+          }
+        }
+      } catch (error) {
+        console.error("Error al verificar o refrescar el token:", error);
+        setErrorMessage(error.message);
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
+    };
+
+    checkAndRefreshToken();
+  }, [navigate]);
 
   return (
     <div>
@@ -93,16 +187,27 @@ const LoginForm = () => {
         <img className="logo" src={logo} alt="" />
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
-          <div className="input-box">
+          {/* <div className="input-box">
             <input
               type="text"
               placeholder="Usuario"
               value={username}
               onChange={handleUsernameChange}
               maxLength={30}
-              required
+              
             />
             <FaUser className="icon" />
+          </div> */}
+          <div className="input-box">
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={mail}
+              onChange={handleMailChange}
+              maxLength={30}
+              required
+            />
+            <GrMail className="icon" />
           </div>
           <div className="input-box">
             <input

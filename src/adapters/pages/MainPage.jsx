@@ -13,69 +13,71 @@ const MainPage = () => {
   const [repos, setRepos] = useState([]);
   const [expandedProjectId, setExpandedProjectId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
   const [showClienteForm, setShowClienteForm] = useState(false);
   const [showProjectList, setShowProjectList] = useState(true);
 
-  useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const currentUserResponse = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/${username}`
-        );
-        if (currentUserResponse.ok) {
-          const currentUserData = await currentUserResponse.json();
-          setCurrentUser(currentUserData);
+useEffect(() => {
+  const fetchRepos = async () => {
+    try {
+      const currentUserPromise = fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"autor":{"_eq":"${username}"}}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
         }
+      );
 
-        const collaboratorResponse = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/collaborator-repos/${username}`
-        );
-        if (collaboratorResponse.ok) {
-          const collaboratorData = await collaboratorResponse.json();
-          setRepos((prevRepos) => {
-            const currentRepoIds = prevRepos.map((repo) => repo.id);
-            const newCollabRepos = collaboratorData.filter(
-              (collabRepo) => !currentRepoIds.includes(collabRepo.id)
-            );
-            return [...prevRepos, ...newCollabRepos];
-          });
+      const collaboratorPromise = fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_eq":"${username}"}}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
         }
-      } catch (error) {
-        console.error("Error fetching repos:", error);
+      );
+
+      // Espera a que ambas promesas se resuelvan
+      const [currentUserResponse, collaboratorResponse] = await Promise.all([
+        currentUserPromise,
+        collaboratorPromise,
+      ]);
+
+      let repos = [];
+
+      if (currentUserResponse.ok) {
+        const currentUserData = await currentUserResponse.json();
+        const currentUserRepos = currentUserData.data;
+        console.log(currentUserRepos);
+        // Agrega los repositorios del usuario
+        repos = [...repos, ...currentUserRepos];
       }
-    };
 
-    fetchRepos();
-  }, [username]);
+      if (collaboratorResponse.ok) {
+        const collaboratorDataResponse = await collaboratorResponse.json();
+        const collaboratorRepos = collaboratorDataResponse.data;
+        console.log(collaboratorRepos);
+        // Filtra los repositorios de colaboradores para eliminar duplicados
+        const uniqueCollaboratorRepos = collaboratorRepos.filter((collabRepo) =>
+          repos.every((repo) => repo.id !== collabRepo.id)
+        );
+        // Agrega los repositorios de colaboradores sin duplicados
+        repos = [...repos, ...uniqueCollaboratorRepos];
+      }
 
-  useEffect(() => {
-    if (currentUser) {
-      const fetchRepos = async () => {
-        try {
-          const response = await fetch(
-            `${process.env.REACT_APP_BACKEND_URL}/repo/${username}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setRepos((prevRepos) => {
-              const currentRepoIds = new Set(prevRepos.map((repo) => repo.id));
-              const newData = data.filter(
-                (repo) => !currentRepoIds.has(repo.id)
-              );
-              return [...prevRepos, ...newData];
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching repos:", error);
-        }
-      };
-
-      fetchRepos();
+      // Actualiza el estado repos
+      setRepos(repos);
+    } catch (error) {
+      console.error('Error fetching repos:', error);
     }
-  }, [currentUser, username]);
+  };
 
-  const handleSearchChangeVar = async (event) => {
+  fetchRepos();
+}, [username]);
+
+  const handleSearchChangeVar = (event) => {
     const searchTerm = event.target.value;
     setSearchQuery(searchTerm);
   };

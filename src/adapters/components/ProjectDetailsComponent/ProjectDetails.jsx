@@ -180,11 +180,12 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         const totalTimeData = { time: totalTime };
 
         const timeMS = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/time/${project.id}`,
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=time`,
           {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
             },
             body: JSON.stringify(totalTimeData),
           }
@@ -226,7 +227,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchClients = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/items/repo/${project.id}?fields=cliente`
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`
         );
         if (response.status === 200) {
           const clients = response.data.map((name, index) => ({
@@ -397,7 +398,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchStaff = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/staff`
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/staff`
         );
         if (response.ok) {
           const data = await response.json();

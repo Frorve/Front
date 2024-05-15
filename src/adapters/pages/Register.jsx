@@ -31,16 +31,17 @@ const Register = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/users`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/users`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            nombre: username,
+            first_name: username,
+            role: "370eb339-094e-478f-bd1d-a0f2cc032a45",
             password: password,
-            correoElectronico: mail
+            email: mail
           }),
         }
       );
@@ -77,7 +78,7 @@ const Register = () => {
           <h1>Crear Cuenta</h1>
           <div className="input-box">
             <input
-              type="text"
+              type="username"
               placeholder="Nombre de usuario"
               value={username}
               onChange={handleUsernameChange}

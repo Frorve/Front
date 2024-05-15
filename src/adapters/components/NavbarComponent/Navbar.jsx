@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.png";
 
 const Navbar = ({
@@ -8,6 +8,18 @@ const Navbar = ({
   handleSearchChangeVar,
   handleClienteFormToggle,
 }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
+    localStorage.removeItem("rememberedUsername");
+    localStorage.removeItem("rememberedPassword");
+    localStorage.removeItem("rememberMe");
+    navigate("/login");
+  };
+
   return (
     <div id="nav" className="navbar bg-base-100">
       <div className="flex-1">
@@ -64,9 +76,9 @@ const Navbar = ({
           </div>
         </button>
         <div className="navbar-end">
-          <Link to="/login" className="btn btn-error">
+          <button className="btn btn-error" onClick={handleLogout}>
             Cerrar sesión
-          </Link>
+          </button>
         </div>
       </div>
     </div>

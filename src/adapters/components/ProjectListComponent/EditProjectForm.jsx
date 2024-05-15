@@ -28,7 +28,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("http://localhost:8055/files", {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/files`, {
       method: "POST",
       body: formData,
     });
@@ -38,14 +38,14 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     }
 
     const data = await response.json();
-    return data.data.id; // UUID del archivo subido
+    return data.data.id;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      let archivoUUID = project.archivo; // Usar el UUID existente si no hay un archivo nuevo
+      let archivoUUID = project.archivo;
       if (editedProject.archivo) {
         archivoUUID = await uploadFile(editedProject.archivo);
       }
@@ -59,11 +59,12 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
       };
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/items/repo/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}`,
         {
-          method: "PATCH", // Usar PATCH en lugar de PUT para actualizaciones parciales
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
           },
           body: JSON.stringify(projectData),
         }
