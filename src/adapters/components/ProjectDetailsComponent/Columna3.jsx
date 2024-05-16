@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiDownload } from "react-icons/fi";
-import axios from "axios";
 
 const Columna3 = ({
   project,

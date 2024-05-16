@@ -5,14 +5,13 @@ import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import Footer from "../components/FooterComponent/Footer";
-import * as api from "../api/api";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [userCreatedMessage, setUserCreatedMessage ] = useState("");
+  const [userCreatedMessage, setUserCreatedMessage] = useState("");
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -41,7 +40,7 @@ const Register = () => {
             first_name: username,
             role: "370eb339-094e-478f-bd1d-a0f2cc032a45",
             password: password,
-            email: mail
+            email: mail,
           }),
         }
       );
@@ -53,11 +52,30 @@ const Register = () => {
         setPassword("");
         setUserCreatedMessage("Usuario creado correctamente");
         setTimeout(() => setUserCreatedMessage(""), 5000);
-      } else {
-        setErrorMessage(
-          "El nombre de usuario o correo electrónico ya están en uso"
+
+        const responseStaff = await fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/staff`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              nombre: username,
+              cargo: "Staff",
+              correoElectronico: mail,
+            }),
+          }
         );
-        setTimeout(() => setErrorMessage(""), 5000);
+
+        if (responseStaff.ok) {
+          console.log("Operación añadir Staff realizada con éxito");
+        } else {
+          console.error(
+            "Error en la operación de añadir a Staff:",
+            responseStaff.statusText
+          );
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {

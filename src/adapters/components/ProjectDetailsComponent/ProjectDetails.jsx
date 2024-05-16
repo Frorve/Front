@@ -185,7 +185,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
             body: JSON.stringify(totalTimeData),
           }
@@ -207,11 +207,18 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchClientsAll = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/cliente/all`
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente?fields=nombre`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
         );
         if (response.ok) {
           const data = await response.json();
-          setSearchResultsClients(data);
+          console.log(data.data);
+          setSearchResultsClients(data.data);
         } else {
           console.error("Error fetching clients:", response.statusText);
         }
@@ -226,18 +233,33 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
         );
-        if (response.status === 200) {
-          const clients = response.data.map((name, index) => ({
-            id: index + 1,
-            nombre: name,
-          }));
-          setSelectedClients(clients);
+
+        if (response.ok) {
+          const data = await response.json();
+          const client = data.data.cliente;
+          if (typeof client === "string") {
+            const clientsArray = client.split(",").map((name, index) => ({
+              id: index + 1,
+              nombre: name.trim(), // Elimina espacios en blanco alrededor del nombre
+            }));
+            setSelectedClients(clientsArray);
+          } else {
+            console.error("Data is not a string:", client);
+          }
+        } else {
+          console.error("Error fetching client:", response.statusText);
         }
       } catch (error) {
-        console.error("Error fetching collaborators:", error);
+        console.error("Error fetching client:", error);
       }
     };
 
@@ -270,47 +292,30 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     );
     setSelectedClients(updatedClients);
     localStorage.setItem("selectedClients", JSON.stringify(updatedClients));
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${client.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) {
-        console.log("Cliente eliminado correctamente de la base de datos");
-      } else {
-        console.error(
-          "Error al eliminar cliente de la base de datos:",
-          response.statusText
-        );
-        setErrorMessage("Error al eliminar cliente de la base de datos");
-        setTimeout(() => setErrorMessage(""), 5000);
-      }
-    } catch (error) {
-      console.error("Error al eliminar cliente de la base de datos:", error);
-      setErrorMessage("Error al eliminar cliente de la base de datos");
-      setTimeout(() => setErrorMessage(""), 5000);
-    }
   };
 
   const handleSaveClients = async () => {
     try {
-      const clientNamesString = clientNames.join(", ");
+      const clientNamesArray = clientNames.join(", ");
 
-      const formData = new FormData();
-      formData.append("cliente", clientNamesString);
+      const requestBody = {
+        cliente: clientNamesArray,
+      };
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`,
         {
-          method: "PUT",
-          body: formData,
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
         }
       );
 
       if (response.ok) {
+        console.log(clientNamesArray);
         console.log("Clientes guardados correctamente");
         setsuccessMessage("Cliente/s guardado correctamente");
         setTimeout(() => setsuccessMessage(""), 5000);
@@ -326,11 +331,175 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     }
   };
 
-  const filteredClients = searchResultsClients.filter(
-    (client) =>
-      !selectedClients.some((selected) => selected.id === client.id) &&
-      client.nombre.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredClients = Array.isArray(searchResultsClients)
+    ? searchResultsClients.filter((client) => {
+        const isSelected = selectedClients.some(
+          (selected) => selected.id === client.id
+        );
+        const matchesSearchQuery = client.nombre
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        return !isSelected && matchesSearchQuery;
+      })
+    : [];
+
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/staff?fields=nombre`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data.data);
+          setSearchResults(data.data);
+        } else {
+          console.error("Error fetching staff:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching staff:", error);
+      }
+    };
+
+    fetchStaff();
+  }, []);
+
+  useEffect(() => {
+    const fetchCollaborators = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data.data);
+          const collaboratorsData = data.data.colaboradores; // Accede directamente a la propiedad "colaboradores"
+          if (typeof collaboratorsData === "string") {
+            // Verifica si "collaboratorsData" es un string
+            // Aquí puedes procesar el string como desees
+            // Por ejemplo, si los nombres están separados por comas, puedes convertirlos en un array
+            const collaboratorsArray = collaboratorsData
+              .split(",")
+              .map((name, index) => ({
+                id: index + 1,
+                nombre: name.trim(), // Elimina espacios en blanco alrededor del nombre
+              }));
+            setSelectedCollaborators(collaboratorsArray);
+          } else {
+            console.error("Data is not a string:", collaboratorsData);
+          }
+        } else {
+          console.error("Error fetching collaborators:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching collaborators:", error);
+      }
+    };
+
+    if (project.id) {
+      fetchCollaborators();
+    }
+  }, [project.id]);
+
+  const handleSearchInputChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    if (query.trim() !== "") {
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSelectCollaborator = (staff) => {
+    if (
+      !selectedCollaborators.some(
+        (collaborator) => collaborator.id === staff.id
+      )
+    ) {
+      const updatedCollaborators = [...selectedCollaborators, staff];
+      setSelectedCollaborators(updatedCollaborators);
+      localStorage.setItem(
+        "selectedCollaborators",
+        JSON.stringify(updatedCollaborators)
+      );
+    }
+  };
+
+  const handleRemoveCollaborator = async (staff) => {
+    const updatedCollaborators = selectedCollaborators.filter(
+      (item) => item.id !== staff.id
+    );
+    setSelectedCollaborators(updatedCollaborators);
+    localStorage.setItem(
+      "selectedCollaborators",
+      JSON.stringify(updatedCollaborators)
+    );
+
+    console.log("Colaborador a eliminar:", staff);
+  };
+
+  const handleSaveCollaborators = async () => {
+    try {
+      const collaboratorNamestring = collaboratorNames.join(", ");
+
+      const requestBody = {
+        colaboradores: collaboratorNamestring,
+      };
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (response.ok) {
+        console.log(collaboratorNamestring);
+        console.log("Colaboradores guardados correctamente");
+        setsuccessMessage("Colaborador/es guardado correctamente");
+        setTimeout(() => setsuccessMessage(""), 5000);
+      } else {
+        console.error("Error al guardar colaboradores:", response.statusText);
+        setErrorMessage("Error al guardar colaboradores");
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
+    } catch (error) {
+      console.error("Error al guardar colaboradores:", error);
+      setErrorMessage("Error al guardar colaboradores");
+      setTimeout(() => setErrorMessage(""), 5000);
+    }
+  };
+
+  const filteredStaff = Array.isArray(searchResults)
+    ? searchResults.filter((staff) => {
+        const isSelected = selectedCollaborators.some(
+          (selected) => selected.id === staff.id
+        );
+        const matchesSearchQuery = staff.nombre
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        return !isSelected && matchesSearchQuery;
+      })
+    : [];
 
   const isEndDateNear = () => {
     const endDate = new Date(project.fechaFinalizacion);
@@ -393,154 +562,6 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       return null;
     }
   };
-
-  useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/staff`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(data);
-        } else {
-          console.error("Error fetching staff:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching staff:", error);
-      }
-    };
-
-    fetchStaff();
-  }, []);
-
-  useEffect(() => {
-    const fetchCollaborators = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/repo/collaborators/${project.id}`
-        );
-        if (response.status === 200) {
-          const collaborators = response.data.map((name, index) => ({
-            id: index + 1,
-            nombre: name,
-          }));
-          setSelectedCollaborators(collaborators);
-        }
-      } catch (error) {
-        console.error("Error fetching collaborators:", error);
-      }
-    };
-
-    if (project.id) {
-      fetchCollaborators();
-    }
-  }, [project.id]);
-
-  const handleSearchInputChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-    if (query.trim() !== "") {
-      setShowSearchResults(true);
-    } else {
-      setShowSearchResults(false);
-    }
-  };
-
-  const handleSelectCollaborator = (staff) => {
-    if (
-      !selectedCollaborators.some(
-        (collaborator) => collaborator.id === staff.id
-      )
-    ) {
-      const updatedCollaborators = [...selectedCollaborators, staff];
-      setSelectedCollaborators(updatedCollaborators);
-      localStorage.setItem(
-        "selectedCollaborators",
-        JSON.stringify(updatedCollaborators)
-      );
-    }
-  };
-
-  const handleRemoveCollaborator = async (staff) => {
-    const updatedCollaborators = selectedCollaborators.filter(
-      (item) => item.id !== staff.id
-    );
-    setSelectedCollaborators(updatedCollaborators);
-    localStorage.setItem(
-      "selectedCollaborators",
-      JSON.stringify(updatedCollaborators)
-    );
-
-    console.log("Colaborador a eliminar:", staff);
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${staff.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) {
-        console.log("Colaborador eliminado correctamente de la base de datos");
-      } else {
-        console.error(
-          "Error al eliminar colaborador de la base de datos:",
-          response.statusText
-        );
-        setErrorMessage("Error al eliminar colaborador de la base de datos");
-        setTimeout(() => setErrorMessage(""), 5000);
-      }
-    } catch (error) {
-      console.error(
-        "Error al eliminar colaborador de la base de datos:",
-        error
-      );
-      setErrorMessage("Error al eliminar colaborador de la base de datos");
-      setTimeout(() => setErrorMessage(""), 5000);
-    }
-  };
-
-  const handleSaveCollaborators = async () => {
-    try {
-      const collaboratorNamesString = collaboratorNames.join(", ");
-
-      const formData = new FormData();
-      formData.append("colaboradores", collaboratorNamesString);
-
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        console.log("Colaboradores guardados correctamente");
-        setsuccessMessage("Colaborador/es guardado correctamente");
-        setTimeout(() => setsuccessMessage(""), 5000);
-      } else {
-        console.error("Error al guardar colaboradores:", response.statusText);
-        setErrorMessage("Error al guardar colaboradores");
-        setTimeout(() => setErrorMessage(""), 5000);
-      }
-    } catch (error) {
-      console.error("Error al guardar colaboradores:", error);
-      setErrorMessage("Error al guardar colaboradores");
-      setTimeout(() => setErrorMessage(""), 5000);
-    }
-  };
-
-  const filteredStaff = searchResults.filter((staff) => {
-    const isSelected = selectedCollaborators.some(
-      (selected) => selected.id === staff.id
-    );
-    const matchesSearchQuery = staff.nombre
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return !isSelected && matchesSearchQuery;
-  });
 
   return (
     <div className="project-details">

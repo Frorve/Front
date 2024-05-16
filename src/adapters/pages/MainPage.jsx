@@ -28,9 +28,9 @@ useEffect(() => {
           },
         }
       );
-
+  
       const collaboratorPromise = fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_eq":"${username}"}}`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_contains":"${username}"}}`,
         {
           method: 'GET',
           headers: {
@@ -38,15 +38,15 @@ useEffect(() => {
           },
         }
       );
-
+  
       // Espera a que ambas promesas se resuelvan
       const [currentUserResponse, collaboratorResponse] = await Promise.all([
         currentUserPromise,
         collaboratorPromise,
       ]);
-
+  
       let repos = [];
-
+  
       if (currentUserResponse.ok) {
         const currentUserData = await currentUserResponse.json();
         const currentUserRepos = currentUserData.data;
@@ -54,19 +54,16 @@ useEffect(() => {
         // Agrega los repositorios del usuario
         repos = [...repos, ...currentUserRepos];
       }
-
+  
+      
       if (collaboratorResponse.ok) {
         const collaboratorDataResponse = await collaboratorResponse.json();
         const collaboratorRepos = collaboratorDataResponse.data;
         console.log(collaboratorRepos);
-        // Filtra los repositorios de colaboradores para eliminar duplicados
-        const uniqueCollaboratorRepos = collaboratorRepos.filter((collabRepo) =>
-          repos.every((repo) => repo.id !== collabRepo.id)
-        );
-        // Agrega los repositorios de colaboradores sin duplicados
-        repos = [...repos, ...uniqueCollaboratorRepos];
+        // Agrega los repositorios de colaboradores
+        repos = [...repos, ...collaboratorRepos];
       }
-
+  
       // Actualiza el estado repos
       setRepos(repos);
     } catch (error) {

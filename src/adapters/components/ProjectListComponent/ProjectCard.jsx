@@ -29,9 +29,12 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
         }
       );
 
