@@ -16,9 +16,75 @@ const MainPage = () => {
   const [showClienteForm, setShowClienteForm] = useState(false);
   const [showProjectList, setShowProjectList] = useState(true);
 
+  // Función para decodificar un token JWT y obtener la fecha de expiración
+const jwtDecode = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+};
+
+// Función para solicitar un nuevo token de autenticación utilizando el token de actualización
+const refreshAuthToken = async (refreshToken) => {
+  try {
+    const payload = {
+      refresh_token: refreshToken,
+      mode: 'json'
+    };
+
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('refreshToken', data.data.refresh_token);
+      return data.data.access_token; // Devuelve el nuevo token de autenticación
+    } else {
+      throw new Error(`Error al actualizar el token: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Error al actualizar el token:', error.message);
+    throw error;
+  }
+};
+
 useEffect(() => {
   const fetchRepos = async () => {
     try {
+
+      const authToken = localStorage.getItem('authToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+  
+      if (!authToken || !refreshToken) {
+        throw new Error('No hay tokens disponibles');
+      }
+  
+      // Verificar si el token de autenticación ha expirado
+      const authTokenExpireTime = jwtDecode(authToken).exp * 1000;
+      const currentTime = new Date().getTime();
+  
+      if (currentTime >= authTokenExpireTime) {
+        // Token expirado, solicitar un nuevo token de actualización
+        const refreshedToken = await refreshAuthToken(refreshToken);
+        localStorage.setItem('authToken', refreshedToken);
+      }
+  
+      // Continuar con la solicitud utilizando el token actualizado
       const currentUserPromise = fetch(
         `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"autor":{"_eq":"${username}"}}`,
         {

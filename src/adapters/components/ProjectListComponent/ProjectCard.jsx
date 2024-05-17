@@ -9,7 +9,6 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
   const { username } = useParams();
 
   const handleEdit = () => {
-    console.log("Editar proyecto:", project.id);
     setIsEditing(true);
   };
 
@@ -48,26 +47,81 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
     }
   };
 
-  const downloadFile = async () => {
+  const getProjectFileUUID = async (projectId) => {
     try {
+      const token = localStorage.getItem("authToken");
+
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/repo/download/${project.id}`,
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${projectId}?fields=archivo`,
         {
           method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
         }
       );
 
       if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = project.nombreArchivo;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const data = await response.json();
+        return data.data.archivo;
       } else {
-        console.error("Error al descargar el archivo:", response.statusText);
+        console.error("Error al obtener el UUID del archivo:", response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al obtener el UUID del archivo:", error);
+      return null;
+    }
+  };
+
+  const downloadFile = async () => {
+    try {
+      const archivoUUID = await getProjectFileUUID(project.id);
+
+      if (!archivoUUID) {
+        console.error("No se pudo obtener el UUID del archivo.");
+        return;
+      }
+
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/files/${archivoUUID}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        const downloadUrl = `${process.env.REACT_APP_BACKEND_DIRECTUS}/assets/${data.data.filename_disk}`;
+
+        const downloadResponse = await fetch(downloadUrl, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (downloadResponse.ok) {
+          const blob = await downloadResponse.blob();
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = data.data.filename_download || project.nombreArchivo; // Usa el nombre del archivo descargado o un nombre predeterminado
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        } else {
+          console.error("Error al descargar el archivo binario:", downloadResponse.statusText);
+        }
+      } else {
+        console.error("Error al obtener los metadatos del archivo:", response.statusText);
       }
     } catch (error) {
       console.error("Error al descargar el archivo:", error);

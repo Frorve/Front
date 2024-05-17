@@ -69,7 +69,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     }
 
     const data = await response.json();
-    return data.data.id; // UUID del archivo subido
+    return data.data.id;
   };
 
   useEffect(() => {
