@@ -175,6 +175,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         setTimerActive(false);
         setTimerIntervalId(null);
 
+        // eslint-disable-next-line
         const timeData = { time: timerDuration };
         const totalTime = timerDuration + project.time;
         const totalTimeData = { time: totalTime };
@@ -249,7 +250,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           if (typeof client === "string") {
             const clientsArray = client.split(",").map((name, index) => ({
               id: index + 1,
-              nombre: name.trim(), // Elimina espacios en blanco alrededor del nombre
+              nombre: name.trim(),
             }));
             setSelectedClients(clientsArray);
           } else {
@@ -296,7 +297,13 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
 
   const handleSaveClients = async () => {
     try {
-      const clientNamesArray = clientNames.join(", ");
+      let clientNamesArray;
+
+      if (selectedClients.length > 0){
+        clientNamesArray = clientNames.join(", ")
+      } else {
+        clientNamesArray = null
+      }
 
       const requestBody = {
         cliente: clientNamesArray,
@@ -386,16 +393,13 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         if (response.status === 200) {
           const data = await response.json();
           console.log(data.data);
-          const collaboratorsData = data.data.colaboradores; // Accede directamente a la propiedad "colaboradores"
+          const collaboratorsData = data.data.colaboradores;
           if (typeof collaboratorsData === "string") {
-            // Verifica si "collaboratorsData" es un string
-            // Aquí puedes procesar el string como desees
-            // Por ejemplo, si los nombres están separados por comas, puedes convertirlos en un array
             const collaboratorsArray = collaboratorsData
               .split(",")
               .map((name, index) => ({
                 id: index + 1,
-                nombre: name.trim(), // Elimina espacios en blanco alrededor del nombre
+                nombre: name.trim(),
               }));
             setSelectedCollaborators(collaboratorsArray);
           } else {
@@ -418,6 +422,12 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const query = event.target.value;
     setSearchQuery(query);
     if (query.trim() !== "") {
+      const filteredResults = filteredStaff.filter(
+        (collaborator) =>
+          collaborator.nombre.toLowerCase().includes(query.toLowerCase()) &&
+          collaborator.nombre !== project.autor
+      );
+      setSearchResults(filteredResults);
       setShowSearchResults(true);
     } else {
       setShowSearchResults(false);
@@ -425,17 +435,15 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   };
 
   const handleSelectCollaborator = (staff) => {
-    if (
-      !selectedCollaborators.some(
-        (collaborator) => collaborator.id === staff.id
-      )
-    ) {
+    const isCollaboratorSelected = selectedCollaborators.some(collaborator => collaborator.nombre === staff.nombre);
+    console.log("isCollaboratorSelected:", isCollaboratorSelected);
+  
+    if (!isCollaboratorSelected) {
       const updatedCollaborators = [...selectedCollaborators, staff];
       setSelectedCollaborators(updatedCollaborators);
-      localStorage.setItem(
-        "selectedCollaborators",
-        JSON.stringify(updatedCollaborators)
-      );
+      localStorage.setItem("selectedCollaborators", JSON.stringify(updatedCollaborators));
+    } else {
+      alert("El colaborador ya está añadido");
     }
   };
 
@@ -454,12 +462,18 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
 
   const handleSaveCollaborators = async () => {
     try {
-      const collaboratorNamestring = collaboratorNames.join(", ");
-
+      let collaboratorNamestring;
+  
+      if (selectedCollaborators.length > 0) {
+        collaboratorNamestring = collaboratorNames.join(", ");
+      } else {
+        collaboratorNamestring = null;
+      }
+  
       const requestBody = {
         colaboradores: collaboratorNamestring,
       };
-
+  
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
         {
@@ -471,7 +485,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           body: JSON.stringify(requestBody),
         }
       );
-
+  
       if (response.ok) {
         console.log(collaboratorNamestring);
         console.log("Colaboradores guardados correctamente");
@@ -488,6 +502,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };
+  
 
   const filteredStaff = Array.isArray(searchResults)
     ? searchResults.filter((staff) => {

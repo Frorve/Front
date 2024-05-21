@@ -53,7 +53,7 @@ const refreshAuthToken = async (refreshToken) => {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem('refreshToken', data.data.refresh_token);
-      return data.data.access_token; // Devuelve el nuevo token de autenticación
+      return data.data.access_token;
     } else {
       throw new Error(`Error al actualizar el token: ${response.statusText}`);
     }
