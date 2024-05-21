@@ -5,23 +5,25 @@ import { FaLock } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import logo from "../../assets/logo.png";
 import Footer from "../components/FooterComponent/Footer";
+import { login, getUserInfo } from "../api/apiDirectus";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem("rememberedUsername");
     const storedPassword = localStorage.getItem("rememberedPassword");
-    const storedMail = localStorage.getItem("remenberedMail")
+    const storedMail = localStorage.getItem("remenberedMail");
     const storedRememberMe = localStorage.getItem("rememberMe");
 
-    if (storedUsername && storedPassword && storedMail && storedRememberMe === "true") {
-      setUsername(storedUsername);
+    if (
+      storedPassword &&
+      storedMail &&
+      storedRememberMe === "true"
+    ) {
       setPassword(storedPassword);
       setMail(storedMail);
       setRememberMe(true);
@@ -49,59 +51,29 @@ const LoginForm = () => {
     };
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+      const data = await login(loginData);
+      const token = data.data.access_token;
+      const refreshToken = data.data.refresh_token;
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("refreshToken", refreshToken);
+      console.log(token);
 
-      if (response.ok) {
-        const data = await response.json();
-        const token = data.data.access_token;
-        const refreshToken = data.data.refresh_token;
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        console.log(token);
+      const userData = await getUserInfo(token);
+      const firstName = userData.data.first_name;
 
-        const userResponse = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/users/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      localStorage.setItem("username", firstName);
 
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          const firstName = userData.data.first_name;
-
-          localStorage.setItem("username", firstName);
-
-          if (rememberMe) {
-            localStorage.setItem("rememberedUsername", username);
-            localStorage.setItem("rememberedPassword", password);
-            localStorage.setItem("remenberedMail")
-            localStorage.setItem("rememberMe", "true");
-          } else {
-            localStorage.removeItem("rememberedUsername");
-            localStorage.removeItem("rememberedPassword");
-            localStorage.removeItem("remenberedMail")
-            localStorage.removeItem("rememberMe");
-          }
-
-          navigate(`/main/${firstName}`);
-        } else {
-          throw new Error("Error al obtener información del usuario");
-        }
+      if (rememberMe) {
+        localStorage.setItem("rememberedUsername", mail);
+        localStorage.setItem("rememberedPassword", password);
+        localStorage.setItem("rememberMe", "true");
       } else {
-        throw new Error("Credenciales incorrectas");
+        localStorage.removeItem("rememberedUsername");
+        localStorage.removeItem("rememberedPassword");
+        localStorage.removeItem("rememberMe");
       }
+
+      navigate(`/main/${firstName}`);
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setErrorMessage(error.message);

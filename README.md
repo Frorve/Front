@@ -83,6 +83,18 @@ Instala las dependencias necesarias para ejecutar la aplicación.
 
 <img src="screenshots/AddTimeEntryClockify.png">
 
+### Lista de Clientes:
+
+<img src="screenshots/ListaClientes.png">
+
+### Información del Cliente:
+
+<img src="screenshots/InfoDetalladaCliente.png">
+
+### Editar Cliente:
+
+<img src="screenshots/EditarCliente.png">
+
 ## Contacto
 
 Si tienes alguna pregunta, sugerencia o simplemente deseas ponerte en contacto, no dudes en hacerlo a través de los siguientes medios:

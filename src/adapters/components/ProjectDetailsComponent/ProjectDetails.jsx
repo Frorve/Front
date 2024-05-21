@@ -36,10 +36,17 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
 
   const formatTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+  
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   };
+  
 
   const handleTaskChange = (event) => {
     setTask(event.target.value);
@@ -299,10 +306,10 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     try {
       let clientNamesArray;
 
-      if (selectedClients.length > 0){
-        clientNamesArray = clientNames.join(", ")
+      if (selectedClients.length > 0) {
+        clientNamesArray = clientNames.join(", ");
       } else {
-        clientNamesArray = null
+        clientNamesArray = null;
       }
 
       const requestBody = {
@@ -435,13 +442,18 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   };
 
   const handleSelectCollaborator = (staff) => {
-    const isCollaboratorSelected = selectedCollaborators.some(collaborator => collaborator.nombre === staff.nombre);
+    const isCollaboratorSelected = selectedCollaborators.some(
+      (collaborator) => collaborator.nombre === staff.nombre
+    );
     console.log("isCollaboratorSelected:", isCollaboratorSelected);
-  
+
     if (!isCollaboratorSelected) {
       const updatedCollaborators = [...selectedCollaborators, staff];
       setSelectedCollaborators(updatedCollaborators);
-      localStorage.setItem("selectedCollaborators", JSON.stringify(updatedCollaborators));
+      localStorage.setItem(
+        "selectedCollaborators",
+        JSON.stringify(updatedCollaborators)
+      );
     } else {
       alert("El colaborador ya está añadido");
     }
@@ -463,17 +475,17 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const handleSaveCollaborators = async () => {
     try {
       let collaboratorNamestring;
-  
+
       if (selectedCollaborators.length > 0) {
         collaboratorNamestring = collaboratorNames.join(", ");
       } else {
         collaboratorNamestring = null;
       }
-  
+
       const requestBody = {
         colaboradores: collaboratorNamestring,
       };
-  
+
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
         {
@@ -485,7 +497,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
           body: JSON.stringify(requestBody),
         }
       );
-  
+
       if (response.ok) {
         console.log(collaboratorNamestring);
         console.log("Colaboradores guardados correctamente");
@@ -502,7 +514,6 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };
-  
 
   const filteredStaff = Array.isArray(searchResults)
     ? searchResults.filter((staff) => {

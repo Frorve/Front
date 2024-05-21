@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const backendAPI = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -6,7 +6,7 @@ const backendAPI = axios.create({
 
 export const loginUser = async (username, password) => {
   try {
-    const response = await backendAPI.post('/auth/login', {
+    const response = await backendAPI.post("/auth/login", {
       nombre: username,
       contraseña: password,
     });
@@ -14,11 +14,11 @@ export const loginUser = async (username, password) => {
   } catch (error) {
     throw new Error(error.response.data.message || "Error al iniciar sesión");
   }
-}
+};
 
 export const registerUser = async (username, mail, password) => {
   try {
-    const response = await backendAPI.post('/auth/register', {
+    const response = await backendAPI.post("/auth/register", {
       nombre: username,
       cargo: "Staff",
       correoElectronico: mail,
@@ -38,7 +38,9 @@ export const fetchRepos = async (username) => {
       return currentUserData;
     }
 
-    const collaboratorResponse = await backendAPI.get(`/repo/collaborator-repos/${username}`);
+    const collaboratorResponse = await backendAPI.get(
+      `/repo/collaborator-repos/${username}`
+    );
     if (collaboratorResponse.status === 200) {
       const collaboratorData = collaboratorResponse.data;
       return collaboratorData;

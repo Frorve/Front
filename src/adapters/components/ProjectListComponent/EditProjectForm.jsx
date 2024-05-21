@@ -28,10 +28,13 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/files`, {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_DIRECTUS}/files`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Error al subir el archivo");
@@ -64,7 +67,7 @@ const EditProjectForm = ({ project, onSave, onCancel }) => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
           body: JSON.stringify(projectData),
         }

@@ -6,6 +6,7 @@ import Footer from "../components/FooterComponent/Footer";
 import ProjectForm from "../components/ProjectListComponent/ProjectForm";
 import ProjectList from "../components/ProjectListComponent/ProjectList";
 import ClienteForm from "../components/ProjectListComponent/ClienteForm";
+import ClienteList from "../components/ProjectListComponent/ClienteList";
 
 const MainPage = () => {
   const { username } = useParams();
@@ -14,131 +15,131 @@ const MainPage = () => {
   const [expandedProjectId, setExpandedProjectId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showClienteForm, setShowClienteForm] = useState(false);
+  const [showClienteList, setShowClienteList] = useState(false);
   const [showProjectList, setShowProjectList] = useState(true);
 
-  // Función para decodificar un token JWT y obtener la fecha de expiración
-const jwtDecode = (token) => {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error('Error decoding JWT:', error);
-    return null;
-  }
-};
-
-// Función para solicitar un nuevo token de autenticación utilizando el token de actualización
-const refreshAuthToken = async (refreshToken) => {
-  try {
-    const payload = {
-      refresh_token: refreshToken,
-      mode: 'json'
-    };
-
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem('refreshToken', data.data.refresh_token);
-      return data.data.access_token;
-    } else {
-      throw new Error(`Error al actualizar el token: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error('Error al actualizar el token:', error.message);
-    throw error;
-  }
-};
-
-useEffect(() => {
-  const fetchRepos = async () => {
+  const jwtDecode = (token) => {
     try {
-
-      const authToken = localStorage.getItem('authToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-  
-      if (!authToken || !refreshToken) {
-        throw new Error('No hay tokens disponibles');
-      }
-  
-      // Verificar si el token de autenticación ha expirado
-      const authTokenExpireTime = jwtDecode(authToken).exp * 1000;
-      const currentTime = new Date().getTime();
-  
-      if (currentTime >= authTokenExpireTime) {
-        // Token expirado, solicitar un nuevo token de actualización
-        const refreshedToken = await refreshAuthToken(refreshToken);
-        localStorage.setItem('authToken', refreshedToken);
-      }
-  
-      // Continuar con la solicitud utilizando el token actualizado
-      const currentUserPromise = fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"autor":{"_eq":"${username}"}}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        }
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
       );
-  
-      const collaboratorPromise = fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_contains":"${username}"}}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        }
-      );
-  
-      // Espera a que ambas promesas se resuelvan
-      const [currentUserResponse, collaboratorResponse] = await Promise.all([
-        currentUserPromise,
-        collaboratorPromise,
-      ]);
-  
-      let repos = [];
-  
-      if (currentUserResponse.ok) {
-        const currentUserData = await currentUserResponse.json();
-        const currentUserRepos = currentUserData.data;
-        console.log(currentUserRepos);
-        // Agrega los repositorios del usuario
-        repos = [...repos, ...currentUserRepos];
-      }
-  
-      
-      if (collaboratorResponse.ok) {
-        const collaboratorDataResponse = await collaboratorResponse.json();
-        const collaboratorRepos = collaboratorDataResponse.data;
-        console.log(collaboratorRepos);
-        // Agrega los repositorios de colaboradores
-        repos = [...repos, ...collaboratorRepos];
-      }
-  
-      // Actualiza el estado repos
-      setRepos(repos);
+      return JSON.parse(jsonPayload);
     } catch (error) {
-      console.error('Error fetching repos:', error);
+      console.error("Error decoding JWT:", error);
+      return null;
     }
   };
 
-  fetchRepos();
-}, [username]);
+  const refreshAuthToken = async (refreshToken) => {
+    try {
+      const payload = {
+        refresh_token: refreshToken,
+        mode: "json",
+      };
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/auth/refresh`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("refreshToken", data.data.refresh_token);
+        return data.data.access_token;
+      } else {
+        throw new Error(`Error al actualizar el token: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error al actualizar el token:", error.message);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const fetchRepos = async () => {
+      try {
+        const authToken = localStorage.getItem("authToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (!authToken || !refreshToken) {
+          throw new Error("No hay tokens disponibles");
+        }
+
+        // Verificar si el token de autenticación ha expirado
+        const authTokenExpireTime = jwtDecode(authToken).exp * 1000;
+        const currentTime = new Date().getTime();
+
+        if (currentTime >= authTokenExpireTime) {
+          // Token expirado, solicitar un nuevo token de actualización
+          const refreshedToken = await refreshAuthToken(refreshToken);
+          localStorage.setItem("authToken", refreshedToken);
+        }
+
+        // Continuar con la solicitud utilizando el token actualizado
+        const currentUserPromise = fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"autor":{"_eq":"${username}"}}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        const collaboratorPromise = fetch(
+          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_contains":"${username}"}}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        // Espera a que ambas promesas se resuelvan
+        const [currentUserResponse, collaboratorResponse] = await Promise.all([
+          currentUserPromise,
+          collaboratorPromise,
+        ]);
+
+        let repos = [];
+
+        if (currentUserResponse.ok) {
+          const currentUserData = await currentUserResponse.json();
+          const currentUserRepos = currentUserData.data;
+          console.log(currentUserRepos);
+          // Agrega los repositorios del usuario
+          repos = [...repos, ...currentUserRepos];
+        }
+
+        if (collaboratorResponse.ok) {
+          const collaboratorDataResponse = await collaboratorResponse.json();
+          const collaboratorRepos = collaboratorDataResponse.data;
+          console.log(collaboratorRepos);
+          // Agrega los repositorios de colaboradores
+          repos = [...repos, ...collaboratorRepos];
+        }
+
+        // Actualiza el estado repos
+        setRepos(repos);
+      } catch (error) {
+        console.error("Error fetching repos:", error);
+      }
+    };
+
+    fetchRepos();
+  }, [username]);
 
   const handleSearchChangeVar = (event) => {
     const searchTerm = event.target.value;
@@ -148,6 +149,7 @@ useEffect(() => {
   const handleFormToggle = () => {
     setShowForm(!showForm);
     setShowProjectList(false);
+    setShowClienteList(false);
   };
 
   const handleSubmitForm = () => {
@@ -164,6 +166,7 @@ useEffect(() => {
     setShowForm(false);
     setExpandedProjectId(false);
     setShowClienteForm(false);
+    setShowClienteList(false);
   };
 
   const handleExpand = (projectId) => {
@@ -173,6 +176,14 @@ useEffect(() => {
   const handleClienteFormToggle = () => {
     setShowClienteForm(!showClienteForm);
     setShowProjectList(false);
+    setShowClienteList(false);
+  };
+
+  const handleClienteListToggle = () => {
+    setShowClienteList(!showClienteList);
+    setShowProjectList(false);
+    setShowForm(false);
+    setShowClienteForm(false);
   };
 
   const handleSubmitClienteForm = () => {
@@ -199,9 +210,10 @@ useEffect(() => {
         handleClienteFormToggle={handleClienteFormToggle}
         handleFormToggle={handleFormToggle}
         handleCancel={handleCancel}
+        handleClienteListToggle={handleClienteListToggle}
       />
       <div className="wrapper-main">
-        {!showForm && !showClienteForm && (
+        {!showForm && !showClienteForm && !showClienteList && (
           <strong>
             <h1>Proyectos</h1>
           </strong>
@@ -220,6 +232,11 @@ useEffect(() => {
                 onCancel={handleCancelClienteForm}
               />
             )}
+            {showClienteList && (
+              <ClienteList
+                onCancel={handleCancel}
+              />
+            )}
             {showProjectList && repos.length === 0 && (
               <p className="welcome">
                 <strong>
@@ -236,7 +253,7 @@ useEffect(() => {
             )}
           </>
         )}
-        {!showForm && !showClienteForm && (
+        {!showForm && !showClienteForm && !showClienteList && (
           <>
             <button className="add-project-button" onClick={handleFormToggle}>
               Agregar Proyecto

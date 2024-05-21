@@ -6,7 +6,7 @@ const Navbar = ({
   username,
   handleCancel,
   handleSearchChangeVar,
-  handleClienteFormToggle,
+  handleClienteListToggle,
 }) => {
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ const Navbar = ({
         </Link>
       </div>
       <div className="flex-none gap-2 flex items-center">
-        <button className="btn" onClick={handleClienteFormToggle}>
+        <button className="btn" onClick={handleClienteListToggle}>
           Gestionar clientes
         </button>
 

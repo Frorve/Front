@@ -48,6 +48,7 @@ const ClienteForm = ({ onSubmit, onCancel }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
           body: JSON.stringify(clienteData),
         }

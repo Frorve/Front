@@ -32,7 +32,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
@@ -56,7 +56,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -65,7 +65,10 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         const data = await response.json();
         return data.data.archivo;
       } else {
-        console.error("Error al obtener el UUID del archivo:", response.statusText);
+        console.error(
+          "Error al obtener el UUID del archivo:",
+          response.statusText
+        );
         return null;
       }
     } catch (error) {
@@ -90,7 +93,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -103,7 +106,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
         const downloadResponse = await fetch(downloadUrl, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -112,16 +115,22 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.href = url;
-          link.download = data.data.filename_download || project.nombreArchivo; // Usa el nombre del archivo descargado o un nombre predeterminado
+          link.download = data.data.filename_download || project.nombreArchivo;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           URL.revokeObjectURL(url);
         } else {
-          console.error("Error al descargar el archivo binario:", downloadResponse.statusText);
+          console.error(
+            "Error al descargar el archivo binario:",
+            downloadResponse.statusText
+          );
         }
       } else {
-        console.error("Error al obtener los metadatos del archivo:", response.statusText);
+        console.error(
+          "Error al obtener los metadatos del archivo:",
+          response.statusText
+        );
       }
     } catch (error) {
       console.error("Error al descargar el archivo:", error);

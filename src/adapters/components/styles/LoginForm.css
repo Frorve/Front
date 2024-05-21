@@ -122,16 +122,14 @@
   text-decoration: underline;
 }
 
-/* Media query para pantallas más pequeñas */
 @media (max-width: 768px) {
   .wrapper {
-    padding: 20px; /* Ajustar el padding */
+    padding: 20px;
   }
 }
 
-/* Media query para pantallas más pequeñas */
 @media (max-width: 480px) {
   .wrapper {
-    padding: 10px; /* Ajustar el padding */
+    padding: 10px; 
   }
 }

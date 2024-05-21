@@ -59,10 +59,13 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/files`, {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_DIRECTUS}/files`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Error al subir el archivo");
@@ -98,14 +101,17 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
 
       const token = localStorage.getItem("authToken");
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, 
-        },
-        body: JSON.stringify(projectData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(projectData),
+        }
+      );
 
       if (response.ok) {
         console.log("Proyecto creado exitosamente");
@@ -119,7 +125,9 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
         window.location.reload();
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.errors[0].message || "Error al crear proyecto");
+        throw new Error(
+          errorData.errors[0].message || "Error al crear proyecto"
+        );
       }
     } catch (error) {
       console.error("Error al crear proyecto:", error);
