@@ -88,7 +88,7 @@ const MainPage = () => {
 
         // Continuar con la solicitud utilizando el token actualizado
         const currentUserPromise = fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"autor":{"_eq":"${username}"}}`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/autor/${username}`,
           {
             method: "GET",
             headers: {
@@ -98,7 +98,7 @@ const MainPage = () => {
         );
 
         const collaboratorPromise = fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo?fields=*.*&filter={"colaboradores":{"_contains":"${username}"}}`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/colaborador/${username}`,
           {
             method: "GET",
             headers: {

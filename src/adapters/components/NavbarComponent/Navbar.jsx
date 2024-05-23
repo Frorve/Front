@@ -76,7 +76,7 @@ const Navbar = ({
           </div>
         </button>
         <div className="navbar-end">
-          <button className="btn btn-error" onClick={handleLogout}>
+          <button className="btn btn-error hover:bg-red-600 transition duration-300" onClick={handleLogout}>
             Cerrar sesión
           </button>
         </div>

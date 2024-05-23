@@ -33,7 +33,7 @@ const ClienteList = ({ onCancel }) => {
   const fetchClientes = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/cliente`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -50,7 +50,7 @@ const ClienteList = ({ onCancel }) => {
   const handleDeleteCliente = async (clienteId) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente/${clienteId}`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/cliente/${clienteId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -99,7 +99,7 @@ const ClienteList = ({ onCancel }) => {
   const handleSave = async () => {
     try {
       await axios.patch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente/${selectedCliente.id}`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/cliente/${selectedCliente.id}`,
         formData,
         {
           headers: {

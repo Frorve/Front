@@ -188,7 +188,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         const totalTimeData = { time: totalTime };
 
         const timeMS = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=time`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/time/${project.id}`,
           {
             method: "PATCH",
             headers: {
@@ -215,7 +215,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchClientsAll = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/cliente?fields=nombre`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/cliente/name`,
           {
             method: "GET",
             headers: {
@@ -242,7 +242,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchClients = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/cliente/project/${project.id}`,
           {
             method: "GET",
             headers: {
@@ -305,30 +305,29 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const handleSaveClients = async () => {
     try {
       let clientNamesArray;
-
+  
       if (selectedClients.length > 0) {
-        clientNamesArray = clientNames.join(", ");
+        clientNamesArray = selectedClients.map(client => client.nombre).join(", "); // Use 'client.nombre' instead of 'client.name'
       } else {
         clientNamesArray = null;
       }
-
+  
       const requestBody = {
         cliente: clientNamesArray,
       };
-
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=cliente`,
+  
+      const response = await axios.patch(
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/cliente/project/${project.id}`,
+        JSON.stringify(requestBody),
         {
-          method: "PATCH",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
         }
       );
-
-      if (response.ok) {
+  
+      if (response.status >= 200 && response.status < 300) {
         console.log(clientNamesArray);
         console.log("Clientes guardados correctamente");
         setsuccessMessage("Cliente/s guardado correctamente");
@@ -344,6 +343,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       setTimeout(() => setErrorMessage(""), 5000);
     }
   };
+  
 
   const filteredClients = Array.isArray(searchResultsClients)
     ? searchResultsClients.filter((client) => {
@@ -361,7 +361,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchStaff = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/staff?fields=nombre`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/staff/name`,
           {
             method: "GET",
             headers: {
@@ -388,7 +388,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     const fetchCollaborators = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/colaborador/project/${project.id}`,
           {
             method: "GET",
             headers: {
@@ -487,7 +487,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       };
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=colaboradores`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/colaborador/project/${project.id}`,
         {
           method: "PATCH",
           headers: {

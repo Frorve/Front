@@ -38,7 +38,7 @@ const Columna3 = ({
         }
 
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo/${project.id}?fields=time`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/time/${project.id}`,
           {
             method: "GET",
             headers: {

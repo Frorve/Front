@@ -30,7 +30,7 @@ const Register = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/users`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/users`,
         {
           method: "POST",
           headers: {
@@ -54,7 +54,7 @@ const Register = () => {
         setTimeout(() => setUserCreatedMessage(""), 5000);
 
         const responseStaff = await fetch(
-          `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/staff`,
+          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/staff`,
           {
             method: "POST",
             headers: {

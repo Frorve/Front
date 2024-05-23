@@ -102,7 +102,7 @@ const ProjectForm = ({ onSubmit, onCancel }) => {
       const token = localStorage.getItem("authToken");
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_DIRECTUS}/items/repo`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo`,
         {
           method: "POST",
           headers: {

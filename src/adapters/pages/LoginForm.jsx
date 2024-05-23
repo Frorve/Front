@@ -16,14 +16,10 @@ const LoginForm = () => {
 
   useEffect(() => {
     const storedPassword = localStorage.getItem("rememberedPassword");
-    const storedMail = localStorage.getItem("remenberedMail");
+    const storedMail = localStorage.getItem("rememberedMail");
     const storedRememberMe = localStorage.getItem("rememberMe");
 
-    if (
-      storedPassword &&
-      storedMail &&
-      storedRememberMe === "true"
-    ) {
+    if (storedPassword && storedMail && storedRememberMe === "true") {
       setPassword(storedPassword);
       setMail(storedMail);
       setRememberMe(true);
@@ -51,9 +47,28 @@ const LoginForm = () => {
     };
 
     try {
-      const data = await login(loginData);
+      const response = await fetch(
+        `http://localhost:3000/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
       const token = data.data.access_token;
       const refreshToken = data.data.refresh_token;
+
+      console.log(data);
+
       localStorage.setItem("authToken", token);
       localStorage.setItem("refreshToken", refreshToken);
       console.log(token);
@@ -79,7 +94,7 @@ const LoginForm = () => {
       setErrorMessage(error.message);
       setTimeout(() => setErrorMessage(""), 5000);
     }
-  };
+  }
 
   return (
     <div>
