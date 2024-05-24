@@ -9,6 +9,7 @@ const ClienteList = ({ onCancel }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedCliente, setSelectedCliente] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     nombre: "",
     cif: "",
@@ -22,13 +23,15 @@ const ClienteList = ({ onCancel }) => {
   }, []);
 
   useEffect(() => {
-    if (selectedCliente) {
-      const modal = document.getElementById("cliente_modal");
-      if (modal) {
+    const modal = document.getElementById("cliente_modal");
+    if (modal) {
+      if (modalVisible) {
         modal.showModal();
+      } else {
+        modal.close();
       }
     }
-  }, [selectedCliente]);
+  }, [modalVisible]);
 
   const fetchClientes = async () => {
     try {
@@ -74,6 +77,7 @@ const ClienteList = ({ onCancel }) => {
   const handleViewMore = (cliente) => {
     setSelectedCliente(cliente);
     setIsEditing(false); // Para ver más, no estamos editando
+    setModalVisible(true); // Mostrar modal
   };
 
   const handleEditCliente = (cliente) => {
@@ -86,6 +90,7 @@ const ClienteList = ({ onCancel }) => {
       telefono: cliente.telefono,
       web: cliente.web,
     });
+    setModalVisible(true); // Mostrar modal
   };
 
   const handleChange = (e) => {
@@ -108,7 +113,7 @@ const ClienteList = ({ onCancel }) => {
           },
         }
       );
-      document.getElementById("cliente_modal").close();
+      setModalVisible(false); // Cerrar modal
       fetchClientes(); // Refrescar la lista de clientes
     } catch (error) {
       console.error("Error al actualizar el cliente:", error);
@@ -118,19 +123,15 @@ const ClienteList = ({ onCancel }) => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+<div className="container mx-auto p-4">
+  {!showForm && (
+    <>
       <h1 className="text-2xl mb-4">Lista de Clientes</h1>
       <br />
       {errorMessage && (
         <div role="alert" className="alert alert-error mb-4">
           <span>{errorMessage}</span>
         </div>
-      )}
-      {showForm && (
-        <ClienteForm
-          onSubmit={handleFormSubmit}
-          onCancel={() => setShowForm(false)}
-        />
       )}
       <ul className="space-y-4">
         {clientes.map((cliente) => (
@@ -169,111 +170,123 @@ const ClienteList = ({ onCancel }) => {
       <button className="cancel-button-new" onClick={onCancel}>
         Volver atrás
       </button>
+    </>
+  )}
 
-      {selectedCliente && (
-        <dialog id="cliente_modal" className="modal">
-          <div className="modal-box w-11/12 max-w-5xl relative">
-            <button
-              className="absolute top-3 right-3 m-3 text-red-600 hover:text-red-800"
-              onClick={() => document.getElementById("cliente_modal").close()}
-            >
-              <AiFillCloseCircle size={24} />
-            </button>
-            {isEditing ? (
-              <div>
-                <h2 className="font-bold text-lg">Editar Cliente</h2>
-                <br />
-                <div className="py-3">
-                  <label className="block font-medium">Nombre</label>
-                  <input
-                    type="text"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="py-3">
-                  <label className="block font-medium">CIF</label>
-                  <input
-                    type="text"
-                    name="cif"
-                    value={formData.cif}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="py-3">
-                  <label className="block font-medium">Correo Electrónico</label>
-                  <input
-                    type="email"
-                    name="correoElectronico"
-                    value={formData.correoElectronico}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="py-3">
-                  <label className="block font-medium">Teléfono</label>
-                  <input
-                    type="text"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="py-3">
-                  <label className="block font-medium">Sitio Web</label>
-                  <input
-                    type="text"
-                    name="web"
-                    value={formData.web}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="py-3">
-                  <button
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                    onClick={handleSave}
-                  >
-                    Guardar
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <h2 className="font-bold text-lg">{selectedCliente.nombre}</h2>
-                <br />
-                <p className="py-3">
-                  <strong>CIF:</strong> {selectedCliente.cif}
-                </p>
-                <p className="py-3">
-                  <strong>Correo Electrónico:</strong>{" "}
-                  {selectedCliente.correoElectronico}
-                </p>
-                <p className="py-3">
-                  <strong>Teléfono:</strong> {selectedCliente.telefono}
-                </p>
-                <p className="py-3">
-                  <strong>Sitio Web:</strong>{" "}
-                  <a
-                    href={selectedCliente.web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-yellow-600 hover:underline"
-                  >
-                    {selectedCliente.web}
-                  </a>
-                </p>
-              </div>
-            )}
+  {showForm && (
+    <ClienteForm
+      onSubmit={handleFormSubmit}
+      onCancel={() => setShowForm(false)}
+    />
+  )}
+
+  {selectedCliente && (
+    <dialog id="cliente_modal" className="modal">
+      <div className="modal-box w-11/12 max-w-5xl relative">
+        <button
+          className="absolute top-3 right-3 m-3 text-red-600 hover:text-red-800"
+          onClick={() => setModalVisible(false)}
+        >
+          <AiFillCloseCircle size={24} />
+        </button>
+        {isEditing ? (
+          <div>
+            <h2 className="font-bold text-lg">Editar Cliente</h2>
+            <br />
+            <div className="py-3">
+              <label className="block font-medium">Nombre</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="py-3">
+              <label className="block font-medium">CIF</label>
+              <input
+                type="text"
+                name="cif"
+                value={formData.cif}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="py-3">
+              <label className="block font-medium">Correo Electrónico</label>
+              <input
+                type="email"
+                name="correoElectronico"
+                value={formData.correoElectronico}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="py-3">
+              <label className="block font-medium">Teléfono</label>
+              <input
+                type="text"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="py-3">
+              <label className="block font-medium">Sitio Web</label>
+              <input
+                type="text"
+                name="web"
+                value={formData.web}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="py-3">
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                onClick={handleSave}
+              >
+                Guardar
+              </button>
+            </div>
           </div>
-        </dialog>
-      )}
-    </div>
+        ) : (
+          <div>
+            <h2 className="font-bold text-lg">{selectedCliente.nombre}</h2>
+            <br />
+            <p className="py-3">
+              <strong>CIF:</strong> {selectedCliente.cif}
+            </p>
+            <p className="py-3">
+              <strong>Correo Electrónico:</strong>{" "}
+              {selectedCliente.correoElectronico}
+            </p>
+            <p className="py-3">
+            <strong>Teléfono:</strong> {selectedCliente.telefono}
+            </p>
+            <p className="py-3">
+              <strong>Sitio Web:</strong>{" "}
+              <a
+                href={selectedCliente.web}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-yellow-600 hover:underline"
+              >
+                {selectedCliente.web}
+              </a>
+            </p>
+          </div>
+        )}
+      </div>
+    </dialog>
+  )}
+</div>
+
+
   );
 };
 
 export default ClienteList;
+

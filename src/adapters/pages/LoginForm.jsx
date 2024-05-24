@@ -40,15 +40,15 @@ const LoginForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     const loginData = {
       email: mail,
       password: password,
     };
-
+  
     try {
       const response = await fetch(
-        `http://localhost:3000/auth/login`,
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -57,27 +57,45 @@ const LoginForm = () => {
           body: JSON.stringify(loginData),
         }
       );
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Error: ${response.status} - ${errorText}`);
       }
-
+  
       const data = await response.json();
       const token = data.data.access_token;
       const refreshToken = data.data.refresh_token;
-
+  
       console.log(data);
-
+  
       localStorage.setItem("authToken", token);
       localStorage.setItem("refreshToken", refreshToken);
       console.log(token);
-
+  
+      // Nueva solicitud para almacenar el token en el backend de NestJS
+      const storeTokenResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/directus/token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ token }),
+        }
+      );
+  
+      if (!storeTokenResponse.ok) {
+        const errorText = await storeTokenResponse.text();
+        throw new Error(`Error: ${storeTokenResponse.status} - ${errorText}`);
+      }
+  
       const userData = await getUserInfo(token);
       const firstName = userData.data.first_name;
-
+  
       localStorage.setItem("username", firstName);
-
+  
       if (rememberMe) {
         localStorage.setItem("rememberedUsername", mail);
         localStorage.setItem("rememberedPassword", password);
@@ -87,15 +105,15 @@ const LoginForm = () => {
         localStorage.removeItem("rememberedPassword");
         localStorage.removeItem("rememberMe");
       }
-
+  
       navigate(`/main/${firstName}`);
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setErrorMessage(error.message);
       setTimeout(() => setErrorMessage(""), 5000);
     }
-  }
-
+  };
+  
   return (
     <div>
       <div className="wrapper">
