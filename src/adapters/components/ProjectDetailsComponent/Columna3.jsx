@@ -9,7 +9,10 @@ const Columna3 = ({
   onDelete,
   renderProjectStatus,
   selectedClients,
+  username,
 }) => {
+  const isAuthor = project.autor === username;
+
   const [projectTime, setProjectTime] = useState(`00:00:00`);
 
   const formatTime = (milliseconds) => {
@@ -89,13 +92,15 @@ const Columna3 = ({
         ) : (
           <p>No hay cliente asociado</p>
         )}
-        <button
-          className="btn"
-          id="modal-cliente"
-          onClick={() => document.getElementById("modal-client").showModal()}
-        >
-          Asignar Cliente
-        </button>
+        {isAuthor && (
+          <button
+            className="btn"
+            id="modal-cliente"
+            onClick={() => document.getElementById("modal-client").showModal()}
+          >
+            Asignar Cliente
+          </button>
+        )}
       </div>
 
       <div className="detail-autor">
@@ -113,14 +118,17 @@ const Columna3 = ({
         </div>
       )}
 
-      <div className="project-actions">
-        <button id="edit" className="btn btn-wide" onClick={onEdit}>
-          Editar <FaEdit />
-        </button>
-        <button id="Sup" className="btn btn-wide" onClick={onDelete}>
-          Borrar <FaTrash />
-        </button>
-      </div>
+      {isAuthor && (
+        <div className="project-actions">
+          <button id="edit" className="btn btn-wide" onClick={onEdit}>
+            Editar <FaEdit />
+          </button>
+
+          <button id="Sup" className="btn btn-wide" onClick={onDelete}>
+            Borrar <FaTrash />
+          </button>
+        </div>
+      )}
 
       <div id="tiempo-empleado" role="alert" className="alert alert-info">
         <svg

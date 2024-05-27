@@ -272,6 +272,11 @@
   top: 0%;
 }
 
+.author-project {
+  background: #c77f24;
+}
+
+
 .project-card.expanded .project-info {
   display: none;
 }

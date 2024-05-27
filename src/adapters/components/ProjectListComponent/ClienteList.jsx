@@ -61,7 +61,7 @@ const ClienteList = ({ onCancel }) => {
           },
         }
       );
-      fetchClientes(); // Refrescar la lista de clientes
+      fetchClientes();
     } catch (error) {
       console.error("Error al eliminar el cliente:", error);
       setErrorMessage("Error al eliminar el cliente");
@@ -71,18 +71,18 @@ const ClienteList = ({ onCancel }) => {
 
   const handleFormSubmit = () => {
     setShowForm(false);
-    fetchClientes(); // Refrescar la lista de clientes
+    fetchClientes();
   };
 
   const handleViewMore = (cliente) => {
     setSelectedCliente(cliente);
-    setIsEditing(false); // Para ver más, no estamos editando
-    setModalVisible(true); // Mostrar modal
+    setIsEditing(false);
+    setModalVisible(true);
   };
 
   const handleEditCliente = (cliente) => {
     setSelectedCliente(cliente);
-    setIsEditing(true); // Estamos editando
+    setIsEditing(true); 
     setFormData({
       nombre: cliente.nombre,
       cif: cliente.cif,
@@ -90,7 +90,7 @@ const ClienteList = ({ onCancel }) => {
       telefono: cliente.telefono,
       web: cliente.web,
     });
-    setModalVisible(true); // Mostrar modal
+    setModalVisible(true);
   };
 
   const handleChange = (e) => {
@@ -113,8 +113,8 @@ const ClienteList = ({ onCancel }) => {
           },
         }
       );
-      setModalVisible(false); // Cerrar modal
-      fetchClientes(); // Refrescar la lista de clientes
+      setModalVisible(false);
+      fetchClientes();
     } catch (error) {
       console.error("Error al actualizar el cliente:", error);
       setErrorMessage("Error al actualizar el cliente");
@@ -148,7 +148,7 @@ const ClienteList = ({ onCancel }) => {
                 Ver más
               </button>
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition duration-300"
+                className="bg-[#6b4734] text-white px-4 py-2 rounded hover:bg-yellow-900 transition duration-300"
                 onClick={() => handleEditCliente(cliente)}
               >
                 Editar

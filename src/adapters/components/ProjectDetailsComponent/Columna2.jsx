@@ -1,6 +1,8 @@
 import React from "react";
 
-const Columna2 = ({ selectedCollaborators }) => {
+const Columna2 = ({ selectedCollaborators, project, username }) => {
+  const isAuthor = project.autor === username;
+
   return (
     <div className="columna2">
       <div className="detail-colaborador">
@@ -23,14 +25,16 @@ const Columna2 = ({ selectedCollaborators }) => {
           <p>No hay colaboradores asociados al proyecto.</p>
         )}
       </div>
-      <div className="detail-colab">
-        <button
-          className="btn"
-          onClick={() => document.getElementById("modal").showModal()}
-        >
-          Añadir/Eliminar colaboradores
-        </button>
-      </div>
+      {isAuthor && (
+        <div className="detail-colab">
+          <button
+            className="btn"
+            onClick={() => document.getElementById("modal").showModal()}
+          >
+            Añadir/Eliminar colaboradores
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import ProjectForm from "../components/ProjectListComponent/ProjectForm";
 import ProjectList from "../components/ProjectListComponent/ProjectList";
 import ClienteForm from "../components/ProjectListComponent/ClienteForm";
 import ClienteList from "../components/ProjectListComponent/ClienteList";
+import Chat from "../components/ChatBubble/Chat"
 
 const MainPage = () => {
   const { username } = useParams();
@@ -66,80 +67,80 @@ const MainPage = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const authToken = localStorage.getItem("authToken");
-        const refreshToken = localStorage.getItem("refreshToken");
+  const fetchRepos = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const refreshToken = localStorage.getItem("refreshToken");
 
-        if (!authToken || !refreshToken) {
-          throw new Error("No hay tokens disponibles");
-        }
-
-        // Verificar si el token de autenticación ha expirado
-        const authTokenExpireTime = jwtDecode(authToken).exp * 1000;
-        const currentTime = new Date().getTime();
-
-        if (currentTime >= authTokenExpireTime) {
-          // Token expirado, solicitar un nuevo token de actualización
-          const refreshedToken = await refreshAuthToken(refreshToken);
-          localStorage.setItem("authToken", refreshedToken);
-        }
-
-        // Continuar con la solicitud utilizando el token actualizado
-        const currentUserPromise = fetch(
-          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/autor/${username}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-          }
-        );
-
-        const collaboratorPromise = fetch(
-          `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/colaborador/${username}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-          }
-        );
-
-        // Espera a que ambas promesas se resuelvan
-        const [currentUserResponse, collaboratorResponse] = await Promise.all([
-          currentUserPromise,
-          collaboratorPromise,
-        ]);
-
-        let repos = [];
-
-        if (currentUserResponse.ok) {
-          const currentUserData = await currentUserResponse.json();
-          const currentUserRepos = currentUserData.data;
-          console.log(currentUserRepos);
-          // Agrega los repositorios del usuario
-          repos = [...repos, ...currentUserRepos];
-        }
-
-        if (collaboratorResponse.ok) {
-          const collaboratorDataResponse = await collaboratorResponse.json();
-          const collaboratorRepos = collaboratorDataResponse.data;
-          console.log(collaboratorRepos);
-          // Agrega los repositorios de colaboradores
-          repos = [...repos, ...collaboratorRepos];
-        }
-
-        // Actualiza el estado repos
-        setRepos(repos);
-      } catch (error) {
-        console.error("Error fetching repos:", error);
+      if (!authToken || !refreshToken) {
+        throw new Error("No hay tokens disponibles");
       }
-    };
 
+      // Verificar si el token de autenticación ha expirado
+      const authTokenExpireTime = jwtDecode(authToken).exp * 1000;
+      const currentTime = new Date().getTime();
+
+      if (currentTime >= authTokenExpireTime) {
+        // Token expirado, solicitar un nuevo token de actualización
+        const refreshedToken = await refreshAuthToken(refreshToken);
+        localStorage.setItem("authToken", refreshedToken);
+      }
+
+      // Continuar con la solicitud utilizando el token actualizado
+      const currentUserPromise = fetch(
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/autor/${username}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      const collaboratorPromise = fetch(
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/colaborador/${username}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      // Espera a que ambas promesas se resuelvan
+      const [currentUserResponse, collaboratorResponse] = await Promise.all([
+        currentUserPromise,
+        collaboratorPromise,
+      ]);
+
+      let repos = [];
+
+      if (currentUserResponse.ok) {
+        const currentUserData = await currentUserResponse.json();
+        const currentUserRepos = currentUserData.data;
+        console.log(currentUserRepos);
+        // Agrega los repositorios del usuario
+        repos = [...repos, ...currentUserRepos];
+      }
+
+      if (collaboratorResponse.ok) {
+        const collaboratorDataResponse = await collaboratorResponse.json();
+        const collaboratorRepos = collaboratorDataResponse.data;
+        console.log(collaboratorRepos);
+        // Agrega los repositorios de colaboradores
+        repos = [...repos, ...collaboratorRepos];
+      }
+
+      // Actualiza el estado repos
+      setRepos(repos);
+    } catch (error) {
+      console.error("Error fetching repos:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchRepos();
-  }, [username]);
+}, []);
 
   const handleSearchChangeVar = (event) => {
     const searchTerm = event.target.value;
@@ -160,6 +161,7 @@ const MainPage = () => {
   const handleCancelForm = () => {
     setShowForm(false);
     setShowProjectList(true);
+    fetchRepos();
   };
 
   const handleCancel = () => {
@@ -167,6 +169,8 @@ const MainPage = () => {
     setExpandedProjectId(false);
     setShowClienteForm(false);
     setShowClienteList(false);
+    setShowProjectList(true);
+    fetchRepos();
   };
 
   const handleExpand = (projectId) => {
@@ -180,7 +184,7 @@ const MainPage = () => {
   };
 
   const handleClienteListToggle = () => {
-    setShowClienteList(!showClienteList);
+    setShowClienteList(true);
     setShowProjectList(false);
     setShowForm(false);
     setShowClienteForm(false);
@@ -189,6 +193,8 @@ const MainPage = () => {
   const handleSubmitClienteForm = () => {
     setShowClienteForm(false);
     setShowProjectList(true);
+    setRepos(repos);
+
   };
 
   const handleCancelClienteForm = () => {
@@ -218,6 +224,7 @@ const MainPage = () => {
             <h1>Proyectos</h1>
           </strong>
         )}
+        
         {username && showForm ? (
           <ProjectForm
             onSubmit={handleSubmitForm}
@@ -253,6 +260,7 @@ const MainPage = () => {
             )}
           </>
         )}
+        <Chat/>
         {!showForm && !showClienteForm && !showClienteList && (
           <>
             <button className="add-project-button" onClick={handleFormToggle}>

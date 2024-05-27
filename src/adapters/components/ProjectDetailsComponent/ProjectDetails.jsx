@@ -277,24 +277,40 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   }, [project.id]);
 
   const handleSelectClient = (client) => {
-    if (!selectedClients.some((selected) => selected.id === client.id)) {
+
+    if (project.autor !== username) {
+      setErrorMessage("No puedes agregar a otros clientes.");
+      setTimeout(() => setErrorMessage(""), 3000);
+      return;
+    }
+
+    const isClientSelected = selectedClients.some(
+      (selectedClient) => selectedClient.id === client.id
+    );
+
+    if (!isClientSelected) {
       const updatedClients = [...selectedClients, client];
       setSelectedClients(updatedClients);
-      localStorage.setItem("selectedClients", JSON.stringify(updatedClients));
+    } else {
+      setErrorMessage("El cliente ya está añadido.");
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 
   const handleSearchInputChangeClients = (event) => {
     const query = event.target.value;
     setSearchQueryClients(query);
-    if (query.trim() !== "") {
-      setShowSearchResultsClients(true);
-    } else {
-      setShowSearchResultsClients(false);
-    }
+    setShowSearchResultsClients(true);
   };
 
   const handleRemoveClient = async (client) => {
+
+    if (project.autor !== username) {
+      setErrorMessage("No puedes eliminar a otros clientes.");
+      setTimeout(() => setErrorMessage(""), 3000);
+      return;
+    }
+
     const updatedClients = selectedClients.filter(
       (item) => item.id !== client.id
     );
@@ -305,6 +321,12 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const handleSaveClients = async () => {
     try {
       let clientNamesArray;
+
+      if (project.autor !== username) {
+        setErrorMessage("No puedes guardar a otros clientes.");
+        setTimeout(() => setErrorMessage(""), 3000);
+        return;
+      }
   
       if (selectedClients.length > 0) {
         clientNamesArray = selectedClients.map(client => client.nombre).join(", "); // Use 'client.nombre' instead of 'client.name'
@@ -428,25 +450,21 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
   const handleSearchInputChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    if (query.trim() !== "") {
-      const filteredResults = filteredStaff.filter(
-        (collaborator) =>
-          collaborator.nombre.toLowerCase().includes(query.toLowerCase()) &&
-          collaborator.nombre !== project.autor
-      );
-      setSearchResults(filteredResults);
-      setShowSearchResults(true);
-    } else {
-      setShowSearchResults(false);
-    }
+    setShowSearchResults(true); 
   };
 
   const handleSelectCollaborator = (staff) => {
+    if (project.autor !== username) {
+      setErrorMessage("No puedes agregar a otros colaboradores.");
+      setTimeout(() => setErrorMessage(""), 3000);
+      return;
+    }
+  
     const isCollaboratorSelected = selectedCollaborators.some(
       (collaborator) => collaborator.nombre === staff.nombre
     );
     console.log("isCollaboratorSelected:", isCollaboratorSelected);
-
+  
     if (!isCollaboratorSelected) {
       const updatedCollaborators = [...selectedCollaborators, staff];
       setSelectedCollaborators(updatedCollaborators);
@@ -455,21 +473,44 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         JSON.stringify(updatedCollaborators)
       );
     } else {
-      alert("El colaborador ya está añadido");
+      setErrorMessage("El colaborador ya está añadido.");
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
+  
 
-  const handleRemoveCollaborator = async (staff) => {
-    const updatedCollaborators = selectedCollaborators.filter(
-      (item) => item.id !== staff.id
-    );
-    setSelectedCollaborators(updatedCollaborators);
-    localStorage.setItem(
-      "selectedCollaborators",
-      JSON.stringify(updatedCollaborators)
-    );
+  const handleRemoveCollaborator = (collaborator) => {
+      const updatedSelectedCollaborators = selectedCollaborators.filter(
+        (c) => c.id !== collaborator.id
+      );
+      setSelectedCollaborators(updatedSelectedCollaborators);
 
-    console.log("Colaborador a eliminar:", staff);
+      const collaboratorsString = updatedSelectedCollaborators
+        .map((c) => c.nombre)
+        .join(", ");
+      const requestData = {
+        collaborator: collaboratorsString,
+      };
+
+      fetch(
+        `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/repo/collaborator/project/${project.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify(requestData),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Collaborator actualizado:", data);
+        })
+        .catch((error) => {
+          console.error("Error al actualizar el collaborator:", error);
+        });
+
   };
 
   const handleSaveCollaborators = async () => {
@@ -515,17 +556,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
     }
   };
 
-  const filteredStaff = Array.isArray(searchResults)
-    ? searchResults.filter((staff) => {
-        const isSelected = selectedCollaborators.some(
-          (selected) => selected.id === staff.id
-        );
-        const matchesSearchQuery = staff.nombre
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        return !isSelected && matchesSearchQuery;
-      })
-    : [];
+  const filteredStaff = searchResults.filter((staff) =>
+    staff.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const isEndDateNear = () => {
     const endDate = new Date(project.fechaFinalizacion);
@@ -605,7 +638,9 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         successMessage={successMessage}
       />
 
-      <Columna2 selectedCollaborators={selectedCollaborators} />
+      <Columna2 selectedCollaborators={selectedCollaborators}
+      project={project}
+      username={username} />
 
       <Columna3
         project={project}
@@ -614,6 +649,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
         onDelete={onDelete}
         renderProjectStatus={renderProjectStatus}
         selectedClients={selectedClients}
+        username={username}
       />
 
       <ModalClientes

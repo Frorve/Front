@@ -7,6 +7,9 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
   const isExpanded = project.id === expandedProjectId;
   const [isEditing, setIsEditing] = useState(false);
   const { username } = useParams();
+  const isAuthor = project.autor === username;
+const projectClassName = `project-card ${isExpanded ? "expanded" : ""} ${!isAuthor ? "author-project" : ""}`;
+
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -152,7 +155,7 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
 
   return (
     <div
-      className={`project-card ${isExpanded ? "expanded" : ""}`}
+      className={projectClassName}
       onClick={handleClick}
     >
       {isEditing ? (
@@ -168,10 +171,10 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
               <strong>Nombre: </strong>
               {project.nombreProyecto}
             </p>
-            <p>
+            {/* <p>
               <strong>Descripción: </strong>
               {project.descripcion}
-            </p>
+            </p> */}
           </div>
           {isExpanded && (
             <ProjectDetails
@@ -187,6 +190,6 @@ const ProjectCard = ({ project, expandedProjectId, onExpand, onDelete }) => {
       )}
     </div>
   );
-};
+}
 
 export default ProjectCard;
