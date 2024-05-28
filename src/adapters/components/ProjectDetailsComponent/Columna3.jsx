@@ -73,7 +73,7 @@ const Columna3 = ({
 
   return (
     <div className="columna3">
-      <div className="detail-autor">
+      <div className="detail-cliente">
         <strong>Cliente: </strong>
         {selectedClients.length > 0 ? (
           <div className="caja2">

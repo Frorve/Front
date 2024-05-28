@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import {
   MainContainer,
@@ -8,18 +8,18 @@ import {
   MessageInput,
   TypingIndicator,
 } from '@chatscope/chat-ui-kit-react';
-
-const API_KEY = process.env.REACT_APP_CHATGPT;
+import { sendMessage } from './huggingfaceService';
 
 const Chat = () => {
   const [messages, setMessages] = useState([
     {
-      message: "Hello, I'm ChatGPT! Ask me anything!",
+      message: "Hola, ¡Soy un ChatBot, pregunta lo que quieras!",
       sentTime: "just now",
-      sender: "ChatGPT",
+      sender: "Bot",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleSendRequest = async (message) => {
     const newMessage = {
@@ -32,18 +32,12 @@ const Chat = () => {
     setIsTyping(true);
 
     try {
-      const response = await processMessageToChatGPT([...messages, newMessage]);
-      if (response.error) {
-        throw new Error(response.error.message);
-      }
-      const content = response.choices[0]?.message?.content;
-      if (content) {
-        const chatGPTResponse = {
-          message: content,
-          sender: "ChatGPT",
-        };
-        setMessages((prevMessages) => [...prevMessages, chatGPTResponse]);
-      }
+      const response = await sendMessage(message);
+      const botResponse = {
+        message: response || "No response received",
+        sender: "Bot",
+      };
+      setMessages((prevMessages) => [...prevMessages, botResponse]);
     } catch (error) {
       console.error("Error processing message:", error);
       const errorMessage = {
@@ -56,50 +50,53 @@ const Chat = () => {
     }
   };
 
-  async function processMessageToChatGPT(chatMessages) {
-    const apiMessages = chatMessages.map((messageObject) => {
-      const role = messageObject.sender === "ChatGPT" ? "assistant" : "user";
-      return { role, content: messageObject.message };
-    });
-
-    const apiRequestBody = {
-      "model": "davinci-002",
-      "messages": [
-        { role: "system", content: "I'm a Student using ChatGPT for learning" },
-        ...apiMessages,
-      ],
-    };
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer " + API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(apiRequestBody),
-    });
-
-    return response.json();
-  }
-
   return (
-    <div className="App">
-      <div style={{ position:"relative", height: "800px", width: "700px" }}>
-        <MainContainer>
-          <ChatContainer>
-            <MessageList
-              scrollBehavior="smooth"
-              typingIndicator={isTyping ? <TypingIndicator content="ChatGPT is typing" /> : null}
+    <div>
+      {/* Bubble button */}
+      <div className="relative">
+        <button
+          className="z-20 text-white flex flex-col shrink-0 grow-0 justify-around 
+                      fixed bottom-0 right-0 right-5 rounded-lg
+                      mr-1 mb-5 lg:mr-5 lg:mb-5 xl:mr-10 xl:mb-10"
+          onClick={() => setIsChatOpen(!isChatOpen)} // Toggle isChatOpen state
+        >
+          <div className="p-3 rounded-full border-4 border-white bg-yellow-600">
+            <svg
+              className="w-10 h-10 lg:w-12 lg:h-12 xl:w-13 xl:h-13"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              {messages.map((message, i) => {
-                console.log(message);
-                return <Message key={i} model={message} />
-              })}
-            </MessageList>
-            <MessageInput placeholder="Send a Message" onSend={handleSendRequest} />
-          </ChatContainer>
-        </MainContainer>
+              <path
+                fillRule="evenodd"
+                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </div>
+        </button>
       </div>
+
+      {/* Chat window */}
+      {isChatOpen && (
+        <div className="fixed bottom-40 right-14 bg-white rounded-lg shadow-lg w-96 h-128">
+          <div className="flex flex-col h-full">
+            <MainContainer>
+              <ChatContainer>
+                <MessageList
+                  scrollBehavior="smooth"
+                  typingIndicator={isTyping ? <TypingIndicator content="Bot esta escribiendo" /> : null}
+                >
+                  {messages.map((message, i) => {
+                    return <Message key={i} model={message} />
+                  })}
+                </MessageList>
+                <MessageInput placeholder="Enviar mensaje" onSend={handleSendRequest} />
+              </ChatContainer>
+            </MainContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
