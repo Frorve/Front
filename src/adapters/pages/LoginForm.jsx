@@ -5,7 +5,7 @@ import { FaLock } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import logo from "../../assets/logo.png";
 import Footer from "../components/FooterComponent/Footer";
-import { login, getUserInfo } from "../api/apiDirectus";
+import { getUserInfo } from "../api/apiDirectus";
 
 const LoginForm = () => {
   const navigate = useNavigate();

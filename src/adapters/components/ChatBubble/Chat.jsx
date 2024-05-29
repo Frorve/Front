@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+import { useState } from "react";
+import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   MainContainer,
   ChatContainer,
@@ -7,8 +7,8 @@ import {
   Message,
   MessageInput,
   TypingIndicator,
-} from '@chatscope/chat-ui-kit-react';
-import { sendMessage } from './huggingfaceService';
+} from "@chatscope/chat-ui-kit-react";
+import { sendMessage } from "./openaiService";
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -24,7 +24,7 @@ const Chat = () => {
   const handleSendRequest = async (message) => {
     const newMessage = {
       message,
-      direction: 'outgoing',
+      direction: "outgoing",
       sender: "user",
     };
 
@@ -52,13 +52,12 @@ const Chat = () => {
 
   return (
     <div>
-      {/* Bubble button */}
       <div className="relative">
         <button
           className="z-20 text-white flex flex-col shrink-0 grow-0 justify-around 
                       fixed bottom-0 right-0 right-5 rounded-lg
                       mr-1 mb-5 lg:mr-5 lg:mb-5 xl:mr-10 xl:mb-10"
-          onClick={() => setIsChatOpen(!isChatOpen)} // Toggle isChatOpen state
+          onClick={() => setIsChatOpen(!isChatOpen)}
         >
           <div className="p-3 rounded-full border-4 border-white bg-yellow-600">
             <svg
@@ -77,21 +76,27 @@ const Chat = () => {
         </button>
       </div>
 
-      {/* Chat window */}
       {isChatOpen && (
         <div className="fixed bottom-40 right-14 bg-white rounded-lg shadow-lg w-96 h-128">
           <div className="flex flex-col h-full">
             <MainContainer>
-              <ChatContainer>
+              <ChatContainer style={{ height: "700px", overflowY: "auto" }}>
                 <MessageList
                   scrollBehavior="smooth"
-                  typingIndicator={isTyping ? <TypingIndicator content="Bot esta escribiendo" /> : null}
+                  typingIndicator={
+                    isTyping ? (
+                      <TypingIndicator content="Bot esta escribiendo" />
+                    ) : null
+                  }
                 >
                   {messages.map((message, i) => {
-                    return <Message key={i} model={message} />
+                    return <Message key={i} model={message} />;
                   })}
                 </MessageList>
-                <MessageInput placeholder="Enviar mensaje" onSend={handleSendRequest} />
+                <MessageInput
+                  placeholder="Enviar mensaje"
+                  onSend={handleSendRequest}
+                />
               </ChatContainer>
             </MainContainer>
           </div>
@@ -99,6 +104,6 @@ const Chat = () => {
       )}
     </div>
   );
-}
+};
 
 export default Chat;
