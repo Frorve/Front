@@ -59,8 +59,8 @@ const LoginForm = () => {
       );
   
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error: ${response.status} - ${errorText}`);
+        setErrorMessage("Error al iniciar sesión:");
+        setTimeout(() => setErrorMessage(""), 5000);
       }
   
       const data = await response.json();
