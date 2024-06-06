@@ -12,6 +12,10 @@ const Columna1 = ({
   errorMessage,
   successMessage,
 }) => {
+
+  /*/Componente de los detalles del proyecto, el cual se refiere a la Columna de la izquierda del componente, 
+  donde se muestran detalles tales como nombre, descripcion, fechas y la funcionalidad de Clockify./*/
+  
   return (
     <div className="columa1">
       <div className="detail-nombre">

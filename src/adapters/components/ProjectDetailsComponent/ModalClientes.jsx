@@ -16,7 +16,11 @@ const ModalClientes = ({
   successMessage,
   handleSave,
 }) => {
+  //Componente modal para poder usarlo para los clientes.
+
   const [error, setError] = useState(false);
+
+  //Función que no se puedan añadir mas de 1 cliente
 
   const handleSelectSingleItem = (item) => {
     if (selectedItems.length > 0) {

@@ -16,6 +16,8 @@ const Modal = ({
   successMessage,
   handleSave,
 }) => {
+  //Componente modal para poder usarlo para los colaboradores.
+
   return (
     <dialog id={id} className="modal">
       <div className="modal-box w-full max-w-5xl">

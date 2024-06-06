@@ -11,9 +11,14 @@ const Columna3 = ({
   selectedClients,
   username,
 }) => {
+  /*/Componente de los detalles del proyecto, el cual se refiere a la Columna de la derecha del componente, 
+  donde se muestran detalles tales como tiempo invertido, cliente y funcionalidades de editar, borrar y descargar archivo asociado./*/
+
   const isAuthor = project.autor === username;
 
   const [projectTime, setProjectTime] = useState(`00:00:00`);
+
+  //Formateo del tiempo
 
   const formatTime = (milliseconds) => {
     const seconds = Math.floor((milliseconds / 1000) % 60);
@@ -28,6 +33,8 @@ const Columna3 = ({
       String(seconds).padStart(2, "0")
     );
   };
+
+  //Registro del tiempo invertido en la base de datos, el cual se va sumando cada vez que se hace un registro de Clockify, sumandose asi al tiempo total
 
   useEffect(() => {
     const fetchProjectTime = async () => {

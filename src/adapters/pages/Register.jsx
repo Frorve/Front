@@ -25,6 +25,8 @@ const Register = () => {
     setMail(event.target.value);
   };
 
+  //Función para hacer el post del formulario de registro
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -44,6 +46,8 @@ const Register = () => {
           }),
         }
       );
+
+      //Si pasa el primer try que es registrar el rol este usuario tambien quedará guardado en nuestra base de datos
 
       if (response.ok) {
         console.log("Usuario creado exitosamente");

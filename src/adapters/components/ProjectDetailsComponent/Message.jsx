@@ -1,6 +1,8 @@
 import React from "react";
 
 const Message = ({ type, message }) => {
+  //Componente para poder utilizarlo en otros componentes para generar los mensajes de error o éxito del proceso.
+
   return (
     <div role="alert" className={`alert alert-${type}`}>
       {type === "error" ? (

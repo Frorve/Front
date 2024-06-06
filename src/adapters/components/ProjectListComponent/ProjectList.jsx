@@ -1,6 +1,8 @@
 import React from "react";
 import ProjectCard from "./ProjectCard";
 
+//Componente para crear una lista de proyectos
+
 const ProjectList = ({ projects, expandedProjectId, onExpand }) => {
   return (
     <div className="projects-container">

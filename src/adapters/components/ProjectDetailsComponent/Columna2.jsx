@@ -3,6 +3,9 @@ import React from "react";
 const Columna2 = ({ selectedCollaborators, project, username }) => {
   const isAuthor = project.autor === username;
 
+  /*/Componente de los detalles del proyecto, el cual se refiere a la Columna central del componente, 
+  donde se muestran todos los colaboradores del proyecto./*/
+  
   return (
     <div className="columna2">
       <div className="detail-colaborador">

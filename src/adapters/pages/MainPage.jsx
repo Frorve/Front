@@ -37,6 +37,8 @@ const MainPage = () => {
     }
   };
 
+  //Funcion para refrescar el token, donde se almacenaría en local si la respuesta es valida
+
   const refreshAuthToken = async (refreshToken) => {
     try {
       const payload = {
@@ -68,13 +70,15 @@ const MainPage = () => {
     }
   };
 
+  //Función donde comprueba el token, si no tienes token te lleva al login y si tienes se te mostraran los proyectos donde eres autor y colaborador a traves de las llamadas
+
   const fetchRepos = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
       const refreshToken = localStorage.getItem("refreshToken");
 
       if (!authToken || !refreshToken) {
-        navigate("/login");  // Redirigir al login si no hay tokens
+        navigate("/login"); // Redirigir al login si no hay tokens
         return;
       }
 
@@ -100,7 +104,7 @@ const MainPage = () => {
       );
 
       if (!currentUserResponse.ok) {
-        navigate("/login");  // Redirigir al login si no hay tokens
+        navigate("/login"); // Redirigir al login si no hay tokens
         return;
       }
 
@@ -115,7 +119,7 @@ const MainPage = () => {
       );
 
       if (!collaboratorResponse.ok) {
-        navigate("/login");  // Redirigir al login si no hay tokens
+        navigate("/login"); // Redirigir al login si no hay tokens
         return;
       }
 
@@ -141,7 +145,7 @@ const MainPage = () => {
       setRepos(repos);
     } catch (error) {
       console.error("Error fetching repos:", error);
-      navigate("/login");  // Redirigir al login en caso de error
+      navigate("/login"); // Redirigir al login en caso de error
     }
   };
 
@@ -208,6 +212,8 @@ const MainPage = () => {
     setShowProjectList(true);
   };
 
+  //Filtro para poder buscar tu proyecto por nombre en el buscador
+
   const filteredProjects = searchQuery
     ? repos.filter((repo) =>
         repo.nombreProyecto.toLowerCase().includes(searchQuery.toLowerCase())
@@ -230,7 +236,7 @@ const MainPage = () => {
             <h1>Proyectos</h1>
           </strong>
         )}
-        
+
         {username && showForm ? (
           <ProjectForm
             onSubmit={handleSubmitForm}
@@ -245,11 +251,7 @@ const MainPage = () => {
                 onCancel={handleCancelClienteForm}
               />
             )}
-            {showClienteList && (
-              <ClienteList
-                onCancel={handleCancel}
-              />
-            )}
+            {showClienteList && <ClienteList onCancel={handleCancel} />}
             {showProjectList && repos.length === 0 && (
               <p className="welcome">
                 <strong>
@@ -266,7 +268,7 @@ const MainPage = () => {
             )}
           </>
         )}
-        
+
         {!showForm && !showClienteForm && !showClienteList && (
           <>
             <button className="add-project-button" onClick={handleFormToggle}>

@@ -14,6 +14,8 @@ const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  //Hook para mque guarde contraseña y mail en la memoria local si el usuario lo decide a traves de un marcador
+
   useEffect(() => {
     const storedPassword = localStorage.getItem("rememberedPassword");
     const storedMail = localStorage.getItem("rememberedMail");
@@ -45,7 +47,9 @@ const LoginForm = () => {
       email: mail,
       password: password,
     };
-  
+
+    //Llamada para hacer el login con las crendeciales, si se inicia sesion guardara el token en el almacenamiento local
+
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_MICROSERVICIOS}/auth/login`,

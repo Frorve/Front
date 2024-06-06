@@ -329,7 +329,7 @@ const ProjectDetails = ({ project, onClose, onEdit, onDelete, onDownload }) => {
       }
   
       if (selectedClients.length > 0) {
-        clientNamesArray = selectedClients.map(client => client.nombre).join(", "); // Use 'client.nombre' instead of 'client.name'
+        clientNamesArray = selectedClients.map(client => client.nombre).join(", ");
       } else {
         clientNamesArray = null;
       }
