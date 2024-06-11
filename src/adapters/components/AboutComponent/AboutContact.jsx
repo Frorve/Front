@@ -24,6 +24,10 @@ const AboutContact = () => {
               <li>
                 Posibilidad de añadir colaboradores y clientes a proyectos.
               </li>
+              <li>
+                Integración con la API de ChatGPT para poder hacer preguntas en
+                cualquier momento a traves del Chat que viene integrado.
+              </li>
             </ul>
           </div>
           <div className="bg-transparent p-6 ">
